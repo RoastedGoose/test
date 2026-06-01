@@ -1,0 +1,101 @@
+%\section{Multi-party NIKE in the Bounded Storage Model with Background and (Full)Security}
+%In this section, we give the definitions and theorems used to construct our multi-party NIKE in the bounded storage model, along with the proof of its security.
+%\subsection{Background of Bounded Storage Model}
+%\section{Proof of \cref{lem:pairwise}}
+%\label{sec:pairwise}
+
+\begin{proof}
+%Let $ t_i^j=h_i(j)$ for all $i\in[\pnum]$ and $j\in\Z_q$ and $( u_j)_{j\in\Z_q}$ be the sequence such that $ u_j= h_1(j)$ if there exist indices $j_2,\cdots,j_{\pnum}$ satisfying
+%$\msb_\kk( h_1(j))=\msb_\kk( t_i^{j_2})=\cdots=\msb_\kk( t_\pnum^{j_\pnum})$ and $ u_i=\bot$ otherwise.
+Let $\hx_1,\hx_2$ be any distinct elements in $GF(n)$.
+%To prove this lemma, it is sufficient to show that 
+%the sequence $( u_i)_{i\in[q]}$ restricted to $ u_i\neq\bot$ is $\kk$-approximately pairwise independent, i.e. $( u_i)_{i\in[q]}$ satisfies
+%$
+%\Pr[ u_i=\hx_1\land  u_j=\hx_2| u_i\neq \bot\land  u_j\neq\bot]=\frac{1}{k(k-1)}
+%$
+%for all $i,j\in\Z_q$. 
+Due to approximately pairwise independence, we have 
+$$
+\Pr[ h_\pnum(i)=\hx_1\land  h_\pnum(j)=\hx_2]=1/(n(n-1))
+$$
+for all distinct $i,j\in[q]$,
+and
+$$
+\Pr[\exists i_l,j_l: h_l(i_l)=\hx_1\land h_l(j_l)=\hx_2]=q(q-1)/(n(n-1))
+$$
+for all $l\in[\pnum-1]$.
+Hence, for any distinct $i,j\in\Z_q$, we have
+\[\begin{split}
+\Pr[ u_i=\hx_1\land  u_j=\hx_2]
+=&\Pr[\exists (i_l,j_l)_{l\in[\pnum-1]}: 
+ h_1(i_1)=\cdots= h_{\pnum-1}(i_{\pnum-1})=\hx_1= h_\pnum(i)\land\\
+ &\tab h_1(j_1)=\cdots= h_{\pnum-1}(j_{\pnum-1})=\hx_2= h_\pnum(j)]\\
+=&\Pr[ h_\pnum(i)=\hx_1\land  h_\pnum(j)=\hx_2]\cdot\prod_{l=1}^{\pnum-1}\Pr[\exists i_l,j_l: h_l(i_l)=\hx_1\land  h_l(j_l)=\hx_2]\\
+%=\Pr[&t_1^i=x_1\land h_1(j)=x_2]\cdot\Pr[\exists i_2,\cdots,i_\pnum,j_2,\cdots,j_\pnum: \\&
+%\msb_\kk(t_2^{i_2})=\cdots=\msb_\kk(t_\pnum^{i_\pnum})=\msb_\kk(x_1)\land\\
+%&\msb_\kk(t_2^{j_2})=\cdots=\msb_\kk(t_\pnum^{j_\pnum})=\msb_\kk(x_2)]\\
+=&1/(n(n-1))\cdot \Big(q(q-1)/(n(n-1))\Big)^{\pnum-1},
+\end{split}\]
+and
+\[\begin{split}
+\Pr[ u_i\neq\bot\land  u_j\neq \bot]
+=&\Pr[\exists (i_l,j_l)_{l\in[\pnum-1]}: h_1(i_1)=\cdots= h_{\pnum-1}(i_{\pnum-1})= h_\pnum(i)\land\\
+&\tab  h_1(j_1)=\cdots= h_{\pnum-1}(j_{\pnum-1})= h_\pnum(j)]
+\\
+=&\prod_{l=1}^\pnum\Pr[\exists i_l,j_l: h_l(i_l)=h_\pnum(i)\land  h_l(j_l)= h_\pnum(j)]
+=\Big(q(q-1)/(n(n-1))\Big)^{\pnum-1},
+\end{split}\]
+i.e.,
+$$
+ \Pr[ u_i=\hx_1\land  u_j=\hx_2\mid u_i\neq \bot\land  u_j\neq\bot]=\frac{\Pr[ u_i=\hx_1\land  u_j=\hx_2]}{\Pr[ u_i\neq\bot\land  u_j\neq \bot]}=1/(n(n-1)).
+$$
+Therefore, conditioned on two surviving positions, their values are uniformly distributed over ordered pairs of distinct field elements. Restricting to the non-$\bot$ entries and then taking the first $\lambda$ entries preserves this pairwise distribution. Hence, conditioned on $\mathsf{Good}$, $\vec{s}_{\lambda}$ satisfies the condition required by \cref{thm:cm}.
+\end{proof}
+
+
+%In this section, we give the backgrounds used to construct our multi-party NIKE in the bounded storage model.
+%\heading{Pairwise independence.}
+%\label{sec:pairwisedef}
+%In this section, we recall the definitions of uniformly and approximately pairwise independence, (approximately) strongly 2-universal hash function family, and 2-universal hash function family, and recall their instantiations in \cref{fig:con-hash}.~\footnote{The approximate pairwise independence and approximate 2-universal hash function family are defined in \cite{FOCS:Zuckerman91,C:CacMau97} in an implicit way.}
+%%We refer the reader to~\cref{sec:pairwise} for the definitions of uniformly and approximately pairwise independence, (approximately) strongly 2-universal hash function family, and 2-universal hash function family, and recall their instantiations in \cref{fig:con-hash}.
+%%Roughly approximately pairwise independent variables are uniformly pairwise independent conditioned on that they are all distinct.
+%
+%\begin{definition}[Uniform pairwise independence]
+%\label{def:upairwise}
+%A sequence of random variables $x_1,\cdots,x_q$ with alphabet $\mathcal Y$ are uniformly pairwise independent if for any $1\leq i<j\leq q$ and any $\hat y_1, \hat y_2 \in \mathcal X$, we have
+%	$\Pr[x_i = \hat y_1 \land x_j = \hat y_2] = 1/|\mathcal{Y}|^2$.
+%\end{definition}
+%
+%
+%\begin{definition}[Approximate pairwise independence \cite{FOCS:Zuckerman91,C:CacMau97}]
+%\label{def:apairwise}
+%A sequence of random variables $x_1,\cdots,x_q$ with alphabet $\mathcal Y$ are approximate pairwise independent if for any $1\leq i<j\leq q$ and any distinct $\hat y_1, \hat y_2 \in \mathcal Y$, we have
+%$\Pr[x_i = \hat y_1 \land x_j = \hat y_2] = 1/|\mathcal{Y}|(|\mathcal{Y}|-1)$.
+%%The definition of \emph{approximate pairwise independence} is exactly the same as \cref{def:upairwise} except that we replace 
+%%``$\frac{1}{|\mathcal{Y}|^2}$''
+%%by
+%%``$\frac{1}{|\mathcal{Y}|(|\mathcal{Y}|-1)}$''.
+%\end{definition}
+%
+%
+%%For any $q\in\N$, a sequence of random variables $\vec x_1,\cdots,\vec x_q$ from a range $\mathcal X$ are pairwise independent if for any $1\leq i<j\leq q$ and any $\hy_1, \hy_2 \in \bin^\nn$ with $\hy_1\neq \hy_2$, we have
+%%	$$\Pr[\vec x_i = \hy_1 \land \vec x_j = \hy_2] = \frac{1}{|\mathcal{X}|^2}.$$
+%
+%\begin{definition}[Strongly 2-universal hash function family]
+%\label{def:shash}
+%	A set $\mathcal H$ of functions with domain $\mathcal X$ and range $\mathcal Y$ is said to be a \emph{strongly 2-universal hash function family} if for any distinct $x_1,x_2 \in \mathcal{X}$, $h(x_1)$ and $h(x_2)$ are uniformly pairwise independent for $h\getsr \mathcal H$.
+%\end{definition}
+%
+%\begin{definition}[Approximate strongly 2-universal hash function \cite{FOCS:Zuckerman91,C:CacMau97}]
+%\label{def:ahash}
+%The definition of \emph{approximate strongly 2-universal hash function family} is exactly the same as \cref{def:shash} except that we replace ``uniformly pairwise independent'' by ``approximate pairwise independent''.
+%\end{definition}
+%
+%
+%\begin{definition}[2-universal hash function family]
+%\label{def:hash}
+%	A set $\mathcal H$ of functions with domain $\mathcal X$ and range $\mathcal Y$ is said to be a \emph{2-universal hash function family} if for any distinct $x_1,x_2 \in \mathcal{X}$, we have
+%	$\Pr[g(x_1)=g(x_2)]\leq 1/|\mathcal Y|$.
+%\end{definition}
+
+%We now recall a main theorem in \cite{C:CacMau97} for privacy amplification. 

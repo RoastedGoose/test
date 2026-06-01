@@ -1,0 +1,38 @@
+\begin{thebibliography}{10}
+\providecommand{\url}[1]{\texttt{#1}}
+\providecommand{\urlprefix}{URL }
+
+\bibitem{ICML:BacTza17}
+Backurs, A., Tzamos, C.: Improving viterbi is hard: better runtimes imply faster clique algorithms. In: Proceedings of the 34th International Conference on Machine Learning - Volume 70. p. 311–321. ICML'17, JMLR.org (2017)
+
+\bibitem{DH76}
+Diffie, W., Hellman, M.E.: New directions in cryptography. {IEEE} Trans. Inf. Theory  22(6),  644--654 (1976)
+
+\bibitem{GL89}
+Goldreich, O., Levin, L.A.: A hard-core predicate for all one-way functions. In: {STOC}. pp. 25--32. {ACM} (1989)
+
+\bibitem{GKRS22}
+Guo, S., Kamath, P., Rosen, A., Sotiraki, K.: Limits on the efficiency of (ring) {LWE}-based non-interactive key exchange. J. Cryptol.  35(1), ~1 (2022)
+
+\bibitem{Has87}
+H{\aa}stad, J.: One-way permutations in {NC0}. Inf. Process. Lett.  26(3),  153--155 (1987)
+
+\bibitem{HKKW13}
+Hofheinz, D.: Fully secure constrained pseudorandom functions using random oracles. Cryptology ePrint Archive, Paper 2014/372 (2014), \url{https://eprint.iacr.org/2014/372}
+
+\bibitem{Joux04}
+Joux, A.: A one-round protocol for tripartite {Diffie-Hellman}. J. Cryptol.  17(4),  263--276 (2004)
+
+\bibitem{JC:Maurer92}
+Maurer, U.M.: Conditionally-perfect secrecy and a provably-secure randomized cipher. J. Cryptol.  5(1),  53--66 (1992)
+
+\bibitem{Maurer93}
+Maurer, U.M.: Secret key agreement by public discussion from common information. {IEEE} Trans. Inf. Theory  39(3),  733--742 (1993), \url{https://doi.org/10.1109/18.256484}
+
+\bibitem{Merkle78}
+Merkle, R.C.: Secure communications over insecure channels. Commun. {ACM}  21(4),  294--299 (1978)
+
+\bibitem{Razborov1987}
+Razborov, A.A.: Lower bounds on the size of bounded depth circuits over a complete basis with logical addition. Mathematical notes of the Academy of Sciences of the USSR  41(4) (Apr 1987)
+
+\end{thebibliography}

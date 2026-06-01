@@ -1,0 +1,170 @@
+%\section{Multi-Party NIKE based on Zero-k-Clique with (Full) Security}
+%\label{sec:hcp}
+%In this section, we extend our multi-party NIKE to one with full security via privacy amplification. 
+%We first introduce the probability bound as follows.
+\begin{theorem}[Chebyshev bound]
+%<<<<<<< HEAD
+%<<<<<<< HEAD
+%	Fix $\epsilon > 0$ and $b \in \{0,1\}$, and let $\{x_i\}$ be pairwise-independent, $0/1$-random variables for which $\Pr[x_i = b] \geq \frac{1}{2} + \epsilon$ for all $i$. 
+%%	Consider the process in which $m$ values $x_1, \cdots, x_m$ are recorded and 
+%	Let $x = \begin{cases} 1 & \text{if $\Sigma_{i=1}^{q}x_i \geq \frac{q}{2}$}\\
+%	0 &  \text{if $\Sigma_{i=1}^{q}x_i < \frac{q}{2}$}
+%	\end{cases}$. Then
+%=======
+	For any $\epsilon > 0$, $b \in \{0,1\}$, and $q\in\N$, let $\{x_i\}_{i\in[q]}$ be pairwise-independent, $0/1$-random variables such that
+	$$\Pr[x_i = b] \geq 1/2 + \epsilon$$ for all $i\in[q]$.
+%	Consider the process in which $m$ values $x_1, \cdots, x_m$ are recorded and $x$ is set to the value that occurs a strict majority of the time. Then
+	Let $x = \begin{cases} 1 & \text{if $\Sigma_{i=1}^{q}x_i \geq q/2$}\\
+	0 &  \text{if $\Sigma_{i=1}^{q}x_i < q/2$}
+	\end{cases}$. Then
+%>>>>>>> 460f90c11079c66ad36db4d2223f8b5c29dee719
+	$$ \Pr[x \neq b] \leq 1/(4\epsilon^2q).$$
+%=======
+%	For any $\epsilon > 0$, $b \in \{0,1\}$ and $q\in\N$, and let $\{x_i\}_{i\in[q]}$ be pairwise-independent, $0/1$-random variables such that $\Pr[x_i = b] \geq \frac{1}{2} + \epsilon$ for all $i\in[q]$. Consider the process in which $m$ values $x_1, \cdots, x_m$ are recorded and $x$ is set to the value that occurs a strict majority of the time. Then
+%	$$ \Pr[x \neq b] \leq \frac{1}{4\epsilon^2m}. $$
+%>>>>>>> 00bd60cea94da8dde24d82e43fc4b4710637bcef
+\end{theorem}
+
+%appendix hcp theorem
+%Let $\cc_1$ (respectively, $\cc_2$) be the set of all word-RAM families such that for each $\mathcal{F} = \{f_{\lambda}\}\in\cc_1$ and each $\lambda\in\N$, $f_{\lambda}$ runs in time $\tilde{O}(T_1(\lambda))$ (respectively, $\tilde{O}(T_2(\lambda))$) for any constant $\pnum \geq 2, k \geq 3$. Let $\epsilon =1/ \lambda^{o(1)}$ and $\tnike = (\gen, \share)$ be a $\cc_1$-$\pnum$-NIKE that satisfies $\cc_2$-$\frac{\epsilon}{4}$-weak security with the secret key size $ \log(\lambda^{\Omega(1)})$, we construct $\tnike^* = (\gen^*, \share^*)$ satisfying $\cc_2$-$\epsilon$-security as in \cref{fig:con-search-nike}.
+%not \epsilon/4
+%Let $\cc_1$ (respectively, $\cc_2$) be the set of all word-RAM families such that for each $\mathcal{F} = \{f_{\lambda}\}\in\cc_1$ and each $\lambda\in\N$, $f_{\lambda}$ runs in time $\tilde{O}(T_1(\lambda))$ (respectively, $\tilde{O}(T_2(\lambda))$) for any constant $\pnum \geq 2, k \geq 3$. Let $\tnike = (\gen, \share)$ be a $\cc_1$-$\pnum$-NIKE with shared-key length $Q(\lambda) = \log(\lambda^{\Omega(1)})$, and let $\tnike^* = (\gen^*, \share^*)$ be the construction in \cref{fig:con-search-nike}.
+Let $\cc_1$ (respectively, $\cc_2$) be the set of all word-RAM families such that for each $\mathcal{F} = \{f_{\lambda}\}\in\cc_1$ and each $\lambda\in\N$, $f_{\lambda}$ runs in time $\tilde{O}(T_1(\lambda))$ (respectively, $\tilde{O}(T_2(\lambda))$) for any constant $\pnum \geq 2, k \geq 3$. Let $\epsilon =1/ \lambda^{o(1)}$ and $\tnike = (\gen, \share)$ be a $\cc_1$-$\pnum$-NIKE that satisfies $\cc_2$-$\epsilon$-weak security with the shared key size $ Q(\lambda) = \Theta(\log(\lambda))$, we construct $\tnike^* = (\gen^*, \share^*)$ satisfying $\cc_2$-$1/ \lambda^{o(1)}$-security as in \cref{fig:con-search-nike}.
+%\begin{theorem}
+%\label{thm:hcp}
+%	Let $p_{\mathrm{GL}}(\epsilon)=\epsilon^{O(1)}$ denote the reconstruction success probability guaranteed by the standard Goldreich--Levin reconstruction algorithm for recovering a $Q(\lambda)$-bit string from an $\epsilon$-advantage predictor of its random inner products, using $\mathrm{poly}(Q(\lambda),1/\epsilon)$ oracle calls. Assume that $\mathrm{poly}(Q(\lambda),1/\epsilon)=\lambda^{o(1)}$. If $\tnike$ is a $\cc_1$-$\pnum$-NIKE with $\cc_2$-$\epsilon_w$-weak security and $\epsilon_w<p_{\mathrm{GL}}(\epsilon)$, then $\tnike^*$ is a $\cc_1$-$\pnum$-NIKE with $\cc_2$-$\epsilon$-security.
+%\end{theorem}
+\begin{theorem}
+\label{thm:hcp}
+	If $\tnike$ is a $\cc_1$-$\pnum$-NIKE with $\cc_2$-$\epsilon$-weak security, then $\tnike^*$ is a $\cc_1$-$\pnum$-NIKE with $\cc_2$-$1/ \lambda^{o(1)}$-security.
+\end{theorem}
+\begin{figure}[h!]
+\begin{center}
+\framebox{
+\small
+  \begin{tabular}{l|l}
+    \begin{minipage}[t]{0.4\textwidth}
+    	\underline{$\gen^*(\bot)$:}
+	\item $(\pk, \sk) \getsr \gen(\bot)$
+%	\item $\vec{v} \getsr \{0,1\}^{\log\elllambda^3}$
+	\item $\vec{v} \getsr \{0,1\}^{Q(\lambda)}$
+    	\item Return $(\pk^* =(\pk, \vec{v}),\sk^* = \sk)$
+      \end{minipage}&  \begin{minipage}[t]{0.4\textwidth}
+        
+    \underline{$\share^*(i,\sk_i^*,(\pk_j^*)_{j\in[\pnum]})$:}
+    \item Parse $\pk_j^*=(\pk_j,\vec v_j)$ for all $j \in [\pnum]$
+    	\item $\tempkey = \share(i,\sk_i^*,(\pk_j)_{j\in[\pnum]})$
+	%\item Let $\vec{v} = \vec{v}_\pnum$
+	\item If $\tempkey=\bot$, return $\bot$
+	\item Return $\key^* = \tempkey \cdot \vec{v}_\pnum$
+    \end{minipage} 
+      \end{tabular}
+      }
+\end{center}
+\caption{Definition of $\tnike^*=\{\gen^*,\share^*\}$ with $\cc_2$-$1/ \lambda^{o(1)}$-security.}
+\label{fig:con-search-nike}
+\end{figure}
+%\begin{proof}
+%	Suppose there exists a distinguisher $\advA=\{\adv\}\in\cc_2$ that breaks the $\cc_2$-$\epsilon$-security of $\tnike^*$. Using $\adv$ as an oracle and varying the public vector $\vec v_\pnum$ in \cref{fig:con-search-nike}, the standard Goldreich--Levin reconstruction argument yields a randomized predictor that, on input the public keys of $\tnike$, recovers
+%	\[
+%	\key=\share(1,\sk_1,(\pk_i)_{i\in[\pnum]})
+%	\]
+%	with probability at least $p_{\mathrm{GL}}(\epsilon)$.
+%	The reconstruction overhead is $\mathrm{poly}(Q(\lambda),1/\epsilon)$. By assumption this overhead is $\lambda^{o(1)}$, and is therefore absorbed by the $\widetilde{O}(\cdot)$ adversarial running time defining $\cc_2$. Hence, if $p_{\mathrm{GL}}(\epsilon)>\epsilon_w$, this predictor contradicts the $\cc_2$-$\epsilon_w$-weak security of $\tnike$. Therefore, $\tnike^*$ is $\cc_2$-$\epsilon$-secure.
+%\end{proof}
+\begin{proof}
+	Let $m =  2Q(\lambda)/\epsilon^2$, $(\pk_i, \sk_i) \getsr \gen(\bot)$ for all $i \in [\pnum]$, $\key = \share(1, \sk_1, \pk_{[\pnum]})$, $\vec v_{\pnum} \getsr \bin^{Q(\lambda)}$, and $\advA = \{\adv\} \in \cc_2$ be any adversary breaking the $\cc_2$-$\epsilon$-security of $\tnike^*$.
+%	where $\cc_2$ runs in time $\tilde{\Omega}(\elllambda T(\lambda))$. 
+%	We construct an adversary $\advB = \{b_{\lambda}\} \in \cc_2$ breaking the $\cc_2$-$\frac{\epsilon}{4}$-weak security of $\tnike$.
+	We construct an adversary $\advB = \{b_{\lambda}\} \in \cc_2$ breaking the $\cc_2$-$\epsilon$-weak security of $\tnike$.
+	
+	Firstly, $b_{\lambda}$ chooses $\log (m)$ pairs $(\sigma_1, r_1), \cdots, (\sigma_{\log (m)}, r_{\log (m)}) \getsr \{0,1\} \times \{0,1\}^{Q(\lambda)}$. Then, for every nonempty subset $\mathcal{X} \subseteq [\log (m)]$, $b_{\lambda}$ computes $r_\mathcal{X} = \oplus_{i \in \mathcal{X}} r_i$ and $\sigma_\mathcal{X} = \oplus_{i \in \mathcal{X}} \sigma_i$. For every $i \in [Q(\lambda)]$, $b_{\lambda}$ runs 
+	$$\tempkey_i^\mathcal{X} = \sigma_\mathcal{X} \oplus \adv(\{\pk_i\}_{i\in[\pnum]}, r_\mathcal{X} \oplus e^{i}),$$ 
+	where $e^{i}$ denotes the $Q(\lambda)$-bit string with $1$ in the $i$'th position and 0 everywhere else, and sets $\tempkey_i^*$ as the majority of ${\tempkey_i^\mathcal{X}}$. Finally, $b_{\lambda}$ outputs $\tempkey^* = \tempkey_1^*|| \cdots ||\tempkey_{Q(\lambda)}^*$.
+	Let 
+	$$\set = \{\tempkey \big{|} \Pr[\adv(\{\pk_i\}_{i\in[\pnum]}, \vec{v}_\pnum \allowbreak ) = \key] > 1/2 + \polysmall/2\}.$$ 
+	A quick calculation yields $|\set| > 2^{Q(\lambda) - 1}\polysmall$. 
+	Since $\{\sigma_i\}_{i \in [\log (m)]}$ and $\{r_i\}_{i \in [\log(m)]}$ are sampled uniformly at random, 
+%	and if all $\sigma_{i \in [\log(m)]}$ are guessed correctly (i.e., all $\sigma_{i \in \mathcal{X}}$ is correct), 
+	we have 
+	$$\Pr[(\sigma_{i} = r_{i} \cdot \tempkey)_{i \in [\log (m)]}] = 1/m.$$ 
+	Notice that the set $\{r_{\mathcal{X}}\}_{\mathcal{X} \subseteq [\log(m)]}$ are pairwise independent, the probability that the majority of bits is incorrect is 
+	$$\Pr[(\tempkey_i^* \neq \tempkey_i) \mid (\sigma_j = \tempkey \cdot r_j)_{j \in [\log (m)]} \land (\tempkey \in S)] \leq 1/(m\polysmall^2),$$
+	for each $i \in [Q(\lambda)]$ by Chebyshev bound. Putting all these together we have
+	\[\begin{split}
+		\Pr[b_{\lambda}(\{\pk_i\}_{i\in[\pnum]}) = \tempkey]
+		\geq&  \Pr[\tempkey \in S] \cdot \Pr[b_{\lambda}(\{\pk_i\}_{i\in[\pnum]}) = \tempkey \mid \tempkey \in S]\\
+		=& \polysmall/(2m) \cdot \Pr[\forall i \in [Q(\lambda)], (\tempkey^*_i = \tempkey_i) \mid \tempkey \in S, (\sigma_j = \tempkey \cdot r_j)_{j \in [\log (m)]}] \\
+		=& \polysmall/(2m)(1-\Pr[\exists i \in [Q(\lambda)]\ \mbox{s.t.}\ \tempkey^*_i \neq \tempkey_i \mid \tempkey \in S, (\sigma_j = \tempkey \cdot r_j)_{j \in [\log (m)]}])\\
+		\geq& \polysmall/(2m)(1-Q(\lambda)\Pr[\tempkey^*_i \neq \tempkey_i \mid (\sigma_j = \tempkey \cdot r_j)_{j \in [\log (m)]}, \tempkey \in S])\\
+		\geq& \polysmall/(2m)(1-Q(\lambda)/(m\polysmall^2)) = \polysmall/(2m) - Q(\lambda)/(2m^2\polysmall).
+	\end{split}\]
+	Since $Q(\lambda) = \Theta(\log(\lambda))$ and $\epsilon = 1/\lambda^{o(1)}$, the probability that $b_{\lambda}$ succeeds is at least $\polysmall^3/(8\Theta(\log(\lambda))) = 1/\lambda^{o(1)}$.
+	Since $\adv$ runs in time $\tilde{O}(T_2(\lambda))$ and $m = \Theta(\log \lambda) \lambda^{o(1)}$, $\{b_{\lambda}\}$ runs in time $\tilde{O}(\Theta(\log \lambda))\cdot m \cdot T_2(\lambda))=\tilde{O}(T_2(\lambda))$, completing the proof of \cref{thm:hcp}.
+\end{proof}
+
+
+%theorem of \epsilon/4 (with additional property)
+%Let $\cc_1$ (respectively, $\cc_2$) be the set of all word-RAM families such that for each $\mathcal{F} = \{f_{\lambda}\}\in\cc_1$ and each $\lambda\in\N$, $f_{\lambda}$ runs in time $\tilde{O}(T_1(\lambda))$ (respectively, $\tilde{O}(T_2(\lambda))$) for any constant $\pnum \geq 2, k \geq 3$. Let $\epsilon =1/ \lambda^{o(1)}$ and $\tnike = (\gen, \share)$ be a $\cc_1$-$\pnum$-NIKE that satisfies $\cc_2$-$\frac{\epsilon}{4}$-weak security with the shared key size $ Q(\lambda) = \log(\lambda^{\Omega(1)})$, we construct $\tnike^* = (\gen^*, \share^*)$ satisfying $\cc_2$-$\epsilon$-security as in \cref{fig:con-search-nike}.
+%\begin{theorem}
+%\label{thm:hcp}
+%	If $\tnike$ is a $\cc_1$-$\pnum$-NIKE with $\cc_2$-$\frac{\epsilon}{4}$-weak security, then $\tnike^*$ is a $\cc_1$-$\pnum$-NIKE with $\cc_2$-$\epsilon$-security.
+%\end{theorem}
+%\begin{figure}[h!]
+%\begin{center}
+%\framebox{
+%\small
+%  \begin{tabular}{l|l}
+%    \begin{minipage}[t]{0.4\textwidth}
+%    	\underline{$\gen^*(\bot)$:}
+%	\item $(\pk, \sk) \getsr \gen(\bot)$
+%%	\item $\vec{v} \getsr \{0,1\}^{\log\elllambda^3}$
+%	\item $\vec{v} \getsr \{0,1\}^{Q(\lambda)}$
+%    	\item Return $(\pk^* =(\pk, \vec{v}),\sk^* = \sk)$
+%      \end{minipage}&  \begin{minipage}[t]{0.4\textwidth}
+%        
+%    \underline{$\share^*(i,\sk_i^*,(\pk_j^*)_{j\in[\pnum]})$:}
+%    \item Parse $\pk_j^*=(\pk_j,\vec v_j)$ for all $j \in [\pnum]$
+%    	\item $\tempkey = \share(i,\sk_i^*,(\pk_j)_{j\in[\pnum]}))$
+%	%\item Let $\vec{v} = \vec{v}_\pnum$
+%	\item Return $\key^* = \tempkey \cdot \vec{v}_\pnum$
+%    \end{minipage} 
+%      \end{tabular}
+%      }
+%\end{center}
+%\caption{Definition of $\tnike^*=\{\gen^*,\share^*\}$ with $\cc_2$-$\epsilon$-security.}
+%\label{fig:con-search-nike}
+%\end{figure}
+%\begin{proof}
+%	Let $m =  2Q(\lambda)/\epsilon^2$, and $\advA = \{\adv\} \in \cc_2$ be any adversary breaking the $\cc_2$-$\epsilon$-security of $\tnike^*$.
+%%	where $\cc_2$ runs in time $\tilde{\Omega}(\elllambda T(\lambda))$. 
+%	We construct an adversary $\advB = \{b_{\lambda}\} \in \cc_2$ breaking the $\cc_2$-$\frac{\epsilon}{4}$-weak security of $\tnike$.
+%	
+%	Firstly, $b_{\lambda}$ chooses $(r_1, \cdots, r_{\log (m)}) \getsr \{0,1\}^{Q(\lambda)}$. Then, for every nonempty subset $\mathcal{X} \subseteq [\log (m)]$, $b_{\lambda}$ computes $r_\mathcal{X} = \oplus_{i \in \mathcal{X}} r_i$ and $\sigma_\mathcal{X} = \oplus_{i \in \mathcal{X}} \sigma_i$ for all $\sigma_1, \cdots, \sigma_{\log m} \in \bin$. 
+%	For every $i \in [Q(\lambda)]$, $b_{\lambda}$ runs 
+%	$$\tempkey_i^\mathcal{X} = \sigma_\mathcal{X} \oplus \adv(\{\pk_i\}_{i\in[\pnum]}, r_\mathcal{X} \oplus e^{i}),$$ 
+%	where $e^{i}$ denotes the $Q(\lambda)$-bit string with $1$ in the $i$'th position and 0 everywhere else, and sets $\tempkey_i^*$ as the majority of ${\tempkey_i^\mathcal{X}}$. Finally, $b_{\lambda}$ outputs $\tempkey^* = \tempkey_1^*|| \cdots ||\tempkey_{m}^*$ if $\key^* \cdot r_i = \sigma_i$ for all $i \in [\log(m)]$.
+%
+%	Let 
+%	$$\set = \{\tempkey \big{|} \Pr[\adv(\{\pk_i\}_{i\in[\pnum]}, \vec{v}_\pnum \allowbreak ) = \key] > 1/2 + \polysmall/2\}.$$ 
+%	A quick calculation yields $|\set| > 2^{Q(\lambda) - 1}\polysmall$. 
+%	Note that $\advb$ only returns $\key = \key^*$ when $\key^* \cdot r_i = \sigma_i$ for all $i \in [\log(m)]$, we have $\Pr[(\sigma_j = \tempkey \cdot r_j)_{j \in [\log (m)]}] = 1$, where $\key = \share(1, \sk_1, (\pk_j)_{j \in [\pnum]})$ and $(\pk_i, \sk_i) \getsr \gen(\bot)$ for all $i \in [\pnum]$.
+%%	Since $\{\sigma_i\}_{i \in [\log (m)]}$ are sampled uniformly at random, 
+%%%	and if all $\sigma_{i \in [\log(m)]}$ are guessed correctly (i.e., all $\sigma_{i \in \mathcal{X}}$ is correct), 
+%%	we have 
+%%	$$\Pr[(\sigma_{i} = r_{i} \cdot \tempkey)_{i \in [\log (m)]}] = 1/m.$$ 
+%	Since the set $\{r_{\mathcal{X}}\}_{\mathcal{X} \subseteq [\log(m)]}$ are pairwise independent, the probability that the majority of bits is incorrect is 
+%	$$\Pr[(\tempkey_i^* \neq \tempkey_i) \big{|} (\sigma_j = \tempkey \cdot r_j)_{j \in [\log (m)]} \land (\tempkey \in S)] \leq \frac{1}{m\polysmall^2},$$ 
+%	for each $i \in [Q(\lambda)]$ by chebyshev bound. Putting all these together we have
+%	\[\begin{split}
+%		\Pr[b_{\lambda}(\{\pk_i\}_{i\in[\pnum]}) = \tempkey]
+%		\geq&  \Pr[\tempkey \in S] \cdot \Pr[b_{\lambda}(\{\pk_i\}_{i\in[\pnum]}) = \tempkey \big{|} \tempkey \in S]\\
+%		=& \frac{\polysmall}{2} \cdot \Pr[\forall i \in [Q(\lambda)], (\tempkey^*_i = \tempkey_i) \big{|} \tempkey \in S, (\sigma_j = \tempkey \cdot r_j)_{j \in [\log (m)]}] \\
+%		=& \frac{\polysmall}{2}(1-\Pr[\exists i \in [Q(\lambda)]\ \mbox{s.t.}\ \tempkey^*_i \neq \tempkey_i \big{|} \tempkey \in S, (\sigma_j = \tempkey \cdot r_j)_{j \in [\log (m)]}])\\
+%		\geq& \frac{\polysmall}{2}(1-Q(\lambda)\Pr[\tempkey^*_i \neq \tempkey_i \big{|} (\sigma_j = \tempkey \cdot r_j)_{j \in [\log (m)]}, \tempkey \in S])\\
+%		\geq& \frac{\polysmall}{2}(1-\frac{Q(\lambda)}{m\polysmall^2}) = \frac{\polysmall}{2} - \frac{Q(\lambda)}{2m\polysmall}.
+%	\end{split}\]
+%	Since $m = 2Q(\lambda)/\epsilon^2$, the probability that $b_{\lambda}$ succeeds is at least $\frac{\polysmall}{4}$. 
+%%	Let $T(\lambda) = \lambda^{\pnum+k}$. Since $\adv$ runs in time $\tilde{O}(T(\lambda))$ and $m = \log \lambda^{\Omega(1)} \lambda^{o(1)}$, $\{b_{\lambda}\}$ runs in time $\tilde{O}(\log(\lambda^{\Omega(1)})\cdot m \cdot T(\lambda))=\tilde{O}(T(\lambda))$, completing the proof of \cref{thm:hcp}.
+%	Also note that $\adv$ runs in time $\tilde{O}(T_2(\lambda))$ and $m = \log \lambda^{\Omega(1)} \lambda^{o(1)}$, then $\{b_{\lambda}\}$ runs in time $\tilde{O}(\log(\lambda^{\Omega(1)})\cdot m^2 \cdot T_2(\lambda))=\tilde{O}(T_2(\lambda))$, completing the proof of \cref{thm:hcp}.
+%\end{proof}

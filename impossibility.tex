@@ -1,0 +1,342 @@
+\subsection{Limitations of Multi-Party NIKEs in the BSM}
+\label{sec:negative}
+In this section, we show that for an NIKE treating any constant number of parties satisfying (restricted) extendability and local key independence, the entropy of the shared key conditioned on the public keys is bounded by roughly $\umem^\pnum/\amem^{\pnum-1}$, where $\umem$ and $\amem$  are the memory bounds for users and adversaries respectively. This suggests that $\umem$ must be at least about $\sqrt[\pnum]{\lambda\cdot\amem^{\pnum-1}}$ for sharing $\lambda$ bits, and thus our multi-party NIKE in the BSM, which satisfies local key independence as we show later, achieves optimality up to constant factors within this natural class.
+
+Before giving our negative result, we recall several lemmata and theorems below.
+\begin{lemma}
+\label{fact}
+For two random variables $x, y$, we have
+$H(x) \geq H(x\mid y)$.
+\end{lemma}
+
+\begin{theorem}[Data processing inequality]
+\label{prop:datap}
+For two random variables $x, y$ and deterministic functions $f,g$, we have
+\[
+H(f(x))\leq H(x)
+\ \mbox{and}\
+I(f(x);g(y))\leq I(x;y).
+\]
+The same inequalities hold conditioned on any additional random variable.
+\end{theorem}
+
+\begin{lemma}[Lemma 1 in \cite{EC:DziMau04}]
+\label{lem:DM04}
+Let $y$, $z$, $(z_i)_{i\in[n]}$ be a sequence of random variables such that conditioned on $y$, the variables $z, z_1,\cdots,z_n$ are independent and identically distributed, i.e.,
+%$$
+%\Pr[z=\widehat{z}\land z_1=\widehat z_1\land z_n=\widehat z_n | y=\widehat y]=\Pr[z=\widehat z|y=\widehat y]\prod_{i=1}^n\Pr[z=\widehat z_i|y=\widehat y]
+%$$
+$$
+\Pr[z=\widehat{z}\land z_1=\widehat z_1\land \cdots \land z_n=\widehat z_n \mid y=\widehat y]=\Pr[z=\widehat z\mid y=\widehat y]\prod_{i=1}^n\Pr[z=\widehat z_i\mid y=\widehat y]
+$$
+for all $y,z,(z_i)_{i\in[n]}$. Then
+$
+I(y;z\mid z_1,\cdots,z_n)\leq {H(y)}/({n+1}).
+$
+\end{lemma}
+
+\begin{theorem}[Theorem 1 in \cite{Maurer93}]
+\label{thm:M93}
+Let $x,y,z,c_0,c,s,s'$ be random variables such that
+\[
+H(s\mid x,c_0,c)=0,\quad
+H(s'\mid y,c_0,c)=0,\quad
+\Pr[s\neq s']=0,
+\]
+and
+\[
+I(x;y\mid z,c_0,c)\leq I(x;y\mid z,c_0).
+\]
+Then
+\[
+H(s)\leq I(x;y\mid z,c_0)+I(s;z,c_0,c).
+\]
+\end{theorem}
+
+\heading{Our negative result.} Below we give our negative result showing limitations of multi-party NIKE in the BSM. 
+%By $p(\epsilon)$ we denote  $H_b(\epsilon)+\epsilon\log_2(|\set|-1)$ where $|\set|$ is the space of local key. One can see that $p(\epsilon)$ is equal to $0$ when $\epsilon=0$ as in our multi-party NIKE in the BSM.
+\begin{theorem}
+\label{thm:negative}
+Let $\mathcal C_1$ be the class of streaming word-RAMs with memory bounds $\umem$.
+%Let  $\bsmke=\{\gen,\share\}$ be a $\mathcal C_1$-$\pnum$-NIKE for any constant $\pnum\geq 2$ in the BSM with URS length $n$ and satisfying $\epsilon$-restricted extendability and $\mu$-local key independence, where the associated combining and extracting algorithm families are $\{\combine,\extract\}$. Then there exists an event $\event$ such that $\Pr[\event]\geq 1-\epsilon$ and conditioned on $\event$ we have %Fixing $\urs\in\bin^n$, there exists some event $\event$ such that $\Pr[\event]\geq 1-\delta$ and
+Let $\mathsf{NIKE}=\{\gen,\share\}$ be a $\mathcal C_1$-$\pnum$-NIKE for any constant $\pnum\geq 2$ in the BSM with URS length $n$ and satisfying $0$-restricted extendability and $((\mu_i)_{i\in[\pnum]},\lfloor\amem/\umem\rfloor)$-local key independence for any $\amem\geq \umem$, where the associated combining and extracting algorithm families are $\{\combine,\extract\}$.\footnote{We use $t=\lfloor \amem/\umem\rfloor$. This only affects constant factors; for readability one may assume that $\amem/\umem$ is an integer.} Then
+$$
+H(\key\mid(\pk_i)_{i\in[\pnum]})
+\leq
+\umem^\pnum/\amem^{\pnum-1}
++
+2\sum_{i=2}^{\pnum}(\umem/\amem)^{\pnum-i}\mu_i,
+$$
+where $\urs\getsr\bin^n$, $(\pk_i,\sk_i)\getsr\gen(\urs)$ for all $i\in[\pnum]$, and $\key=\share(1,\sk_1,\allowbreak(\pk_i)_{i\in[\pnum]})$.
+\end{theorem}
+
+\begin{proof}
+Let $\localkey_{[i]}=\combine(\localkey_{[i-1]},\pk_i)$ for all $i>1$, where
+$\localkey_{[1]}=\sk_1$. Let $M_i=(\pk_i,\sk_i)$ and
+$\localkey_{[i]}'=\combine(\sk_i,(\pk_j)_{i>j\geq 1})$ for all $i\in[\pnum]$.
+Let $t=\lfloor\amem/\umem\rfloor$, sample
+$M_i'=(\pk_i',\sk_i')\getsr\gen(\urs)$ for all $i\in[t]$, and set
+$M_E=(M_i')_{i\in[t]}$.
+
+Fix any $i>1$. We apply \cref{thm:M93} with
+\[
+x=\localkey_{[i-1]},
+y=M_i,
+z=M_E,
+c_0=(\pk_j)_{j\in[i-1]},
+c=\pk_i,s=\localkey_{[i]},s'=\localkey_{[i]}'.
+\]
+By $0$-restricted extendability and determinism of $\combine$, we have
+\[
+\begin{gathered}
+H(\localkey_{[i]}\mid \localkey_{[i-1]},(\pk_j)_{j\in[i-1]},\pk_i)=0,\\
+H(\localkey_{[i]}'\mid M_i,(\pk_j)_{j\in[i-1]},\pk_i)=0,\\
+\Pr[\localkey_{[i]}\neq \localkey_{[i]}']=0.
+\end{gathered}
+\]
+Moreover, since $H(\pk_i\mid M_i)=0$, we have
+\[
+\begin{aligned}
+&I(\localkey_{[i-1]};M_i\mid M_E,(\pk_j)_{j\in[i-1]})\\
+=&
+I(\localkey_{[i-1]};\pk_i,M_i\mid M_E,(\pk_j)_{j\in[i-1]})\\
+=&
+I(\localkey_{[i-1]};\pk_i\mid M_E,(\pk_j)_{j\in[i-1]})+
+I(\localkey_{[i-1]};M_i\mid M_E,(\pk_j)_{j\in[i-1]},\pk_i)\\
+&\geq
+I(\localkey_{[i-1]};M_i\mid M_E,(\pk_j)_{j\in[i-1]},\pk_i).
+\end{aligned}
+\]
+Therefore, by \cref{thm:M93} and local key independence, we have
+\[
+H(\localkey_{[i]})
+\leq
+I(\localkey_{[i-1]};M_i\mid M_E,(\pk_j)_{j\in[i-1]})+\mu_i.
+\]
+
+Next, by the second condition in \cref{def:localkeyind}, we have
+\[
+I(\localkey_{[i-1]};M_i\mid M_E,(\pk_j)_{j\in[i-1]})
+\leq
+I(\localkey_{[i-1]};M_i\mid M_E,(\pk_j)_{j\in[i-1]},\urs)+\mu_i.
+\]
+Conditioned on $\urs$ and $(\pk_j)_{j\in[i-1]}$, the variables
+$M_i,M_1',\ldots,M_t'$ are independent copies generated in the same way.
+Hence, by \cref{lem:DM04}, we have
+\[
+I(\localkey_{[i-1]};M_i\mid M_E,(\pk_j)_{j\in[i-1]},\urs)
+\leq
+\frac{H(\localkey_{[i-1]}\mid \urs,(\pk_j)_{j\in[i-1]})}{t+1}
+\leq
+\frac{H(\localkey_{[i-1]})}{t+1}.
+\]
+Since $t=\lfloor\amem/\umem\rfloor$, we have $1/(t+1)\leq\umem/\amem$.
+Combining the above inequalities gives
+\[
+H(\localkey_{[i]})
+\leq
+(\umem/\amem)H(\localkey_{[i-1]})+2\mu_i.
+\]
+
+We now iterate this recurrence. Since
+$H(\localkey_{[1]})\leq H(M_1)\leq\umem$, we have
+\[
+H(\localkey_{[2]})
+\leq
+(\umem/\amem)H(\localkey_{[1]})+2\mu_2
+\leq
+\umem^2/\amem+2\mu_2.
+\]
+Assume that, for some $i\geq3$,
+\[
+H(\localkey_{[i-1]})
+\leq
+\umem^{i-1}/\amem^{i-2}
++
+2\sum_{\ell=2}^{i-1}(\umem/\amem)^{i-1-\ell}\mu_\ell.
+\]
+Then we have
+\[
+\begin{aligned}
+H(\localkey_{[i]})
+\leq&
+(\umem/\amem)H(\localkey_{[i-1]})+2\mu_i
+\leq
+\umem^i/\amem^{i-1}
++
+2\sum_{\ell=2}^{i}(\umem/\amem)^{i-\ell}\mu_\ell.
+\end{aligned}
+\]
+Thus,
+\[
+H(\localkey_{[\pnum]})
+\leq
+\umem^\pnum/\amem^{\pnum-1}
++
+2\sum_{i=2}^{\pnum}(\umem/\amem)^{\pnum-i}\mu_i.
+\]
+
+Finally, conditioning on the public keys,
+\[
+\begin{aligned}
+H(\key\mid(\pk_i)_{i\in[\pnum]})
+=&
+H(\extract(\localkey_{[\pnum]},\pk_\pnum)\mid(\pk_i)_{i\in[\pnum]})
+\leq
+H(\localkey_{[\pnum]}\mid(\pk_i)_{i\in[\pnum]})\\
+\leq&
+H(\localkey_{[\pnum]})
+\leq
+\umem^\pnum/\amem^{\pnum-1}
++
+2\sum_{i=2}^{\pnum}(\umem/\amem)^{\pnum-i}\mu_i.
+\end{aligned}
+\]
+This completes the proof of \cref{thm:negative}.
+\end{proof}
+
+
+
+\paragraph{\bf Optimality of $\bsmke$.}
+%Let $\pnum$, $n$, $\lambda$, and $q$ be the parameters defined in \cref{sec:bsm-nike}. As in mentioned in \cref{sec:extendable}, our construction $\bsmke$  in \cref{fig:con-bsmke} satisfies $2/\lambda$-extendability.
+%To show the optimality, we now only have to show the local key independence of  $\bsmke$.
+Let $\pnum$, $n$, $\lambda$, and $q$ be as in \cref{sec:bsm-nike}. By \cref{sec:extendable}, $\bsmke$ satisfies $0$-extendability, while aborts are covered by the $2/\lambda$-correctness bound in \cref{thm:bsmke}. Thus, it remains to verify local key independence. The next lemma gives the required bounds and shows that our instantiation matches the lower bound up to constant factors.
+%Let $\pnum$, $n$, $\lambda$, and $q$ be the parameters defined in \cref{sec:bsm-nike}. As mentioned in \cref{sec:extendable}, our construction $\bsmke$  in \cref{fig:con-bsmke} satisfies $0$-extendability.
+%Its abort probability is accounted for separately by the $2/\lambda$-correctness guarantee in \cref{thm:bsmke}.
+%It remains to verify the local key independence parameters for BSMKE. The following lemma shows that BSMKE satisfies the bounds needed to match the lower bound, and hence that our instantiation is optimal up to constant factors.
+%\begin{lemma}
+%\label{lem:localkeyind}
+%$\bsmke$ (see \cref{fig:con-bsmke}) satisfies $\pnum (1+(q-\pnum)/2n)$-local key independence.
+%\end{lemma}
+\begin{lemma}
+\label{lem:localkeyind}
+For every $t\in\N$, $\bsmke$ satisfies $((\mu_i)_{i\in[\pnum]},t)$-local key independence in the BSM with
+\[
+\mu_i=O(t\cdot q^{i+1}/n^i+q^i/n^{i-1}+\log n) \ \mbox{for all $i\in[\pnum]$}.
+\]
+\end{lemma}
+
+\begin{proof}
+For notational simplicity, let $\set_i$ be the index set stored by the $i$-th user, and let
+$\set_{[i]}=\set_1\cap\cdots\cap\set_i$, so that $\localkey_{[i]}=\urs_{\set_{[i]}}$.
+We suppress the compact public hash descriptions defining these sets; their size is $O(\log n)$ and is absorbed into the $O(\log n)$ term.
+
+Fix $i\in[\pnum]$, and let $\set'_j$ be the index set stored in $\sk'_j$. The public keys reveal the length of the variable-length string $\urs_{\set_{[i]}}$, which costs at most $O(\log n)$ bits. Once the public keys fix the index sets, the only correlation between $\urs_{\set_{[i]}}$ and $\urs_{\set'_1\cup\cdots\cup\set'_t}$ comes from their overlapping positions. Hence
+\[
+\begin{aligned}
+&I\left(
+\localkey_{[i]};
+(\pk_j)_{j\in[i]},(\pk'_j,\sk'_j)_{j\in[t]}
+\right)\\
+=&
+I\left(
+\urs_{\set_{[i]}};
+(\pk_j)_{j\in[i]},(\pk'_j)_{j\in[t]}
+\right)
++
+I\left(
+\urs_{\set_{[i]}};
+(\sk'_j)_{j\in[t]}
+\mid
+(\pk_j)_{j\in[i]},(\pk'_j)_{j\in[t]}
+\right)\\
+\leq&
+O(\log n)
++
+I\left(
+\urs_{\set_{[i]}};
+\urs_{\set'_1\cup\cdots\cup\set'_t}
+\mid
+(\pk_j)_{j\in[i]},(\pk'_j)_{j\in[t]}
+\right)\\
+\leq&
+O(\log n)
++
+\expect\left[\left|\set_{[i]}\cap(\set'_1\cup\cdots\cup\set'_t)\right|\right]\\
+\leq&
+O(\log n)+\sum_{j=1}^t \expect[|\set_{[i]}\cap\set'_j|]\\
+=&
+O(\log n)+t\sum_{a\in GF(n)}\Pr[a\in\set_{[i]}\cap\set'_1]\\
+=&
+O(\log n)+t\cdot n(q/n)^{i+1}\\
+=&
+O(t\cdot q^{i+1}/n^i+\log n).
+\end{aligned}
+\]
+This proves the first condition.
+
+It remains to verify the second condition. For $i>1$, conditioned on $\urs$ and $(\pk_j)_{j\in[i-1]}$, the value $\localkey_{[i-1]}=\urs_{\set_{[i-1]}}$ is fixed. Therefore,
+\[
+I(\localkey_{[i-1]};(\pk_i,\sk_i)\mid(\pk_j)_{j\in[i-1]},(\pk'_j,\sk'_j)_{j\in[t]},\urs)=0.
+\]
+Without conditioning on $\urs$, the new key pair $(\pk_i,\sk_i)$ can reveal information about $\localkey_{[i-1]}$ only through the overlap
+$\set_{[i-1]}\cap\set_i=\set_{[i]}$. Hence
+\[
+\begin{aligned}
+&I(\localkey_{[i-1]};(\pk_i,\sk_i)\mid(\pk_j)_{j\in[i-1]},(\pk'_j,\sk'_j)_{j\in[t]})
+\leq
+\expect[|\set_{[i]}|]
+=
+\sum_{a\in GF(n)}\Pr[a\in\set_{[i]}]
+=
+n(q/n)^i
+=
+q^i/n^{i-1}.
+\end{aligned}
+\]
+Thus we have
+\[
+\begin{aligned}
+&I(\localkey_{[i-1]};(\pk_i,\sk_i)\mid(\pk_j)_{j\in[i-1]},(\pk'_j,\sk'_j)_{j\in[t]})\\
+\leq&
+I(\localkey_{[i-1]};(\pk_i,\sk_i)\mid(\pk_j)_{j\in[i-1]},(\pk'_j,\sk'_j)_{j\in[t]},\urs)
++
+q^i/n^{i-1}.
+\end{aligned}
+\]
+Since
+$
+\mu_i=O(t\cdot q^{i+1}/n^i+q^i/n^{i-1}+\log n),
+$
+both conditions in \cref{def:localkeyind} are satisfied.
+\end{proof}
+
+\heading{\bf Remark.}
+For the usual parameter choice $n=\Theta(\amem)$, $\umem=\Theta(q)$, and $t=\lfloor\amem/\umem\rfloor$, \cref{lem:localkeyind} gives
+\[
+t\cdot q^{i+1}/n^i
+=
+O((\amem/\umem)\cdot \umem^{i+1}/\amem^i)
+=
+O(\umem^i/\amem^{i-1})
+\ 
+\mbox{and}
+\
+q^i/n^{i-1}
+=
+O(\umem^i/\amem^{i-1}).
+\]
+Hence, we have
+$
+\mu_i=
+O(\umem^i/\amem^{i-1}+\log n).
+$
+Plugging this into \cref{thm:negative} yields
+\[
+H(\key\mid(\pk_i)_{i\in[\pnum]})
+\leq
+O(\umem^\pnum/\amem^{\pnum-1}+\log n).
+\]
+When $\log n=o(\lambda)$, any scheme in this class with
+$H(\key\mid(\pk_i)_{i\in[\pnum]})=\Omega(\lambda)$ must satisfy
+\[
+\umem=\Omega\left(\sqrt[\pnum]{\lambda\cdot\amem^{\pnum-1}}\right).
+\]
+Thus, the BSM construction is optimal up to constant factors within this class.
+%When $n=\lambda^{\pnum+1}$, $\amem=\lambda^{\pnum+1}/2$, and $q=n\sqrt[\pnum]{\frac{2\lambda}{n}}=O(\lambda^\pnum)$ as in the example with asymptotic complexity we mentioned before, $\bsmke$ satisfies O(2).
+%
+%When, e.g., $n=\lambda^{\pnum+1}$, $\amem=\lambda^{\pnum+1}/2$, and $$. We have . In this case, each $\party_{i\in[\pnum]}$ consumes about
+%$q=n\sqrt[\pnum]{\frac{2\lambda}{n}}=O(\lambda^\pnum)$
+%%$$q\cdot \frac{n}{n} = \sqrt[\pnum]{\frac{2\lambda}{n}}\cdot k\cdot\frac{n}{n}=n \sqrt[\pnum]{\frac{2\lambda}{n}}=O(\lambda^{4-\frac{1}{\pnum}})$$ bits of memory and $\party_\pnum$ consumes 
+%%$q=k\sqrt[\pnum]{\frac{2\lambda}{n}}=O(\lambda^{2-\frac{1}{\pnum}})$
+%bits of memory and the communication cost, i.e., the total size of the public keys, is $O(\lambda)$.

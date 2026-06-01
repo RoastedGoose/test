@@ -1,0 +1,93 @@
+%\section{Pairwise Independence}
+%\label{sec:pairwise}
+%We now recall the definitions of (approximate) pairwise independence, (approximately) strongly 2-universal hash function family, and 2-universal hash function family.
+%
+%\begin{definition}[Uniform pairwise independence]
+%\label{def:upairwise}
+%A sequence of random variables $x_1,\cdots,x_q$ with alphabet $\mathcal Y$ are uniformly pairwise independent if for any $1\leq i<j\leq q$ and any $\hat y_1, \hat y_2 \in \mathcal X$, we have
+%	$$\Pr[x_i = \hat y_1 \land x_j = \hat y_2] = \frac{1}{|\mathcal{Y}|^2}.$$
+%\end{definition}
+%
+%
+%\begin{definition}[Approximate pairwise independence \cite{FOCS:Zuckerman91,C:CacMau97}]
+%\label{def:apairwise}
+%A sequence of random variables $x_1,\cdots,x_q$ with alphabet $\mathcal Y$ are approximate pairwise independent if for any $1\leq i<j\leq q$ and any distinct $\hat y_1, \hat y_2 \in \mathcal Y$, we have
+%$$\Pr[x_i = \hat y_1 \land x_j = \hat y_2] = \frac{1}{|\mathcal{Y}|(|\mathcal{Y}|-1)}.$$
+%%The definition of \emph{approximate pairwise independence} is exactly the same as \cref{def:upairwise} except that we replace 
+%%``$\frac{1}{|\mathcal{Y}|^2}$''
+%%by
+%%``$\frac{1}{|\mathcal{Y}|(|\mathcal{Y}|-1)}$''.
+%\end{definition}
+%
+%
+%%For any $q\in\N$, a sequence of random variables $\vec x_1,\cdots,\vec x_q$ from a range $\mathcal X$ are pairwise independent if for any $1\leq i<j\leq q$ and any $\hy_1, \hy_2 \in \bin^\nn$ with $\hy_1\neq \hy_2$, we have
+%%	$$\Pr[\vec x_i = \hy_1 \land \vec x_j = \hy_2] = \frac{1}{|\mathcal{X}|^2}.$$
+%
+%\begin{definition}[Strongly 2-universal hash function family]
+%\label{def:shash}
+%	A set $\mathcal H$ of functions with domain $\mathcal X$ and range $\mathcal Y$ is said to be a \emph{strongly 2-universal hash function family} if for any distinct $x_1,x_2 \in \mathcal{X}$, $h(x_1)$ and $h(x_2)$ are uniformly pairwise independent for $h\getsr \mathcal H$.
+%\end{definition}
+%
+%\begin{definition}[Approximate strongly 2-universal hash function \cite{FOCS:Zuckerman91,C:CacMau97}]
+%\label{def:ahash}
+%The definition of \emph{approximate strongly 2-universal hash function family} is exactly the same as \cref{def:shash} except that we replace ``uniformly pairwise independent'' by ``approximate pairwise independent''.
+%\end{definition}
+%
+%
+%\begin{definition}[2-universal hash function family]
+%\label{def:hash}
+%	A set $\mathcal H$ of functions with domain $\mathcal X$ and range $\mathcal Y$ is said to be a \emph{2-universal hash function family} if for any distinct $x_1,x_2 \in \mathcal{X}$, 
+%	$$\Pr[g(x_1)=g(x_2)]\leq \frac{1}{|\mathcal Y|}.$$
+%\end{definition}
+
+%\section{The Proof of \cref{lem:pairwise}}
+%\label{sec:pairwiselem}
+%In this section we present the proof of \cref{lem:pairwise}.
+
+%\section{Pairwise Independence and Universal Hash Function}
+%\label{sec:pairwisedef}
+%In this section, we give the backgrounds used to construct our multi-party NIKE in the bounded storage model.
+%\heading{Pairwise independence.}
+%\label{sec:pairwisedef}
+%In this section, we recall the definitions of uniformly and approximately pairwise independence, (approximately) strongly 2-universal hash function family, and 2-universal hash function family. %and recall their instantiations in \cref{fig:con-hash}.~\footnote{The approximate pairwise independence and approximate 2-universal hash function family are defined in \cite{FOCS:Zuckerman91,C:CacMau97} in an implicit way.}
+%We refer the reader to~\cref{sec:pairwise} for the definitions of uniformly and approximately pairwise independence, (approximately) strongly 2-universal hash function family, and 2-universal hash function family, and recall their instantiations in \cref{fig:con-hash}.
+%Roughly approximately pairwise independent variables are uniformly pairwise independent conditioned on that they are all distinct.
+
+\begin{definition}[Uniform pairwise independence]
+\label{def:upairwise}
+A sequence of random variables $x_1,\cdots,x_q$ with alphabet $\mathcal Y$ is uniformly pairwise independent if for any $1\leq i<j\leq q$ and any $\hat y_1, \hat y_2 \in \mathcal Y$, we have
+	$\Pr[x_i = \hat y_1 \land x_j = \hat y_2] = 1/|\mathcal{Y}|^2$.
+\end{definition}
+
+
+\begin{definition}[Approximate pairwise independence \cite{FOCS:Zuckerman91,C:CacMau97}]
+\label{def:apairwise}
+A sequence of random variables $x_1,\cdots,x_q$ with alphabet $\mathcal Y$ is approximately pairwise independent if for any $1\leq i<j\leq q$ and any distinct $\hat y_1, \hat y_2 \in \mathcal Y$, we have
+$\Pr[x_i = \hat y_1 \land x_j = \hat y_2] = 1/(|\mathcal{Y}|(|\mathcal{Y}|-1))$.
+%The definition of \emph{approximate pairwise independence} is exactly the same as \cref{def:upairwise} except that we replace 
+%``$\frac{1}{|\mathcal{Y}|^2}$''
+%by
+%``$\frac{1}{|\mathcal{Y}|(|\mathcal{Y}|-1)}$''.
+\end{definition}
+
+
+%For any $q\in\N$, a sequence of random variables $\vec x_1,\cdots,\vec x_q$ from a range $\mathcal X$ are pairwise independent if for any $1\leq i<j\leq q$ and any $\hy_1, \hy_2 \in \bin^\nn$ with $\hy_1\neq \hy_2$, we have
+%	$$\Pr[\vec x_i = \hy_1 \land \vec x_j = \hy_2] = \frac{1}{|\mathcal{X}|^2}.$$
+
+\begin{definition}[Strongly 2-universal hash function family]
+\label{def:shash}
+	A set $\mathcal H$ of functions with domain $\mathcal X$ and range $\mathcal Y$ is said to be a \emph{strongly 2-universal hash function family} if for any distinct $x_1,x_2 \in \mathcal{X}$, $h(x_1)$ and $h(x_2)$ are uniformly pairwise independent for $h\getsr \mathcal H$.
+\end{definition}
+
+\begin{definition}[Approximate strongly 2-universal hash function \cite{FOCS:Zuckerman91,C:CacMau97}]
+\label{def:ahash}
+The definition of \emph{approximate strongly 2-universal hash function family} is exactly the same as \cref{def:shash} except that we replace ``uniformly pairwise independent'' by ``approximate pairwise independent''.
+\end{definition}
+
+
+\begin{definition}[2-universal hash function family]
+\label{def:hash}
+	A set $\mathcal H$ of functions with domain $\mathcal X$ and range $\mathcal Y$ is said to be a \emph{2-universal hash function family} if for any distinct $x_1,x_2 \in \mathcal{X}$, we have
+	$\Pr[g(x_1)=g(x_2)]\leq 1/|\mathcal Y|$, where $g \getsr \mathcal H$.
+\end{definition}
+

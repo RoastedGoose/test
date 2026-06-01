@@ -1,0 +1,1490 @@
+\section{Multi-Party Key Exchange in the Bounded Storage Model}
+\label{sec:bsm-nike}
+
+In this section, we extend the two-party NIKE in the BSM \cite{C:CacMau97} to a multi-party one and show the optimality of our construction up to constant factors within the natural class of schemes satisfying extendability and local key independence by giving a lower bound for the users' storage consumption. All algorithms in this section are considered as streaming word-RAMs except for the storage function applied by the adversary, which can be any unbounded function with limited output size.
+
+\subsection{Our Construction}
+%
+%\subsection{Background of Bounded Storage Model}
+%\label{sec:bsmke-bkg}
+%\subsection{Our Construction}
+%\label{sec:bsmke-con}
+
+%
+%
+
+%We first refer the reader to \cref{sec:pairwisedef} for the definitions of uniformly and approximately pairwise independence, (approximately) strongly 2-universal hash function family, and 2-universal hash function family, and recall their instantiations in \cref{fig:con-hash}.~\footnote{The approximate pairwise independence and approximate 2-universal hash function family are defined in \cite{FOCS:Zuckerman91,C:CacMau97} in an implicit way.}
+
+
+%
+\heading{Pairwise independence.} We first recall the definitions of uniformly and approximately pairwise independence, (approximately) strongly 2-universal hash function family, and 2-universal hash function family, and recall their instantiations in \cref{fig:con-hash}.~\footnote{The approximate pairwise independence and approximate 2-universal hash function family are defined in \cite{FOCS:Zuckerman91,C:CacMau97} in an implicit way.}
+\input{pwindependent.tex}
+%%We refer the reader to~\cref{sec:pairwise} for the definitions of uniformly and approximately pairwise independence, (approximately) strongly 2-universal hash function family, and 2-universal hash function family, and recall their instantiations in \cref{fig:con-hash}.
+%%Roughly approximately pairwise independent variables are uniformly pairwise independent conditioned on that they are all distinct.
+%
+%\begin{definition}[Uniform pairwise independence]
+%\label{def:upairwise}
+%A sequence of random variables $x_1,\cdots,x_q$ with alphabet $\mathcal Y$ are uniformly pairwise independent if for any $1\leq i<j\leq q$ and any $\hat y_1, \hat y_2 \in \mathcal X$, we have
+%	$\Pr[x_i = \hat y_1 \land x_j = \hat y_2] = 1/|\mathcal{Y}|^2$.
+%\end{definition}
+%
+%
+%\begin{definition}[Approximate pairwise independence \cite{FOCS:Zuckerman91,C:CacMau97}]
+%\label{def:apairwise}
+%A sequence of random variables $x_1,\cdots,x_q$ with alphabet $\mathcal Y$ are approximate pairwise independent if for any $1\leq i<j\leq q$ and any distinct $\hat y_1, \hat y_2 \in \mathcal Y$, we have
+%$\Pr[x_i = \hat y_1 \land x_j = \hat y_2] = 1/|\mathcal{Y}|(|\mathcal{Y}|-1)$.
+%%The definition of \emph{approximate pairwise independence} is exactly the same as \cref{def:upairwise} except that we replace 
+%%``$\frac{1}{|\mathcal{Y}|^2}$''
+%%by
+%%``$\frac{1}{|\mathcal{Y}|(|\mathcal{Y}|-1)}$''.
+%\end{definition}
+%
+%
+%%For any $q\in\N$, a sequence of random variables $\vec x_1,\cdots,\vec x_q$ from a range $\mathcal X$ are pairwise independent if for any $1\leq i<j\leq q$ and any $\hy_1, \hy_2 \in \bin^\nn$ with $\hy_1\neq \hy_2$, we have
+%%	$$\Pr[\vec x_i = \hy_1 \land \vec x_j = \hy_2] = \frac{1}{|\mathcal{X}|^2}.$$
+%
+%\begin{definition}[Strongly 2-universal hash function family]
+%\label{def:shash}
+%	A set $\mathcal H$ of functions with domain $\mathcal X$ and range $\mathcal Y$ is said to be a \emph{strongly 2-universal hash function family} if for any distinct $x_1,x_2 \in \mathcal{X}$, $h(x_1)$ and $h(x_2)$ are uniformly pairwise independent for $h\getsr \mathcal H$.
+%\end{definition}
+%
+%\begin{definition}[Approximate strongly 2-universal hash function \cite{FOCS:Zuckerman91,C:CacMau97}]
+%\label{def:ahash}
+%The definition of \emph{approximate strongly 2-universal hash function family} is exactly the same as \cref{def:shash} except that we replace ``uniformly pairwise independent'' by ``approximate pairwise independent''.
+%\end{definition}
+%
+%
+%\begin{definition}[2-universal hash function family]
+%\label{def:hash}
+%	A set $\mathcal H$ of functions with domain $\mathcal X$ and range $\mathcal Y$ is said to be a \emph{2-universal hash function family} if for any distinct $x_1,x_2 \in \mathcal{X}$, we have
+%	$\Pr[g(x_1)=g(x_2)]\leq 1/|\mathcal Y|$.
+%\end{definition}
+
+\begin{figure}[htpb]
+\begin{center}
+\framebox{
+\small
+  \begin{tabular}{l}	
+	\begin{minipage}[t]{0.5\textwidth}
+	$\mathcal F_n=\{f( x)=a_1\cdot  x+a_0\mid a_0,a_1\in GF(n)\}$\\
+	$\mathcal H_n=\{h( x)=a_1\cdot  x+a_0\mid a_0,a_1\in GF(n)\land a_1\neq 0\}$\\
+		$\mathcal G_{\lambda,r}=\{g( x)=\msb_r(a\cdot  x)\mid a\in  GF(2^\lambda)\}$
+    \end{minipage}
+      \end{tabular}}
+\end{center} 
+\caption{The definitions of $\mathcal F_n$, $\mathcal H_n$, and $\mathcal G_{\lambda,r}$. In this figure, all operations involved in $f$ and $h$ (respectively, $g$) are within the field $GF(n)$ (respectively, $GF(2^\lambda)$). One can see that the outputs of any function in $\mathcal H_n$ with distinct inputs must be all distinct.}
+\label{fig:con-hash}
+\end{figure}
+
+\begin{lemma}[\cite{C:CacMau97,FOCS:Zuckerman91}]
+\label{lem:cm}
+For any finite field $GF(n)$ and any $\lambda,r\in\N$, $\mathcal F_n$ (respectively, $\mathcal H_n$) is a strongly 2-universal hash function family (respectively, approximate strongly 2-universal hash function family), and $\mathcal G_{\lambda,r}$ is a 2-universal hash function family.
+\end{lemma}
+%In the rest of this section, we say that a sequence of variables $(u_i)_{i\in\Z_q}$ is generated by $\mathcal H_n$ if it is generated as $u_i=h(x_i)$ for all $i\in\Z_q$ and some distinct $x_1,\cdots,x_q\in GF(n)$, where $h\getsr\mathcal H_n$.
+
+
+
+%Roughly, approximately pairwise independent variables are uniformly pairwise independent conditioned on that they are all distinct.
+%
+%\subsection{Background of Bounded Storage Model}
+%\heading{Pairwise independence.}
+%We first recall the definitions of uniformly and approximately pairwise independence, (approximately) strongly 2-universal hash function family, and 2-universal hash function family, and recall their instantiations in \cref{fig:con-hash}.~\footnote{The approximate pairwise independence and approximate 2-universal hash function family are defined in \cite{FOCS:Zuckerman91,C:CacMau97} in an implicit way.}
+%%We refer the reader to~\cref{sec:pairwise} for the definitions of uniformly and approximately pairwise independence, (approximately) strongly 2-universal hash function family, and 2-universal hash function family, and recall their instantiations in \cref{fig:con-hash}.
+%%Roughly approximately pairwise independent variables are uniformly pairwise independent conditioned on that they are all distinct.
+%
+%\begin{definition}[Uniform pairwise independence]
+%\label{def:upairwise}
+%A sequence of random variables $x_1,\cdots,x_q$ with alphabet $\mathcal Y$ are uniformly pairwise independent if for any $1\leq i<j\leq q$ and any $\hat y_1, \hat y_2 \in \mathcal X$, we have
+%	$\Pr[x_i = \hat y_1 \land x_j = \hat y_2] = 1/|\mathcal{Y}|^2$.
+%\end{definition}
+%
+%
+%\begin{definition}[Approximate pairwise independence \cite{FOCS:Zuckerman91,C:CacMau97}]
+%\label{def:apairwise}
+%A sequence of random variables $x_1,\cdots,x_q$ with alphabet $\mathcal Y$ are approximate pairwise independent if for any $1\leq i<j\leq q$ and any distinct $\hat y_1, \hat y_2 \in \mathcal Y$, we have
+%$\Pr[x_i = \hat y_1 \land x_j = \hat y_2] = 1/|\mathcal{Y}|(|\mathcal{Y}|-1)$.
+%%The definition of \emph{approximate pairwise independence} is exactly the same as \cref{def:upairwise} except that we replace 
+%%``$\frac{1}{|\mathcal{Y}|^2}$''
+%%by
+%%``$\frac{1}{|\mathcal{Y}|(|\mathcal{Y}|-1)}$''.
+%\end{definition}
+%
+%
+%%For any $q\in\N$, a sequence of random variables $\vec x_1,\cdots,\vec x_q$ from a range $\mathcal X$ are pairwise independent if for any $1\leq i<j\leq q$ and any $\hy_1, \hy_2 \in \bin^\nn$ with $\hy_1\neq \hy_2$, we have
+%%	$$\Pr[\vec x_i = \hy_1 \land \vec x_j = \hy_2] = \frac{1}{|\mathcal{X}|^2}.$$
+%
+%\begin{definition}[Strongly 2-universal hash function family]
+%\label{def:shash}
+%	A set $\mathcal H$ of functions with domain $\mathcal X$ and range $\mathcal Y$ is said to be a \emph{strongly 2-universal hash function family} if for any distinct $x_1,x_2 \in \mathcal{X}$, $h(x_1)$ and $h(x_2)$ are uniformly pairwise independent for $h\getsr \mathcal H$.
+%\end{definition}
+%
+%\begin{definition}[Approximate strongly 2-universal hash function \cite{FOCS:Zuckerman91,C:CacMau97}]
+%\label{def:ahash}
+%The definition of \emph{approximate strongly 2-universal hash function family} is exactly the same as \cref{def:shash} except that we replace ``uniformly pairwise independent'' by ``approximate pairwise independent''.
+%\end{definition}
+%
+%
+%\begin{definition}[2-universal hash function family]
+%\label{def:hash}
+%	A set $\mathcal H$ of functions with domain $\mathcal X$ and range $\mathcal Y$ is said to be a \emph{2-universal hash function family} if for any distinct $x_1,x_2 \in \mathcal{X}$, we have
+%	$\Pr[g(x_1)=g(x_2)]\leq 1/|\mathcal Y|$.
+%\end{definition}
+
+%\subsection{Pairwise Independence}
+%We now recall the definitions of (approximate) pairwise independence, (approximately) strongly 2-universal hash function family, and 2-universal hash function family, and provide their instantiations. \footnote{The approximate pairwise independence and approximate 2-universal hash functions are defined in \cite{FOCS:Zuckerman91,C:CacMau97} in an implicit way.}
+%
+%\begin{definition}[Uniform pairwise independence]
+%\label{def:upairwise}
+%For any $q\in\N$, a sequence of random variables $x_1,\cdots,x_q$ with alphabet $\mathcal Y$ are uniformly pairwise independent if for any $1\leq i<j\leq q$ and any $\hat y_1, \hat y_2 \in \mathcal X$, we have
+%	$$\Pr[x_i = \hat y_1 \land x_j = \hat y_2] = \frac{1}{|\mathcal{Y}|^2}.$$
+%\end{definition}
+%
+%
+%\begin{definition}[Approximate pairwise independence \cite{FOCS:Zuckerman91,C:CacMau97}]
+%\label{def:apairwise}
+%For any $q\in\N$, a sequence of random variables $x_1,\cdots,x_q$ with alphabet $\mathcal Y$ are approximate pairwise independent if for any $1\leq i<j\leq q$ and any distinct $\hat y_1, \hat y_2 \in \mathcal Y$, we have
+%$$\Pr[x_i = \hat y_1 \land x_j = \hat y_2] = \frac{1}{|\mathcal{Y}|(|\mathcal{Y}|-1)}.$$
+%%The definition of \emph{approximate pairwise independence} is exactly the same as \cref{def:upairwise} except that we replace 
+%%``$\frac{1}{|\mathcal{Y}|^2}$''
+%%by
+%%``$\frac{1}{|\mathcal{Y}|(|\mathcal{Y}|-1)}$''.
+%\end{definition}
+%One can verify that when a sequence of variables are approximately pairwise independent, they must be all distinct.
+%
+%%For any $q\in\N$, a sequence of random variables $\vec x_1,\cdots,\vec x_q$ from a range $\mathcal X$ are pairwise independent if for any $1\leq i<j\leq q$ and any $\hy_1, \hy_2 \in \bin^\nn$ with $\hy_1\neq \hy_2$, we have
+%%	$$\Pr[\vec x_i = \hy_1 \land \vec x_j = \hy_2] = \frac{1}{|\mathcal{X}|^2}.$$
+%
+%\begin{definition}[Strongly 2-universal hash function family]
+%\label{def:shash}
+%	A set $\mathcal H$ of functions with domain $\mathcal X$ and range $\mathcal Y$ is said to be a \emph{strongly 2-universal hash function family} if for any distinct $x_1,x_2 \in \mathcal{X}$, $h(x_1)$ and $h(x_2)$ are uniformly pairwise independent for $h\getsr \mathcal H$.
+%\end{definition}
+%
+%\begin{definition}[Approximate strongly 2-universal hash function \cite{FOCS:Zuckerman91,C:CacMau97}]
+%\label{def:ahash}
+%The definition of \emph{approximate strongly 2-universal hash function family} is exactly the same as \cref{def:shash} except that we replace ``uniformly pairwise independent'' by ``approximate pairwise independent''.
+%\end{definition}
+%
+%
+%\begin{definition}[2-universal hash function family]
+%\label{def:hash}
+%	A set $\mathcal H$ of functions with domain $\mathcal X$ and range $\mathcal Y$ is said to be a \emph{2-universal hash function family} if for any distinct $x_1,x_2 \in \mathcal{X}$, 
+%	$$\Pr[g(x_1)=g(x_2)]\leq \frac{1}{|\mathcal Y|}.$$
+%\end{definition}
+%
+%The following theorem is a direct combination from the Markov’s and Chebyshev’s Inequality.
+%
+%\begin{theorem}
+%\label{thm:cheb}
+%For any $n\in\N$, let $( t_i)_{i\in [n]}$ be a sequence of pairwise independent variables with $\expect[ t_i]=\mu_i$ and $\var[ t_i]=\sigma_i^2$. Then for any $a>0$, we have
+%$$\Pr[|\sum_{i=1}^n t_i-\sum_{i=1}^n\mu_i|\geq a]\leq \frac{\sum_{i=1}^n\sigma_i^2}{a^2}.$$
+%\end{theorem}
+%%For any $q\in\N$, a sequence of random variables $\vec x_1,\cdots,\vec x_q$ from a range $\mathcal X$ are pairwise independent if for any $1\leq i<j\leq q$ and any $\hy_1, \hy_2 \in \bin^\nn$ with $\hy_1\neq \hy_2$, we have
+%%	$$\Pr[\vec x_i = \hy_1 \land \vec x_j = \hy_2] = \frac{1}{|\mathcal{X}|^2}.$$
+%\begin{definition}[Strongly 2-universal hash function family]
+%\label{def:shash}
+%	A set $\mathcal H$ of functions with domain $\mathcal X$ and range $\mathcal Y$ is said to be a \emph{strongly 2-universal hash function family} if for any distinct $x_1,x_2 \in \mathcal{X}$, $h(x_1)$ and $h(x_2)$ are uniformly pairwise independent for $h\getsr \mathcal H$.
+%\end{definition}
+%
+%\begin{definition}[Approximate strongly 2-universal hash function \cite{FOCS:Zuckerman91,C:CacMau97}]
+%\label{def:ahash}
+%The definition of \emph{approximate strongly 2-universal hash function family} is exactly the same as \cref{def:shash} except that we replace ``uniformly pairwise independent'' by ``approximate pairwise independent''.
+%\end{definition}
+
+%\begin{definition}[2-universal hash function family]
+%\label{def:hash}
+%	A set $\mathcal H$ of functions with domain $\mathcal X$ and range $\mathcal Y$ is said to be a \emph{2-universal hash function family} if for any distinct $x_1,x_2 \in \mathcal{X}$, we have
+%	$\Pr[g(x_1)=g(x_2)]\leq \frac{1}{|\mathcal Y|}$.
+%\end{definition}
+%>>>>>>> f06d3e8e3fe5b22531e8d7ef4d174804921c0939
+
+
+
+%\begin{definition}[Almost pairwise independence]
+%\label{def:ahash}
+%The definition of \emph{approximate strongly 2-universal hash function family} is exactly the same as \cref{def:pairwise} except that we replace 
+%$$``\Pr[h(x_1) = y_1 \land h(x_2) = y_2] = \frac{1}{|\mathcal{Y}|^2}"$$
+%by
+%$$``\Pr[h(x_1) = y_1 \land h(x_2) = y_2] = \frac{1}{|\mathcal{Y}|(|\mathcal{Y}|-1)}".$$
+%\end{definition}
+
+%The definition of \emph{$\kk$-approximate pairwise independence} is exactly the same as \cref{def:pairwise} except that we replace 
+%$$``\Pr[x_i = \hat y_1 \land x_j = \hat y_2] = \frac{1}{2^{2\nn}}"$$
+%by
+%$$``\Pr[x_i = \hat y_1 \land x_j = \hat y_2] = \frac{1}{2^{2\nn}-2^{2\nn-\kk}}".$$
+%\end{definition}
+%In the rest of this work, when we use the term ``approximate pairwise independence'', we are specifically referring to ``$\nn$-approximate pairwise independence''.
+%
+%\begin{definition}[$\kk$-approximate pairwise independence]
+%\label{def:ahash}
+%The definition of \emph{$\kk$-approximate pairwise indedependence} is exactly the same as \cref{def:pairwise} except that we replace 
+%$$``\Pr[x_i = y_1 \land x_j = y_2] = \frac{1}{2^{2\nn}}."$$
+%by
+%$$``\Pr[x_i = y_1 \land x_j = y_2] = \frac{1}{2^{\nn}-2^{2\nn-k}}."$$
+%\end{definition}
+%In the rest of this work, when we use the term ``approximate pairwise independence'', we are specifically referring to ``$\nn$-approximate pairwise independence''.
+
+%	A set $\mathcal H$ of functions with domain $\mathcal{X}$ and range $\mathcal{Y}$ is said to be an \emph{approximate strongly 2-universal hash function family from $\mathcal{X}$ to $\mathcal{Y}$} if for any $x_1,x_2 \in \mathcal{X}$ such that $x_1 \neq x_2$ and $y_1, y_2 \in \mathcal{Y}$, we have
+%	$$\Pr[h(x_1) = y_1 \land h(x_2) = y_2] = \frac{1}{|\mathcal{Y}|(|\mathcal{Y}-1|)}$$
+%	for $h\getsr\mathcal H$.
+
+%\begin{definition}[$\kk$-approximate strongly 2-universal hash function family]
+%\label{def:khash}
+%	A set $\mathcal H_\kk$ of functions with domain $\mathcal X$ and range $\mathcal Y=\bin^\nn$ is said to be a \emph{$\kk$-approximate strongly 2-universal hash function family} if for any $x_1,x_2 \in \mathcal X$ such that $\msb_k(x_1) \neq \msb_k(x_2)$ and $y_1, y_2 \in \mathcal Y$, we have
+%	%$$\Pr[\msb_k(h(x_1)) = \msb_k(y_1) \land \msb_k(h(x_2)) = \msb_k(y_2)] = \frac{1}{2^{2k\nn}-2^{2\nn\cdot\kk}}$$
+%	$$\Pr[h(x_1) = y_1 \land h(x_2) = y_2] = \frac{1}{2^{2\nn}-2^{2\nn\cdot\kk}}$$
+%	for $h\getsr\mathcal H_\kk$.
+%\end{definition}
+
+%\begin{figure}[htpb]
+%\begin{center}
+%\framebox{
+%\small
+%  \begin{tabular}{l}	
+%	\begin{minipage}[t]{0.6\textwidth}
+%	{$\mathcal H_s=\{h(\vec x)=\msb_\nn(\vec a_1\cdot \vec x+\vec a_0)\mid \vec a_0,\vec a_1\in GF(2^\qq)\}$}\\
+%		{$\mathcal H_u=\{h(\vec u)=\msb_\nn(\vec a_1\cdot \vec x)\mid \vec a_1\in GF(2^\qq)\}$}
+%    \end{minipage}
+%      \end{tabular}}
+%\end{center} 
+%\caption{The definitions of $\mathcal H_s$ and $\mathcal H_u$. In this figure, all the operations involved are within $GF(\qq)$.}
+%\label{fig:hash}
+%\end{figure}
+%
+%\begin{lemma}[\cite{C:CacMau97}]
+%\label{lem:cm}
+%$H_u$ (respectively, $\mathcal H_s$) is a 2-universal hash function family (respectively, strongly 2-universal hash function family).
+%\end{lemma}
+
+
+
+
+
+%\begin{figure}[htpb]
+%\begin{center}
+%\framebox{
+%\small
+%  \begin{tabular}{l}	
+%	\begin{minipage}[t]{0.7\textwidth}
+%	$\mathcal H_n=\{(h(\vec x)=(\vec a_1\cdot \msb_k(\vec x)+\vec a_0)\circ \msb_{\qq-\kk}(\vec a_3\cdot \vec x+\vec a_2)\mid \\\vec a_0,\vec a_1\in GF(2^\kk), \vec a_1\neq \vec 0, \vec a_2,\vec a_3\in GF(2^{\qq})\}$
+%    \end{minipage}
+%      \end{tabular}}
+%\end{center} 
+%\caption{The definition of $\mathcal H_n$. In this figure, the operations in computing $\vec a_1\cdot \vec x+\vec a_0$ and $\vec a_3\cdot \vec x+\vec a_2$ are within $GF(2^\kk)$ or $GF(\qq)$ respectively.}
+%\label{fig:hash}
+%\end{figure}
+
+%\begin{lemma}[\cite{C:CacMau97}]
+%\label{lem:cm}
+%Let $q\in[2^n]$ and $\vec x_1, \vec x_2, \cdots, \vec x_q$ be any $q$ distinct elements in $GF(2^\qq)$. Then the sequence $(\vec h(x_1),\cdots,h(\vec x_q))$ where $h\getsr\mathcal H_u$ is pairwise independent.
+%\end{lemma}
+
+%\begin{lemma}[\cite{C:CacMau97}]
+%\label{lem:cm2}
+%Let $q\in[2^n]$ and $\vec x_1, \vec x_2, \cdots, \vec x_q$ be any $q$ distinct elements in $GF(2^\qq)$. Then the sequence $(\vec h(x_1),\cdots,h(\vec x_q))$ where $h\getsr\mathcal H_u$ is pairwise independent.
+%\end{lemma}
+
+%\subsection{Instantiations of Universal Hash Functions}
+%We now recall instantiations of the above function families in \cref{fig:con-hash}.
+%\begin{figure}[htpb]
+%\begin{center}
+%\framebox{
+%\small
+%  \begin{tabular}{l}	
+%	\begin{minipage}[t]{0.7\textwidth}
+%	$\mathcal F_n=\{f( x)=a_1\cdot  x+a_0\mid a_0,a_1\in GF(n)\}$\\
+%	$\mathcal H_n=\{h( x)=a_1\cdot  x+a_0\mid a_0,a_1\in GF(n)\land a_0\neq 0\}$\\
+%		$\mathcal G_{n,m}=\{g(u)=\msb_m(a\cdot  x)\mid a\in  GF(2^n)\}$
+%    \end{minipage}
+%      \end{tabular}}
+%\end{center} 
+%\caption{The definitions of $\mathcal F_n$, $\mathcal H_n$, and $\mathcal G_{n,m}$. In this figure, all operations involved in $f$ and h (respectively, g) are within the field $GF(n)$ (respectively, $GF(2^n)$). One can see that the outputs of any function in $\mathcal H$ with distinct inputs must be all distinct.}
+%\label{fig:con-hash}
+%\end{figure}
+%\begin{lemma}[\cite{C:CacMau97,FOCS:Zuckerman91}]
+%\label{lem:cm}
+%For any $m\in\N$, $\mathcal F_m$ (respectively, $\mathcal H_m$) is an strongly 2-universal hash function family (respectively, approximate strongly 2-universal hash function family), and $\mathcal G_m$ is a 2-universal strong hash function family.
+%\end{lemma}
+
+
+%\heading{Key extraction from randomly selected subset.}
+%We now recall a main theorem in \cite{C:CacMau97} for privacy amplification. 
+
+%which demonstrates the existence of a way to extract a random key from a subset of a random string with indices being pairwise independent with a small amount of memory. 
+%
+%\begin{figure}[htpb]
+%\begin{center}
+%\framebox{
+%\small
+%  \begin{tabular}{l}	
+%	\begin{minipage}[t]{0.8\textwidth}
+%	$\mathcal H=\{h( x)=\msb_\nn(a_1\cdot  x+a_0)\mid a_0,a_1\in GF(2^\qq)\}$\\
+%	$\mathcal H=\{h( x)=\msb_\nn(a_1\cdot  x+a_0)\mid a_0,a_1\in GF(2^\qq), a_1\neq\vec 0\}$\\
+%		{$\mathcal G_r=\{g(\vec u)=\msb_\nn(a_1\cdot  x)\mid a_1\in GF(2^\qq)\}$}
+%    \end{minipage}
+%      \end{tabular}}
+%\end{center} 
+%\caption{The definitions of $\mathcal H$, $\mathcal H$, $\mathcal G_r$. In this figure, all the operations involved are within $GF(\qq)$.}
+%\label{fig:hash}
+%\end{figure}
+%
+%\begin{lemma}[\cite{C:CacMau97}]
+%\label{lem:cm}
+%$H_u$ (respectively, $\mathcal H$) is an 2-universal hash function family (respectively, strongly 2-universal hash function family).
+%\end{lemma}
+
+
+%\begin{lemma}
+%\label{lem:apairwise}
+%Let $\hx_1,\hx_2, \cdots,\hx_q$ a sequence of approximate pairwise independent variables with alphabet $[n]$. Then the sequence $(h(\hx_1),\cdots,h(\hx_n))$ where $h\getsr\mathcal H_\kk$ is $\kk$-approximately pairwise independent.
+%\end{lemma}
+%\begin{proof}
+%%Let $q\in[k]$ and $y,x,x'\in GF(k)$ such that $x\neq x'$.  Then for any $a_0,a_1\in GF(k)$, $a_1\cdot x_i+a_0=a_1\cdot x_j+a_0$ holds if and only if $a_1$ is nonzero.~\footnote{This property is also exploited in \cite{C:CacMau97}.}
+%%Hence, we have 
+%%$$\Pr[a_0\cdot x+a_1=a_0\cdot x'+a_1|a_0,a_1\getsr GF(k)]\leq \frac{1}{k(k-1)}.$$
+%%Moreover, according to \cref{lem:cm}, we have 
+%%Let $q\in[k]$, and $y,x_1,\cdots,x_q\in GF(k)$ such that $x_1,\cdots,x_q$ are distinct. 
+%For any $1\leq i<j\leq q$ and $a_0,a_1\in GF(k)$, $a_1\cdot \hx_i+a_0=a_1\cdot \hx_j+a_0$ holds if and only if $a_1$ is nonzero.~\footnote{This property is also exploited in \cite{C:CacMau97}.}
+%Hence, for any $\hy_1,\hy_2\in GF(k)$ and any $1\leq i<j\leq q$, we have 
+%\[\begin{split}\Pr[a_0\cdot \msb_\kk(\hx_i)+a_1=\msb_\kk(\hy_1)\land a_0\cdot\msb_\kk(\hx_j)+a_1=\msb_\kk(\hy_2)\mid\\
+%a_0,a_1\getsr GF(k)]\leq \frac{1}{k(k-1)}.\end{split}\]
+%Moreover, according to \cref{lem:cm}, we have 
+%\[\begin{split}\Pr[\msb_\kk(a_3\cdot \hx_i+a_2)=\lsb_\kk(\hy_1)\land \msb_\kk(a_3\cdot\hx_j+a_2)=\lsb_\kk(\hy_2)\mid\\
+% a_2,a_3\getsr GF(2^{\qq})]\leq \frac{1}{2^{2(\qq-\kk)}}.\end{split}\]
+% 
+% Since the above two events are independent, we have
+% $$\Pr[h(\hx_i)=h(\hx_j)\mid h\getsr\mathcal H_\kk]\leq \frac{1}{k(k-1)\cdot 2^{2(\qq-\kk)}}=\frac{1}{2^{2\qq}-2^{2\qq-\kk}},$$
+%completing the proof of \cref{lem:apairwise}.
+%\end{proof}
+
+
+%\begin{lemma}
+%Let $X_1,\cdots,X_n$ be $\kk$-approximately pairwise independent random variables. Then for any $a>0$:
+%$$
+%\Pr[|\sum^n_{i=1}X_i-\sum^n_{i=1}\expect(X_i)|\geq a]\leq\frac{\sum_{i=1}^n \var(X_i)}{a^2}.
+%$$
+%\end{lemma}
+
+
+
+%\begin{theorem}[\cite{C:CacMau97}]
+%\label{thm:cm}
+%Let $\lambda,n\in\N$. Let $\A$ be any adversary  with the memory bound $\amem<n$, $\vec s=(s_i)_{i\in[\lambda]}$ be a sequence of approximately pairwise independent variables generated by $\mathcal H_n$, $\urs$, $\vec z$, and $g$ be random variables such that $\urs \getsr\bin^n$, $\vec z=\A(\urs)$, $g_{\lambda,r}\getsr\mathcal G_r$, and $\key=g(\urs_{\vec s})$. There exists a security event $\event$ such that 
+%$$\exists \event:\ \Pr[\event]\geq 1-\epsilon_1-\epsilon_2\ \mbox{and}\ I(\key;g|\vec z,\vec s,\event)\leq \amem.\footnote{The original theorem is presented in a stronger form by asserting that it holds for all possible values of $\vec z$ and $\vec s$, while this weaker version is clearly implied the original one and suffices in our context.}$$
+%\end{theorem}
+
+
+%\begin{lemma}[\cite{C:CacMau97,FOCS:Zuckerman91}]
+%%There exist strongly 2-universal hash function families, approximately strongly 2-universal hash function families, and 2-universal hash function families with domain $\bin^m$ and range $\bin^n$ for any $m,n\in\N$. Each of the strongly 2-universal
+%\end{lemma}
+
+
+%\subsection{Strongly 2-Universal Hash Function Family}
+%\begin{figure}[htpb]
+%\begin{center}
+%\framebox{
+%\small
+%  \begin{tabular}{l}	
+%	\begin{minipage}[t]{0.95\textwidth}
+%	$\mathcal F_{y,z}=\{f(x)=(a_1\cdot x+a_0\mod y)\cdot z+(b_1\cdot  x+b_0\mod z)\mid a_0,a_1\in \Z_y,b_0,b_1\in \Z_z$\\
+%	$\mathcal H_{y,z}=\{h( x)=(a_1\cdot  x+a_0\mod y)\cdot z+(b_1\cdot  x+b_0\mod z)\mid a_0,a_1\in \Z_y,b_0,b_1\in \Z_z, a_1\neq 0\ \mbox{or}\ b_1\neq 0\}$
+%    \end{minipage}
+%      \end{tabular}}
+%\end{center} 
+%\caption{The definitions of $\mathcal F_{y,z}$ and $\mathcal H_{y,z}$.
+%% In this figure, all operations are within $GF(y\cdot z)$.
+% }
+%\label{fig:con-hash'}
+%\end{figure}
+%
+%%Due to the fact that 
+%%$$(a_1\cdot x+a_0\mod y) \cdot z+ (b_1\cdot  x+b_0\mod z)=(a_1\cdot z+b_1)\cdot x+(a_0\cdot z+b_0)\mod (y\cdot z)$$
+%%and $a_1\cdot z+b_1$ and $a_0\cdot z+b_0$ are uniformly distributed
+%
+%
+%
+%\begin{lemma}
+%\label{lem:cr}
+%For any $y,z$ such that $\Z_y$ and $\Z_z$ are fields, $\mathcal F_{y,z}$ (respectively, $\mathcal H_{y,z}$) is a strongly 2-universal hash function family (respectively, approximate strongly 2-universal hash function family) from $\Z_{\min\{y,z\}}$ to $\Z_{y\cdot z}$.
+%\end{lemma}
+%\begin{proof}
+%For any $x, x'\in \Z_y$,
+%any $t=t_1\cdot z+t_2$, and any $t'=t_1'\cdot z+t_2'$ where $t_1,t_1'\in\Z_y$ and $t_2,t_2'\in\Z_z$, one can easily check that
+%\[\begin{split}
+%&\Pr[f(x)= t\land f(x')= t']
+%%=&\Pr[(a_1\cdot x+a_0)\cdot z+ (b_1\cdot  x+b_0)=t]\cdot 
+%%\Pr[(a_1\cdot x'+a_0)\cdot z+ (b_1\cdot  x'+b_0)=t']\\
+%%=&\Pr[(a_1\cdot x+a_0\mod y) \cdot z+ (b_1\cdot  x+b_0\mod z)=t]\cdot \\
+%%&\Pr[(a_1\cdot x'+a_0\mod y) \cdot z+ (b_1\cdot  x'+b_0\mod z)=t']\\
+%%=&\Pr[a_1\cdot x+a_0\equiv t_1\mod y, b_1\cdot  x+b_0\equiv t_2\mod z]\cdot \\
+%%&\Pr[a_1\cdot x'+a_0\equiv t_2\mod y, b_1\cdot  x'+b_0\equiv t_2'\mod z]\\
+%%=\frac{1}{y^2}\cdot\frac{1}{z^2} %\tab (\cref{lem:cm})\\
+%=\frac{1}{(y\cdot z)^2}
+%\end{split}\]
+%where $f\getsr\mathcal F_{y,z}$ and $(a_0,a_1,b_0,b_1)$ are the corresponding randomness, i.e., $\mathcal F_{y,z}$ is a strongly 2-universal hash function family.
+%
+%Also, since $f( x)=f( x')$ if and only if $a_1=b_1=0$, which happens with probability $\frac{1}{y\cdot z}$, 
+%conditioned on $ t\neq  t'$ we have
+%\[\begin{split}
+%&\Pr[f( x)= t\land f( x')= t']\\
+%=&\Pr[f( x)= t\land f( x')= t', f\in\mathcal H_{y,z})]\\
+%=&\Pr[f( x)= t\land f( x')= t'\mid f\in\mathcal H_{y,z})]\cdot \Pr[f\in\mathcal H_{y,z}]\\
+%=&\Pr[f( x)= t\land f( x')= t'\mid f\in\mathcal H_{y,z})]\cdot \frac{y\cdot z-1}{y\cdot z}.
+%\end{split}\]
+%Moreover, since $\Pr[f( x)= t\land f( x')= t']=\frac{1}{(y\cdot z)^2}$, 
+%we have 
+%$$\Pr[f( x)= t\land f( x')= t'\mid f\in\mathcal H_{y,z})]=\frac{1}{y\cdot z(y\cdot z-1)},$$
+%i.e., $\mathcal H_{y,z}$ is an approximate strongly 2-universal hash function family,
+%completing the proof of \cref{lem:cr}.
+%\end{proof}
+%\heading{Remark.}
+%We require that $\Z_y$ and $\Z_z$ be fields only for simplicity.
+%One can easily see that the constructions in \cref{fig:con-hash'} can be generalized by only requiring that $\Z_y$ and $\Z_z$ are isomorphic to fields.
+%We require that the domain of the functions be $\Z_{y,z}$ to achieve approximate pairwise independence. As a special case, we can also set $y$ as $z=1$.
+
+%\begin{lemma}
+%\label{lem:pairwise}
+%%Let $\{ h_1(j)\}_{j\in\Z_q},\cdots,\{ h_\pnum(j)\}_{j\in\Z_q}$ be sequences of approximate pairwise independent random variables generated as $t_i^j=h_i(j)$ where $h_i\getsr \mathcal H_n$ for all $i\in[\pnum]$ and all $j\in\Z_q$.
+%%Let $\{ h_\pnum(j)\}_{j\in\Z_q}$ be a sequence of $\kk$-approximate pairwise independent random variables with size $\nn$.
+%Let $( u_i)_{i\in[q]}$ be the sequence $(h_\pnum(i))_{i\in[q]}$ such that $ u_i= h_\pnum(i)$ if there are indices $i_1,\cdots,i_{\pnum-1}$ satisfying
+%$ h_1(i_1)=\cdots= h_{\pnum-1}(i_{\pnum-1})= h_\pnum(i)$ and $ u_i=\bot$ otherwise. 
+%Let $\set$ be the set of indices $\Z_q$ restricted to $u_i\neq 0$.
+%Then the distribution of $\vec u_\set$ is identical to $(h_\pnum(j))_{j\in\set}$.
+%%Then the sequence $(s_i)_{i\in[q]}$ restricted to those positions different from $\bot$ is pairwise independent.
+%\end{lemma}
+%
+%
+%\begin{proof}
+%%Let $ t_i^j=h_i(j)$ for all $i\in[\pnum]$ and $j\in\Z_q$ and $( u_j)_{j\in\Z_q}$ be the sequence such that $ u_j= h_1(j)$ if there exist indices $j_2,\cdots,j_{\pnum}$ satisfying
+%%$\msb_\kk( h_1(j))=\msb_\kk( t_i^{j_2})=\cdots=\msb_\kk( t_\pnum^{j_\pnum})$ and $ u_i=\bot$ otherwise.
+%Let $\hx_1,\hx_2$ be any distinct element in $GF(k)$.
+%To prove this lemma, it is sufficient to show that 
+%%the sequence $( u_i)_{i\in[q]}$ restricted to $ u_i\neq\bot$ is $\kk$-approximately pairwise independent, i.e. $( u_i)_{i\in[q]}$ satisfies
+%$
+%\Pr[ u_i=\hx_1\land  u_j=\hx_2| u_i\neq \bot\land  u_j\neq\bot]=\frac{1}{k(k-1)}
+%$
+%for all $i,j\in\Z_q$. 
+%
+%Due to approximately pairwise independence, we have 
+%$
+%\Pr[ h_\pnum(i)=\hx_1\land  h_\pnum(j)=\hx_2]=\frac{1}{n(n-1)}
+%$
+%for all $i,j\in\Z_q$,
+%and
+%$
+%\Pr[\exists i_l,j_l: h_l(i_l)=\hx_1\land h_l(j_l)=\hx_2]=\frac{q(q-1)}{n(n-1)}
+%$
+%for all $l\in[\pnum-1]$.
+%Hence, for any $i,j\in\Z_q$, we have
+%\[\begin{split}
+%&\Pr[ u_i=\hx_1\land  u_j=\hx_2]\\
+%=&\Pr[\exists (i_l,j_l)_{l\in[\pnum-1]}: 
+% h_1(i_1)=\cdots= h_{\pnum-1}(i_{\pnum-1})=\hx_1= h_\pnum(i)\land h_1(j_1)=\cdots= h_{\pnum-1}(j_{\pnum-1})=\hx_2= h_\pnum(j)]\\
+%=&\Pr[ h_\pnum(i)=\hx_1\land  h_1(j)=x_2]\cdot\prod_{l=1}^\pnum\Pr[\exists i_l,j_l: h_l(i_1)=\hx_1\land  h_l(j_l)=\hx_2]\\
+%%=\Pr[&t_1^i=x_1\land h_1(j)=x_2]\cdot\Pr[\exists i_2,\cdots,i_\pnum,j_2,\cdots,j_\pnum: \\&
+%%\msb_\kk(t_2^{i_2})=\cdots=\msb_\kk(t_\pnum^{i_\pnum})=\msb_\kk(x_1)\land\\
+%%&\msb_\kk(t_2^{j_2})=\cdots=\msb_\kk(t_\pnum^{j_\pnum})=\msb_\kk(x_2)]\\
+%=&\frac{1}{k(k-1)}\cdot \Big(\frac{q(q-1)}{n(n-1)}\Big)^{\pnum-1}
+%\end{split}\]
+%and 
+%\[\begin{split}
+%&\Pr[ u_i\neq\bot\land  u_j\neq \bot]
+%\\
+%=&\Pr[\exists (i_l,j_l)_{l\in[\pnum-1]}: h_1(i_1)=\cdots= h_{\pnum-1}(i_{\pnum-1})= h_\pnum(i)\land  h_1(j_1)=\cdots= h_{\pnum-1}(j_{\pnum-1})= h_\pnum(j)]
+%\\
+%=&\prod_{l=1}^\pnum\Pr[\exists i_l,j_l: h_l(i_l)=h_\pnum(i)\land  h_l(j_l)= h_\pnum(j)]
+%=\Big(\frac{q(q-1)}{n(n-1)}\Big)^{\pnum-1}
+%\end{split}\]
+%i.e.,
+%$$
+%\Pr[ u_i=x_1\land  u_j=x_2| u_i\neq \bot\land  u_j\neq\bot]=\frac{\Pr[ u_i=\hx_1\land  u_j=\hx_2]}{\Pr[ u_i\neq\bot\land  u_j\neq \bot]}=\frac{1}{k(k-1)}.
+%$$
+%Moreover, for each other index  $l\in\set$ we have $u_l=h_\pnum(l)$ where $h_\pnum$ can be determined by $u_i$ and $u_j$. Hence, the distribution of $(u_i)_{i\in\set}$ is identical to that of $(h_\pnum(i))_{i\in\set}$, completing the proof of \cref{lem:pairwise}.
+%\end{proof}
+
+%\subsection{}
+%\subsection{Our Construction}
+%\label{sec:bsmke-con}
+
+%Before giving our construction, we recall following theorem, which is a direct combination from the Markov’s and Chebyshev’s Inequality.
+%%We recall the following theorem, which is a direct combination of Markov’s and Chebyshev’s Inequalities.
+%
+%
+%\begin{theorem}
+%\label{thm:cheb}
+%For any $n\in\N$, let $( t_i)_{i\in [n]}$ be a sequence of pairwise independent variables. Then for any $a>0$, we have
+%$$\Pr[|\sum_{i=1}^n t_i-\sum_{i=1}^n\expect[ t_i]|\geq a]\leq \frac{\sum_{i=1}^n\var[ t_i]}{a^2}.$$
+%\end{theorem}
+%
+%We also refer the readers to \cref{sec:pairwisedef} for the definitions of uniformly and approximately pairwise independence, (approximately) strongly 2-universal hash function family, and 2-universal hash function family, and their instantiations.
+
+%data processing inequality
+
+
+%and $\widehat{\vec z}$ and $\widehat{\vec s}$ be any possible values of $\vec z$ and $\vec s$ respectively
+%Next we prove the following corollary of the above theorem, regarding to a slightly different distribution of the pairwise independent sequence $\vec s$.
+%\begin{corollary}
+%\label{cor:cm}
+%Let $\lambda,n\in\N$, $\lambda<k\leq n$. Let $\A$ be any adversary with memory bound $\amem<n$, $\urs\getsr\bin^n$, $\vec z\getsr \A(\urs)$, and $\vec s=(s_i)_{i\in[\lambda]}$ be a sequence of random variables such that each $s_i$ is generated as $s_i=h(x_i)\cdot\frac{n}{n}+f(x_i)$ where $h\getsr\mathcal H_n$ and $f\getsr\mathcal F_{n/k}$
+% for some sequence $x_1,\cdots,x_\lambda\in\Z_q$, $g\getsr\mathcal G_r$, and $\key=g(\urs_{\vec s})$, and $\widehat{\vec z}$ and $\widehat{\vec s}$ be any possible values of $\vec z$ and $\vec s$ respectively. There exists a security event $\event_1$ such that 
+%$$\exists \event_1:\ \Pr[\event_1]\geq 1-\epsilon_1-\epsilon_2-\frac{1}{n}\ \mbox{and}\ I(\key;g|\vec z=\widehat{\vec z},\vec s=\widehat{\vec s},\event_1))\leq \amem.$$
+%\end{corollary}
+
+%\begin{proof}
+%%Let $\lambda<\min\{\log n,\log n-\log n\}$ and each $s_{i\in[\lambda]}$ be generated as $s_i=h_1(i)\circ h_2(i)$ where $h_1\circ h_2\getsr \mathcal H_{\log n,\log n-\log n}$ in the above theorem. 
+%Let $h$ be generated by $h\getsr\mathcal H_{k,n/k}$ instead, where the corresponding random coins are $a_0$, $a_1$, $b_0$, and $b_1$ (see \cref{fig:con-hash'}).
+%Let $\event_s$ be the event that $a_1\neq 0$. We have $\Pr[\bar\event_s]\leq \frac{1}{n}$. Thus, combining this with \cref{thm:cm}, we have
+%$$\exists \event_0:\ \Pr[\event_0\land \event_s]=\Pr[\event_0]-\Pr[\event_0\land\bar\event_s]\geq\Pr[\event_0]-\Pr[\bar\event_s] \geq 1-\epsilon_1-\epsilon_2-\frac{1}{n}$$
+%and
+%$$I(\key;g|\vec z=\widehat{\vec z},\vec s=\widehat{\vec s},\event_1)=I(\key;g|\vec z=\widehat{\vec z},\vec s=\widehat{\vec s},(\event_0,\event_s))\leq \amem,$$
+%where $\widehat{\vec z}$ and $\widehat{\vec s}$ be any possible values of $\vec z$ and $\vec s$ when $\event_s$ happens. Here notice that $\event_s\land (\vec s=\widehat{\vec s})$ is equivalent to $\vec s=\widehat{\vec s}$.
+%Considering $\event_0\land \event_s$ as a single event $\event_1$, \cref{cor:cm} immediately follows.
+%\end{proof}
+%
+
+
+
+%\subsection{Our Construction}
+\heading{Parameters.} Next we follow \cite{C:CacMau97} to define several parameters.
+Let $\lambda\in\N$ be the security parameter and $\pnum$ be the number of parties.
+Let $\amem,n$ be integers such that $\amem<n$. We define $q$, $\epsilon_1$, $\epsilon_2$, $r$, and $\theta$ satisfying the following equations:
+\begin{compactitem}
+%\item $\gamma=(1-\frac{1}{n})^\pnum$,
+\item $\delta=\min\{0.9453,(1/n)(n-\amem-\log(1/\epsilon_1))\}$,
+\item $\rho$ such that $H_b(\rho)+\rho\log(1/\delta)+1/n=\delta$,
+\item $\lambda=(q/2)\cdot (q/n)^{\pnum-1}=\lfloor(\rho\epsilon_2^2-\rho2^{-\rho n\log(1/\delta)-2})^{-1}\rfloor$,
+\item $r=\lfloor\log\theta+\rho\lambda/2-1\rfloor$,
+\end{compactitem}
+where $H_b$ is the \emph{binary entropy function} defined as $H_b(\rho) = -\rho \log \rho - (1-\rho)\log(1-\rho).$
+As noted in \cite{C:CacMau97}, when $n>>\amem$, we have $\delta=0.9453$, $\rho=1/3$,  $\lambda\approx3/\epsilon_2^2$, and $r\approx \lambda/6$.
+
+Before giving our construction, we recall the following two theorems. The first one is the main theorem in \cite{C:CacMau97} for privacy amplification, and the second one is a direct combination of Chebyshev's inequality and Markov's inequality.
+%We recall the following theorem, which is a direct combination of Markov’s and Chebyshev’s Inequalities.
+
+%\heading{Privacy amplification.} We now recall . 
+\begin{theorem}[\cite{C:CacMau97}]
+\label{thm:cm}
+Let $\lambda\in\N$ and $GF(n)$ be a finite field. Let $\A$ be any adversary with the memory bound $\amem<n$, $\urs \getsr\bin^n$, $\vec z=\A(\urs)$, $g\getsr\mathcal G_{\lambda,r}$, $\vec s=(s_i)_{i\in[\lambda]}$ be a sequence of approximate pairwise independent
+indices over $GF(n)$, and $\key=g(\urs_{\vec s})$. There exists a security event $\event$ such that
+$$\exists \event:\ \Pr[\event]\geq 1-\epsilon_1-\epsilon_2\ \mbox{and}\ I(\key;g,\vec z,\vec s\mid\event)\leq \theta.\footnote{The original theorem asserts that $I(\key;g\mid\vec z,\vec s,\event)\leq\theta$, %and the theorem holds for all possible values of $\vec z$ and $\vec s$,
+while their proof clearly implies our version.
+%this weaker version is clearly implied the original one and suffices in our context.
+}$$
+\end{theorem}
+
+\begin{theorem}
+\label{thm:cheb}
+For any $n\in\N$, let $( t_i)_{i\in [n]}$ be a sequence of pairwise independent variables. Then for any $a>0$, we have
+$$\Pr[|\sum_{i=1}^n t_i-\sum_{i=1}^n\expect[ t_i]|\geq a]\leq \frac{\sum_{i=1}^n\var[ t_i]}{a^2}.$$
+\end{theorem}
+
+%%We now recall a main theorem in \cite{C:CacMau97} for privacy amplification. 
+%\heading{Privacy amplification.} We now recall the main theorem in \cite{C:CacMau97} for privacy amplification. 
+%\begin{theorem}[\cite{C:CacMau97}]
+%\label{thm:cm}
+%Let $\lambda,n\in\N$. Let $\A$ be any adversary  with the memory bound $\amem<n$, $\vec s=(s_i)_{i\in[\lambda]}$ be a sequence of approximately pairwise independent variables generated by $\mathcal H_n$, $\urs$, $\vec z$, and $g$ be random variables such that $\urs \getsr\bin^n$, $\vec z=\A(\urs)$, $g_{\lambda,r}\getsr\mathcal G_r$, and $\key=g(\urs_{\vec s})$. There exists a security event $\event$ such that 
+%$$\exists \event:\ \Pr[\event]\geq 1-\epsilon_1-\epsilon_2\ \mbox{and}\ I(\key;g|\vec z,\vec s,\event)\leq \theta.\footnote{The original theorem is presented in a stronger form by asserting that it holds for all possible values of $\vec z$ and $\vec s$, while this weaker version is clearly implied the original one and suffices in our context.}$$
+%\end{theorem}
+
+
+%\heading{Construction.} Let $\mathcal H_n$ be the approximately strongly 2-universal hash function family, and $\mathcal G_{\lambda,r}$ be the 2-universal hash function family, as defined in \cref{fig:con-hash}. Let $\mathcal C_1$ be the class of streaming word-RAM families with memory bound $4\log n+\log\lambda+q$, where $q=n\sqrt[\pnum]{\frac{2\lambda}{n}}$.
+%We give our construction of NIKE in the BSM as in \cref{fig:con-bsmke}.
+%
+%
+%\begin{figure}[htpb]
+%\begin{center}
+%\framebox{
+%\small
+% \begin{tabular}{l}	
+%\begin{minipage}[t]{0.95\textwidth}	
+%$\underline{\Gen(\urs\in\bin^n)}$:
+%\item Set $\pk_i=(h_i,g_i)$ where $h_i\getsr\mathcal H_n$ and $g_i\getsr\mathcal G_{\lambda,r}$
+%\item Set $\sk_i=\urs_{\set_i}$ where $\set_i$ is the set of all bits in $\urs$ with indices in $(h_i(j))_{j\in[q]}$
+%\item Return $(\pk_i,\sk_i)$\\
+%%\item $\party_\pnum$ samples $h_\pnum\getsr\mathcal H_n$, $f\getsr\mathcal H_{n/k}$ and $g\getsr\mathcal G_r$ and stores $f$, $g$, and $\sk_\pnum=\urs_{\set_\pnum}$ where $\set_\pnum=(h_\pnum(j)\cdot\frac{n}{n}+f(j))_{j\in\Z_q}$
+%	
+%
+%	%\item compute $t_i^j=g_i(j)$ for $j=1,\cdots,q$ and broadcast $\pk_i=(t_i^j)$ in a streaming manner (without storing it)
+%	$\underline{\share(i,\sk_i,(\pk_j)_{j\in[\pnum]})}$
+%	\item Remove bits in $|\sk_i|$ with indices not in $\set_1\cap\cdots \cap\set_\pnum$ by computing $(h_i(j))_{i\in[\pnum],j\in[q]}$ for all $i$ in a streaming manner
+%	\item Abort the whole protocol if $|\sk_i|< \lambda$
+%%	\item Each $\party_{i\in[\pnum]}$
+%%	\begin{compactitem}
+%%	\item for $j=1,\cdots,q$, check whether $h_i(j)=h_{i'}(j')$ (or $h_i(j)=\msb_\kk(h(j'))$) for some $j'\in[q]$
+%%	\item if the check fails, remove $\urs_{h_i(j)}^*$ from $\sk_i$
+%%	\item  store $h$
+%%	\end{compactitem}
+%%	\item if $|\sk_i|<\lambda$, abort
+%%	\item for each $i=2,\cdots,\pnum$ and $j=1,\cdots,q$, $\party_i$ finds $j'\in[q]$ such that $h_1(j)=h_i(j')$, move the $j'$th bit to the $j$th position in $\sk_i$, and discard $h_1$ //make $\sk_i$ identical to $\sk_1$
+%	\item Return $\key=g_\pnum(\sk_i)$
+%	
+%   \end{minipage}
+%	\end{tabular}}
+%\end{center}
+%\caption{The definition of $\bsmke$. Recall that for any set $\set$, $\urs_\set$ denotes the sequence of all bits in $\urs$ with indices (ordered lexicographically) in $\set$.}
+%\label{fig:con-bsmke}
+%\end{figure}
+
+\heading{Construction.} Let $\mathcal H_n$ be the approximately strongly 2-universal hash function family, and $\mathcal G_{\lambda,r}$ be the 2-universal hash function family, as defined in \cref{fig:con-hash}. Let $\mathcal C_1$ be the class of streaming word-RAM families with memory bounds $4\log n+\lambda+q$, where $q=n\sqrt[\pnum]{2\lambda/n}$.
+Throughout this construction, the parameters satisfy $q\leq n$.
+Our construction of multi-party NIKE in the BSM is defined as in \cref{fig:con-bsmke}.
+
+\begin{figure}[htpb]
+\begin{center}
+\framebox{
+\small
+ \begin{tabular}{l}	
+\begin{minipage}[t]{0.9\textwidth}	
+$\underline{\Gen(\urs\in\bin^n)}$:
+\item Set $\pk_i=(h_i,g_i)$ where $h_i\getsr\mathcal H_n$ and $g_i\getsr\mathcal G_{\lambda,r}$
+\item Set $\sk_i=(h_i,\urs_{\set_i})$ where $\set_i$ is the set of indices in $(h_i(j))_{j\in[q]}$
+	\item Return $(\pk_i,\sk_i)$\\
+%\item $\party_\pnum$ samples $h_\pnum\getsr\mathcal H_n$, $f\getsr\mathcal H_{n/k}$ and $g\getsr\mathcal G_r$ and stores $f$, $g$, and $\sk_\pnum=\urs_{\set_\pnum}$ where $\set_\pnum=(h_\pnum(j)\cdot\frac{n}{n}+f(j))_{j\in\Z_q}$
+	
+
+	%\item compute $t_i^j=g_i(j)$ for $j=1,\cdots,q$ and broadcast $\pk_i=(t_i^j)$ in a streaming manner (without storing it)
+	$\underline{\share(i,\sk_i,(\pk_j)_{j\in[\pnum]})}$
+	\item Parse $\sk_i=(h_i,\urs_{\set_i})$
+	\item Remove bits in $\urs_{\set_i}$ with indices not in $\set_1\cap\cdots \cap\set_\pnum$ by computing $(h_i(j))_{i\in[\pnum],j\in[q]}$ in a streaming manner
+	\item For each $j\in[q]$, let $u_j=h_\pnum(j)$ if $h_\pnum(j)\in\set_1\cap\cdots\cap\set_\pnum$, and let $u_j=\bot$ otherwise
+	\item Let $\vec s$ be obtained from $(u_j)_{j\in[q]}$ by removing all $\bot$'s while preserving the order of $j$
+	\item Abort the whole protocol if $|\vec s|< \lambda$
+	%\item Each party recovers $\urs_{\vec{s}_\lambda}$ from its stored indexed bits, since $\vec{s}_\lambda\subseteq\set_i$ for every $i\in[\pnum]$
+	%	\item Each $\party_{i\in[\pnum]}$
+%	\begin{compactitem}
+%	\item for $j=1,\cdots,q$, check whether $h_i(j)=h_{i'}(j')$ (or $h_i(j)=\msb_\kk(h(j'))$) for some $j'\in[q]$
+%	\item if the check fails, remove $\urs_{h_i(j)}^*$ from $\sk_i$
+%	\item  store $h$
+%	\end{compactitem}
+%	\item if $|\sk_i|<\lambda$, abort
+%	\item for each $i=2,\cdots,\pnum$ and $j=1,\cdots,q$, $\party_i$ finds $j'\in[q]$ such that $h_1(j)=h_i(j')$, move the $j'$th bit to the $j$th position in $\sk_i$, and discard $h_1$ //make $\sk_i$ identical to $\sk_1$
+	\item Return $\key=g_\pnum(\urs_{\vec{s}_\lambda})$ where $\vec{s}_\lambda$ denotes the first $\lambda$ entries of $\vec s$
+	
+   \end{minipage}
+	\end{tabular}}
+\end{center}
+\caption{The definition of $\bsmke$. Recall that for any set $\set$, $\urs_\set$ denotes the sequence of all bits in $\urs$ with indices (ordered lexicographically) in $\set$. For any sequence $\vec s$, $\urs_{\vec s}$ follows the order of $\vec s$.}
+\label{fig:con-bsmke}
+\end{figure}
+\begin{theorem}
+\label{thm:bsmke}
+%For any $\epsilon_1,\epsilon_2>0$, any $0<\epsilon<1$ and any $\amem>0$. 
+$\bsmke$ is a $\mathcal C_1$-$\pnum$-NIKE with $2/\lambda$-correctness and $(\amem,\epsilon_1+\epsilon_2+2/\lambda,\theta)$-security in the BSM.
+\end{theorem}
+
+%\section{Proof of \cref{thm:bsmke}}
+%\label{sec:bsmke-proof}
+
+
+%We now refer the reader to \cref{sec:pairwisedef} for the definitions of uniformly and approximately pairwise independence, (approximately) strongly 2-universal hash function family, and 2-universal hash function family, and their instantiations.
+%In this section we now give the proof of \cref{lem:pairwise}.
+
+%We now give the proof of \cref{thm:bsmke}. %See \cref{sec:bsm-nike} for the instantiations of $\mathcal F_n$, $\mathcal H_n$, and $\mathcal G_{n,m}$, and the parameters.
+\begin{proof}
+\heading{Complexity.}
+First we note that each $\party_{i\in[\pnum]}$ consumes $4\log n+\lambda+q$ bits of memory to store $q$ bits in $\urs$, a 2-universal hash function in $\mathcal G_{\lambda,r}$, and at most two strongly 2-universal hash functions in $\mathcal H_n$ for comparison at any point in the protocol.
+
+\heading{Correctness.}
+To prove correctness, it suffices to show that the protocol aborts with probability at most $2/\lambda$.
+
+Let $\set_i=\{h_i(j):j\in[q]\}$ for $i\in[\pnum]$, and define
+\[
+Y_j=
+\begin{cases}
+1 & \mbox{if } h_\pnum(j)\in \set_1\cap\cdots\cap\set_{\pnum-1},\\
+0 & \mbox{otherwise}
+\end{cases}
+\ \mbox{and}\
+Y=\sum_{j=1}^qY_j .
+\]
+Since $h_\pnum\getsr\mathcal H_n$ is injective on the $q$ queried points, $Y$ is exactly the number of distinct common indices in $\set_1\cap\cdots\cap\set_\pnum$. Thus the protocol aborts iff $Y<\lambda$.
+
+For each fixed $a\in GF(n)$ and each $i\in[\pnum-1]$, $\Pr[a\in\set_i]=q/n$. Since $\set_1,\ldots,\set_{\pnum-1}$ are independent and $h_\pnum(j)$ is uniform and independent of them,
+\[
+\expect[Y]
+=\sum_{j=1}^q\expect[Y_j]=
+\sum_{j=1}^q \Pr[h_\pnum(j)\in \set_1\cap\cdots\cap\set_{\pnum-1}]
+=
+\sum_{j=1}^q \left(\frac qn\right)^{\pnum-1}
+=
+q\left(\frac qn\right)^{\pnum-1}
+=
+2\lambda .
+\]
+
+We next bound the variance. For $j\ne j'$,
+\[
+\begin{aligned}
+&\expect[Y_jY_{j'}]=\Pr[Y_j=Y_{j'}=1]\\
+=&
+\sum_{\substack{a,b\in GF(n)\\a\ne b}}
+\Pr[h_\pnum(j)=a,h_\pnum(j')=b]\,
+\Pr[a,b\in \set_1\cap\cdots\cap\set_{\pnum-1}] \\
+=&
+\sum_{\substack{a,b\in GF(n)\\a\ne b}}
+\frac{1}{n(n-1)}
+\Pr[a,b\in \set_1\cap\cdots\cap\set_{\pnum-1}]
+\
+(\because \text{approximate pairwise independence of $h_\pnum$})\\
+=&
+\sum_{\substack{a,b\in GF(n)\\a\ne b}}
+\frac{1}{n(n-1)}
+\prod_{i=1}^{\pnum-1}\Pr[a,b\in\set_i]
+\
+(\because \mbox{independence of $(\set_i)_{i=1}^{\pnum-1}$}) \\
+=&
+\sum_{\substack{a,b\in GF(n)\\a\ne b}}
+\frac{1}{n(n-1)}
+\left(\frac{q(q-1)}{n(n-1)}\right)^{\pnum-1} \ (\because \mbox{injectivity and uniformity of $\{h_i\}_{i=1}^{\pnum-1}$})\\
+=&
+\left(\frac{q(q-1)}{n(n-1)}\right)^{\pnum-1}\le
+\left(\frac qn\right)^{2(\pnum-1)}
+=
+\expect[Y_j]\expect[Y_{j'}].
+\end{aligned}
+\]
+%where in the third equality we use that, for every fixed distinct $a,b\in GF(n)$ and every
+%$i\in[\pnum-1]$, injectivity and uniformity of $h_i$ imply
+%$\Pr[a,b\in\set_i]=q(q-1)/(n(n-1))$.
+As a result, we have
+\[
+\begin{aligned}
+\var[Y]
+&=
+\sum_{j=1}^q\var[Y_j]
++
+2\sum_{1\leq j<j'\leq q}
+\left(\expect[Y_jY_{j'}]-\expect[Y_j]\expect[Y_{j'}]\right) 
+\leq
+\sum_{j=1}^q\var[Y_j]
+\leq
+\sum_{j=1}^q\expect[Y_j]
+=
+2\lambda.
+\end{aligned}
+\]
+By Chebyshev's inequality,
+\[
+\Pr[Y<\lambda]
+\leq
+\Pr[|Y-\expect[Y]|\geq\lambda]
+\leq
+\frac{\var[Y]}{\lambda^2}
+\leq
+\frac{2}{\lambda}.
+\]
+Therefore, the protocol aborts with probability at most $2/\lambda$.
+%\heading{Correctness.}
+%To prove correctness, it suffices to show that the protocol aborts with probability at most $2/\lambda$.
+%
+%Let $\set_i=\{h_i(j):j\in[q]\}$ for $i\in[\pnum]$, let
+%\[
+%Y_j=
+%\begin{cases}
+%1 & \mbox{if } h_\pnum(j)\in \set_1\cap\cdots\cap\set_{\pnum-1},\\
+%0 & \mbox{otherwise},
+%\end{cases}
+%\]
+%and let $Y=\sum_{j=1}^qY_j$. Since $h_\pnum\getsr\mathcal H_n$ is injective on the $q$ queried points, $Y$ is exactly the number of distinct common indices in $\set_1\cap\cdots\cap\set_\pnum$. Thus the protocol aborts iff $Y<\lambda$.
+%
+%For each fixed $a\in GF(n)$ and each $i\in[\pnum-1]$, we have $\Pr[a\in\set_i]=q/n$. Since $\set_1,\ldots,\set_{\pnum-1}$ are independent and $h_\pnum(j)$ is uniform and independent of them, we have $\expect[Y_j]=(q/n)^{\pnum-1}$. Hence, we have
+%$$\expect[Y]=\sum_{j=1}^q\expect[Y_j]=q(q/n)^{\pnum-1}=2\lambda.$$
+%
+%We now bound the variance. For $j\ne j'$, the pair $(h_\pnum(j),h_\pnum(j'))$ is uniform over ordered pairs of distinct field elements and independent of $\set_1,\ldots,\set_{\pnum-1}$. Hence, we have
+%\[
+%\Pr[Y_j=Y_{j'}=1]
+%=
+%\sum_{\substack{a,b\in GF(n),a\ne b}}
+%\Pr[h_\pnum(j)=a,h_\pnum(j')=b]\,
+%\Pr[a,b\in \set_1\cap\cdots\cap\set_{\pnum-1}].
+%\]
+%For fixed distinct $a,b\in GF(n)$ and $i\in[\pnum-1]$, injectivity and uniformity of $h_i$ give
+%$$\Pr[a,b\in\set_i]=q(q-1)/(n(n-1)).$$ Then, by independence, we have
+%\[
+%\Pr[Y_j=Y_{j'}=1]
+%=
+%\left(q(q-1)/(n(n-1))\right)^{\pnum-1}.
+%\]
+%Since $q\leq n$, we have $q(q-1)/(n(n-1))\leq(q/n)^2$, and therefore
+%\[
+%\expect[Y_jY_{j'}]
+%=
+%\Pr[Y_j=Y_{j'}=1]
+%\leq
+%(q/n)^{2(\pnum-1)}
+%=
+%\expect[Y_j]\expect[Y_{j'}].
+%\]
+%Thus the covariance terms are non-positive. Expanding the variance,
+%\[
+%\begin{aligned}
+%\var[Y]
+%&=
+%\sum_{j=1}^q\var[Y_j]
+%+
+%2\sum_{1\leq j<j'\leq q}
+%\left(\expect[Y_jY_{j'}]-\expect[Y_j]\expect[Y_{j'}]\right) \\
+%&\leq
+%\sum_{j=1}^q\var[Y_j]
+%\leq
+%\sum_{j=1}^q\expect[Y_j]
+%=
+%2\lambda.
+%\end{aligned}
+%\]
+%By Chebyshev's inequality,
+%\[
+%\Pr[Y<\lambda]
+%\leq
+%\Pr[|Y-\expect[Y]|\geq\lambda]
+%\leq
+%\var[Y]/\lambda^2
+%\leq
+%2/\lambda.
+%\]
+%Therefore, the protocol aborts with probability at most $2/\lambda$.
+%\heading{Correctness.} To prove correctness, it is sufficient to prove that the probability that the protocol aborts is at most $2/\lambda$.
+%
+%Let $\set_i=\{h_i(j):j\in[q]\}$ for $i\in[\pnum]$, $Y_j=\begin{cases}
+%1 \ \mbox{if}\ h_\pnum(j)\in \set_1\cap\cdots\cap\set_{\pnum-1} \\0\ \mbox{otherwise}
+%\end{cases}$
+%for all $j\in[q]$,
+%and $Y=\sum_{j=1}^qY_j$.
+%Since $h_\pnum\getsr\mathcal H_n$ is injective on the $q$ queried points, the values $h_\pnum(1),\ldots,h_\pnum(q)$ are distinct. Hence, $Y$ is exactly the number of distinct common indices in $\set_1\cap\cdots\cap\set_\pnum$.
+%
+%For each fixed $a\in GF(n)$ and every $i\in[\pnum-1]$, we have
+%$
+%\Pr[a\in\set_i]=q/n.
+%$
+%Moreover, the sets $\set_1,\ldots,\set_{\pnum-1}$ are generated independently, and $h_\pnum(j)$ is uniform over $GF(n)$ and independent of them. Thus, for every $j\in[q]$, we have
+%$
+%\expect[Y_j]=(q/n)^{\pnum-1}
+%$,
+%i.e.,
+%$
+%\expect[Y]=q(q/n)^{\pnum-1}=2\lambda.
+%$
+%
+%For all $j\ne j'$, $(h_\pnum(j),h_\pnum(j'))$ is uniformly distributed over ordered pairs of distinct field elements and is independent of $\set_1,\ldots,\set_{\pnum-1}$. Hence, we have
+%\[
+%\Pr[Y_j=Y_{j'}=1]
+%=
+%\sum_{\substack{a,b\in GF(n)\\a\ne b}}
+%\Pr[h_\pnum(j)=a,h_\pnum(j')=b]\,
+%\Pr[a,b\in \set_1\cap\cdots\cap\set_{\pnum-1}].
+%\]
+%For all fixed distinct $a,b\in GF(n)$ and all $i\in[\pnum-1]$, since $h_i\getsr\mathcal H_n$ is injective and uniform on ordered pairs of distinct outputs, we have
+%\[
+%\Pr[a,b\in\set_i]=q(q-1)/(n(n-1)).
+%\]
+%Moreover, since the sets $\set_1,\ldots,\set_{\pnum-1}$ are generated independently, we have
+%\[
+%\Pr[a,b\in \set_1\cap\cdots\cap\set_{\pnum-1}]
+%=
+%\left(q(q-1)/(n(n-1))\right)^{\pnum-1}.
+%\]
+%Therefore,
+%\[
+%\Pr[Y_j=Y_{j'}=1]
+%=
+%\left(q(q-1)/(n(n-1))\right)^{\pnum-1}.
+%\]
+%Since $q\leq n$,
+%\[
+%q(q-1)/(n(n-1))
+%\leq
+%(q/n)^2,
+%\]
+%and hence
+%\[
+%\Pr[Y_j=Y_{j'}=1]
+%\leq
+%(q/n)^{2(\pnum-1)}
+%=
+%\expect[Y_j]\expect[Y_{j'}].
+%\]
+%Since $Y_j$ and $Y_{j'}$ are indicators, $\expect[Y_jY_{j'}]=\Pr[Y_j=Y_{j'}=1]$. Hence the last inequality is equivalent to
+%\[
+%\expect[Y_jY_{j'}]\leq \expect[Y_j]\expect[Y_{j'}],
+%\]
+%which is the sense in which the $Y_j$'s are pairwise negatively correlated. Therefore, by expanding the variance directly, we have
+%\[
+%\var[Y]
+%=
+%\sum_{j=1}^q\var[Y_j]
+%+
+%2\sum_{1\leq j<j'\leq q}
+%\left(\expect[Y_jY_{j'}]-\expect[Y_j]\expect[Y_{j'}]\right)
+%\leq
+%\sum_{j=1}^q\var[Y_j]
+%\leq
+%\sum_{j=1}^q\expect[Y_j]
+%=
+%\expect[Y]
+%=
+%2\lambda.
+%\]
+%Then by Chebyshev's inequality,
+%\[
+%\Pr[Y<\lambda]
+%\leq
+%\Pr[|Y-\expect[Y]|\geq \lambda]
+%\leq
+%\var[Y]/\lambda^2
+%\leq
+%2/\lambda.
+%\]
+%Therefore, the protocol aborts with probability at most $2/\lambda$.
+
+%\heading{$(m,\epsilon_1+\epsilon_2),\amem)$-security.}
+\heading{Security.}
+Let $f:\bin^n\rightarrow\bin^\amem$ be any storage function applied by the adversary. Let $(h_i,g_i)_{i\in[\pnum]}$ be the honestly generated public keys.
+ %Let $\{ h_1(j)\}_{j\in\Z_q},\cdots,\{ h_\pnum(j)\}_{j\in\Z_q}$ be sequences of approximate pairwise independent random variables generated as $t_i^j=h_i(j)$ where $h_i\getsr \mathcal H_n$ for all $i\in[\pnum]$ and all $j\in\Z_q$.
+%Let $\{ h_\pnum(j)\}_{j\in\Z_q}$ be a sequence of $\kk$-approximate pairwise independent random variables with size $\nn$. 
+Let $\vec u=(u_i)_{i\in[q]}$ be the sequence such that $u_i= h_\pnum(i)$ if there are indices $i_1,\cdots,i_{\pnum-1}$ satisfying
+$ h_1(i_1)=\cdots= h_{\pnum-1}(i_{\pnum-1})= h_\pnum(i)$ and $ u_i=\bot$ otherwise, and let $\mathcal S$ be the set of all indices of $u_i$ restricted to $u_i\neq \bot$, i.e., $\vec s=\vec u_{\mathcal S}$ be the sequence $\vec u$ restricted to $u_i\neq \bot$.
+We have the following lemma.
+
+\begin{lemma}
+\label{lem:pairwise}
+$\vec s$ is approximately pairwise independent. %\footnote{Recall that as mentioned in \cref{sec:bsmke-con}, we say that $\vec s$ is generated by $\mathcal H_n$ if it is generated as $s_i=h(x_i)$ for all $i\in[n]$ and some distinct $x_1,\cdots,x_n\in GF(2^n)$, where $h\getsr\mathcal H_n$.}
+%Then the sequence $(s_i)_{i\in[q]}$ restricted to those positions different from $\bot$ is pairwise independent.
+\end{lemma}
+
+\begin{proof}
+%Let $ t_i^j=h_i(j)$ for all $i\in[\pnum]$ and $j\in\Z_q$ and $( u_j)_{j\in\Z_q}$ be the sequence such that $ u_j= h_1(j)$ if there exist indices $j_2,\cdots,j_{\pnum}$ satisfying
+%$\msb_\kk( h_1(j))=\msb_\kk( t_i^{j_2})=\cdots=\msb_\kk( t_\pnum^{j_\pnum})$ and $ u_i=\bot$ otherwise.
+Let $\hx_1,\hx_2$ be any distinct elements in $GF(n)$.
+%To prove this lemma, it is sufficient to show that 
+%the sequence $( u_i)_{i\in[q]}$ restricted to $ u_i\neq\bot$ is $\kk$-approximately pairwise independent, i.e. $( u_i)_{i\in[q]}$ satisfies
+%$
+%\Pr[ u_i=\hx_1\land  u_j=\hx_2| u_i\neq \bot\land  u_j\neq\bot]=\frac{1}{k(k-1)}
+%$
+%for all $i,j\in\Z_q$. 
+Due to approximately pairwise independence, we have 
+$
+\Pr[ h_\pnum(i)=\hx_1\land  h_\pnum(j)=\hx_2]=\frac{1}{n(n-1)}
+$
+for all $i,j\in[q]$,
+and
+$
+\Pr[\exists i_l,j_l: h_l(i_l)=\hx_1\land h_l(j_l)=\hx_2]=\frac{q(q-1)}{n(n-1)}
+$
+for all $l\in[\pnum-1]$.
+Hence, for any $i,j\in\Z_q$, we have
+\[\begin{split}
+\Pr[ u_i=\hx_1\land  u_j=\hx_2]
+=&\Pr[\exists (i_l,j_l)_{l\in[\pnum-1]}: 
+ h_1(i_1)=\cdots= h_{\pnum-1}(i_{\pnum-1})=\hx_1= h_\pnum(i)\land\\
+ &\tab h_1(j_1)=\cdots= h_{\pnum-1}(j_{\pnum-1})=\hx_2= h_\pnum(j)]\\
+=&\Pr[ h_\pnum(i)=\hx_1\land  h_\pnum(j)=\hx_2]\cdot\prod_{l=1}^{\pnum-1}\Pr[\exists i_l,j_l: h_l(i_l)=\hx_1\land  h_l(j_l)=\hx_2]\\
+%=\Pr[&t_1^i=x_1\land h_1(j)=x_2]\cdot\Pr[\exists i_2,\cdots,i_\pnum,j_2,\cdots,j_\pnum: \\&
+%\msb_\kk(t_2^{i_2})=\cdots=\msb_\kk(t_\pnum^{i_\pnum})=\msb_\kk(x_1)\land\\
+%&\msb_\kk(t_2^{j_2})=\cdots=\msb_\kk(t_\pnum^{j_\pnum})=\msb_\kk(x_2)]\\
+=&\frac{1}{n(n-1)}\cdot \Big(\frac{q(q-1)}{n(n-1)}\Big)^{\pnum-1},
+\end{split}\]
+and
+\[\begin{split}
+\Pr[ u_i\neq\bot\land  u_j\neq \bot]
+=&\Pr[\exists (i_l,j_l)_{l\in[\pnum-1]}: h_1(i_1)=\cdots= h_{\pnum-1}(i_{\pnum-1})= h_\pnum(i)\land\\
+&\tab  h_1(j_1)=\cdots= h_{\pnum-1}(j_{\pnum-1})= h_\pnum(j)]
+\\
+=&\prod_{l=1}^\pnum\Pr[\exists i_l,j_l: h_l(i_l)=h_\pnum(i)\land  h_l(j_l)= h_\pnum(j)]
+=\Big(\frac{q(q-1)}{n(n-1)}\Big)^{\pnum-1},
+\end{split}\]
+i.e.,
+$$
+ \Pr[ u_i=x_1\land  u_j=x_2| u_i\neq \bot\land  u_j\neq\bot]=\frac{\Pr[ u_i=\hx_1\land  u_j=\hx_2]}{\Pr[ u_i\neq\bot\land  u_j\neq \bot]}=\frac{1}{n(n-1)}.
+$$
+This completes the proof of \cref{lem:pairwise}.
+%Hence, the distribution of $(u_i,u_j)$ is identical to that of $(h_\pnum(i),h_\pnum(j))$, conditioned on neither of them being $\bot$.
+%Moreover, for each $l\in\set\backslash\{i,j\}$ we have $u_l=h_\pnum(l)$ where $h_\pnum$ can be determined by $u_i$ and $u_j$. Hence, the distribution of $(u_i)_{i\in\set}$ is identical to that of $(h_\pnum(i))_{i\in\set}$
+\end{proof}
+
+By the correctness analysis above, we have
+$\Pr[\mathsf{Good}]\geq 1-2/\lambda$. On $\mathsf{Good}$, let
+$\vec{s}_{\lambda}$ denote the first $\lambda$ entries of $\vec s$. By
+\cref{lem:pairwise} and \cref{thm:cm}, there exists an
+event $\event_0$ such that
+\[
+\Pr[\event_0\mid\mathsf{Good}]\geq 1-\epsilon_1-\epsilon_2
+\
+\mbox{and}
+\
+I(\key;g_\pnum,\vec z,\vec{s}_{\lambda}\mid\event_0,\mathsf{Good})
+\leq \theta,
+\]
+where $\urs\getsr\bin^n$, $\vec z=f(\urs)$, and
+$\key=g_\pnum(\urs_{\vec{s}_{\lambda}})$.
+Let $\event=\event_0\cap\mathsf{Good}$. Then we have
+\[
+\Pr[\event]\geq 1-\epsilon_1-\epsilon_2-2/\lambda.
+\]
+The event $\event_0$ is chosen using only $(\urs,g_\pnum,\vec z,\vec{s}_\lambda)$ and not the remaining public-key components. Since $\vec{s}_{\lambda}$ is determined by $(h_i)_{i\in[\pnum]}$ and $\key=g_\pnum(\urs_{\vec{s}_{\lambda}})$, those remaining components give no additional information about $\key$ once $(g_\pnum,\vec z,\vec{s}_{\lambda},\event)$ is fixed. Hence
+\[
+I(\key;(\vec z,(\pk_i)_{i\in[\pnum]})\mid\event)
+=
+I(\key;g_\pnum,\vec z,\vec{s}_{\lambda}\mid\event)
+\leq
+\theta.
+\]
+Thus, $\bsmke$ satisfies $(\amem,\epsilon_1+\epsilon_2+2/\lambda,\theta)$-security in the BSM.
+
+Putting all the above together, \cref{thm:bsmke} follows.
+%\heading{Security.}
+%Let $f:\bin^n\rightarrow\bin^\amem$ be any storage function applied by the adversary. Let $(h_i,g_i)_{i\in[\pnum]}$ be the honestly generated public keys.
+% %Let $\{ h_1(j)\}_{j\in\Z_q},\cdots,\{ h_\pnum(j)\}_{j\in\Z_q}$ be sequences of approximate pairwise independent random variables generated as $t_i^j=h_i(j)$ where $h_i\getsr \mathcal H_n$ for all $i\in[\pnum]$ and all $j\in\Z_q$.
+%%Let $\{ h_\pnum(j)\}_{j\in\Z_q}$ be a sequence of $\kk$-approximate pairwise independent random variables with size $\nn$.
+%Let $\vec u=(u_i)_{i\in[q]}$ be the sequence such that $u_i= h_\pnum(i)$ if there are indices $i_1,\cdots,i_{\pnum-1}$ satisfying
+%$ h_1(i_1)=\cdots= h_{\pnum-1}(i_{\pnum-1})= h_\pnum(i)$ and $ u_i=\bot$ otherwise, and let $\mathcal S$ be the set of indices $i$ such that $u_i\neq \bot$, i.e., $\vec s=\vec u_{\mathcal S}$ be the sequence $\vec u$ restricted to $u_i\neq \bot$.
+%We have the following lemma.
+%%We refer the reader to \cref{sec:pairwise} for the proof of \cref{lem:pairwise}.
+%\begin{lemma}
+%\label{lem:pairwise}
+%$\vec s$ is generated by $\mathcal H_n$. %\footnote{Recall that as mentioned in \cref{sec:bsmke-con}, we say that $\vec s$ is generated by $\mathcal H_n$ if it is generated as $s_i=h(x_i)$ for all $i\in[n]$ and some distinct $x_1,\cdots,x_n\in GF(2^n)$, where $h\getsr\mathcal H_n$.}
+%%Then the sequence $(s_i)_{i\in[q]}$ restricted to those positions different from $\bot$ is pairwise independent.
+%\end{lemma}
+%\input{bsmnike-appendix.tex}
+%%\subsection{The Proof of \cref{lem:pairwise}}
+%%\section{The Proof of \cref{lem:pairwise}}
+%%\label{sec:pairwise}
+%
+%Let $\mathsf{Good}$ denote the non-abort event, i.e., $|\vec s|\geq \lambda$.
+%By the correctness analysis above, $\Pr[\mathsf{Good}]\geq 1-2/\lambda$.
+%Conditioned on $\mathsf{Good}$, $\vec{s}_{\lambda}$ is well-defined.
+%Combining \cref{lem:pairwise} with \cref{thm:cm}, there exists an event $\event_0$ such that
+%$\Pr[\event_0\mid\mathsf{Good}]\geq 1-\epsilon_1-\epsilon_2$ and
+%\[
+%I(\key;g_\pnum,\vec z,\vec{s}_{\lambda}\mid\event_0,\mathsf{Good})
+%\leq \theta,
+%\]
+%where $\urs \getsr\bin^n$, $\vec z=f(\urs)$, $\vec{s}_{\lambda}$ denotes the first $\lambda$ entries of $\vec s$, and $\key=g_\pnum(\urs_{\vec{s}_{\lambda}})$.
+%Let $\event=\event_0\cap\mathsf{Good}$. Then
+%\[
+%\Pr[\event]\geq 1-\epsilon_1-\epsilon_2-2/\lambda.
+%\]
+%%for any $\widehat{\vec s}\in\mathcal S^*$.
+%%The first equation is due to the fact that $\vec s=\widehat{\vec s}$ implies $\event_a$.
+%%Since $\Pr[\event_a]=(1-\frac{1}{n})^\pnum$, we have
+%%$$\Pr[\event_1\land\event_a]=\Pr[\event_1|\event_a]\Pr[\event_a]= (1-\epsilon_1-\epsilon_2-\frac{1}{2^k})(1-\frac{1}{n})^\pnum\geq 1-\epsilon_1-\epsilon_2-\frac{\pnum+1}{n}.$$
+%The public keys determine $\vec{s}_{\lambda}$.
+%%$$H(\key|g,\vec z=\widehat{\vec z},\vec s=\widehat{\vec s}),\event)=H(\key|g,\vec z=\widehat{\vec z},\{h_i\}_{i\in[\pnum]}=\{\widehat h_i\}_{i\in[\pnum]},f=\widehat f,\event)$$
+%%for any $(\widehat h_i,\widehat f)_{i\in[\pnum]}\in\mathcal F^*$.
+%%which implies
+%%$$
+%%H(\key)-H(\key|g,\vec z=\widehat{\vec z},(h_i)_{i\in[\pnum]}=(\widehat h_i)_{i\in[\pnum]},f=\widehat f,\event)\leq \amem.
+%%$$
+%%Then one can easily see that we have
+%%$$
+%%H(\key)-H(\key|g,\vec z,(h_i)_{i\in[\pnum]},f,\event)\leq \amem.
+%%$$
+%Let $W$ denote all remaining public components other than $(g_\pnum,\vec{s}_{\lambda})$.
+%Conditioned on $(g_\pnum,\vec z,\vec{s}_{\lambda},\event)$, the variable $W$ is independent of $\urs_{\vec{s}_{\lambda}}$ and hence of $\key=g_\pnum(\urs_{\vec{s}_{\lambda}})$. Thus, by data processing, we have
+%%$$
+%%H(\key|\vec z,(\pk_i)_{i\in[\pnum]},\event)=H(\key|g_\pnum,\vec z,\vec s,\event),
+%%$$
+%\[\begin{split}
+% I(\key;(\vec z,(\pk_i)_{i\in[\pnum]})|\event)\leq I(\key;g_\pnum,\vec z,\vec{s}_{\lambda}|\event)\leq \theta.
+%%=&H(\key)-H(\key|g_\pnum,\vec z,(h_i,g_i)_{i\in[\pnum]},\event).
+%%=&H(\key)-\sum_{\widehat{\vec z}\in\mathcal Z^*,((\widehat h_i)_{i\in[\pnum]},f)\in\mathcal F^*}\Pr[\vec z=\widehat{\vec z},(h_i)_{i\in[\pnum]}=(\widehat h_i)_{i\in[\pnum]},f=\widehat f]\cdot \\
+%%    &H(\key|g,\vec z=\widehat{\vec z},(h_i)_{i\in[\pnum]}=(\widehat h_i)_{i\in[\pnum]},\event)\\
+%%=&\sum_{\widehat{\vec z}\in\mathcal Z^*,((\widehat h_i)_{i\in[\pnum]},f=\widehat f)\in\mathcal F^*}\Pr[\vec z=\widehat{\vec z},(h_i)_{i\in[\pnum]}=(\widehat h_i)_{i\in[\pnum]},f=\widehat f]\cdot \\
+%%     &(H(\key)-H(\key|g,\vec z=\widehat{\vec z},(h_i)_{i\in[\pnum]}=(\widehat h_i)_{i\in[\pnum]},f=\widehat f,\event))\\
+%     %=&H(\key)-H(\key|g,\vec z=\widehat{\vec z},(h_i)_{i\in[\pnum]}=(\widehat h_i)_{i\in[\pnum]},f=\widehat f,\event)\leq \amem,
+%\end{split}\]
+%Therefore, $\bsmke$ satisfies $(\amem,\epsilon_1+\epsilon_2+2/\lambda,\theta)$-security in the BSM.
+%%completing this part of proof.
+%
+%Putting all the above together, \cref{thm:bsmke} immediately follows.
+\end{proof}
+
+
+%Due to the page limit, we refer the reader to \cref{sec:bsmke-proof} for the proof of \cref{thm:bsmke}.
+%
+%%Before proving \cref{thm:bsmke}, we give the following lemma serving as the core lemma of our construction.
+%
+%
+%
+%
+%
+%
+%
+%%\subsection{Construction}
+%%In this section, we propose two constructions of fine-grained NIZ\pnum for circuit SAT. Both constructions run in $\aczerotwo$ and are secure against adversaries in $\aczero$.
+%
+%
+%%The first construction combines a fine-grained OR-proof (instantiated as in \cref{sec:ornizk}) and the DVV encryption \cite{C:DegVaiVas16} (in a non black-box way). It supports statement circuits in $\aczerotwo$ and can also support statement circuits in $\aczero$ if we allow the prover run in $\aczero$, i.e., its functionality is fully-fledged. The proof size is $l\cdot O(\lambda^2)$, where $l$ denotes the number of all wires in the statement circuit.
+%
+%%In this section, we propose a fine-grained NIZ\pnum for $\aczero$ circuit SAT running in $\aczero$ and secure against adversaries in $\aczero$.
+%
+%
+%%It supports statement circuits in $\aczerotwo$ and can also support statement circuits in $\aczero$ if we allow the prover run in $\aczero$, i.e., its functionality is fully-fledged. The proof size is $l\cdot O(\lambda^2)$, where $l$ denotes the number of all wires in the statement circuit.
+%
+%%The second construction is generically constructed from a new fine-grained sFHE scheme that we give later and fine-grained NIZ\pnums (instantiated as in \cref{sec:lnizk,sec:ornizk}). While it only support statements in $\aczerocm$ (even if we allow the prover run in $\aczero$), the proof size is independent with the witness size and only depend on the input size. Specifically, the size is $n\cdot O(\lambda^2)$ when the witness size is $n$.
+%
+% 
+%%\subsection{Fully-Fledged Construction}
+%%\subsection{The DVV Encryption} \label{sec:dvv}
+%%In this section, we give the definition of generalized affine MAC, which generalizes the notion of standard affine MAC \cite{C:Bla\pnumilPan14} by using predicate encodings, and show how to construct it in the fine-grained setting under the assumption $\assump$.
+%
+%
+%%\begin{lemma}
+%%For $b_0,b_1,b_2\in\bin$, $b_2=\lnot(b_0\land b_1)$ iff 
+%%$$0=1+b_0b_1-b_2$$
+%%or
+%%$$0=1+b_1+(b_0+1)b_1-b_2.$$
+%%\end{lemma}
+%
+%%Before giving our construction, we prove the following theorem, which is necessary to show that our NIZ\pnum can be executed in $\aczero$.
+%
+%%By slightly changing the construction of $\{\fz\}$, we immediately achieve another family of circuits $\{\fo\}$ outputting the index of the first $1$-bits of its input.
+%%\begin{figure}[h!]
+%%\begin{center}
+%%\framebox{
+%%\small
+%%  \begin{tabular}{l}
+%%    \begin{minipage}[t]{0.95\textwidth}
+%%    \underline{$\fo(b_1,…,b_n)$:}\\
+%% For each $i\in[n]$, we compute $\hx_i =  \vec i \cdot b_i$ in parallel. 
+%% 
+%% For each $i\in[n]$, we compute $\vec y_i = \hx_i \cdot (1-\OR_{1\leq k \leq (1-i), 1\leq j \leq \adv}  (x_{k,j})) $.
+%% 
+%%Compute $\vec y_{i^*}=\OR_{1\leq i \leq n} (y_{i,1}) || … || \OR_{1\leq i \leq n} (y_{i,\adv})$.
+%%
+%%    \end{minipage} 
+%%      \end{tabular}
+%%      }
+%%\end{center}
+%%\caption{Definition of $\fo$. By $\vec i\in\bin^\adv$ we denote the bit-string representing the index $i$, where we assume the bit-representation of $n$ has $\adv$ bits. By $y_{i,j}$ we denote the $j$-th bit of $\vec y_i$.}
+%%\label{fig:fz}
+%%\end{figure}
+%
+%%\heading{Construction of Our NIZ\pnum.}
+%%We now define the following languages
+%%\[\lang=\{  x:\exists \vec w \in \bin^{\lambda-1}, \text{ s.t. }  x= \matE \vec w \}\]
+%%%where $\matr M=\begin{pmatrix}\matE & \matr 0\\ \matr 0& \matE\end{pmatrix}$ for $\matE\in\ZeroSamp$.
+%%and
+%%\[\begin{split}\Lor_\lambda=\{ (\hx_i)_{i\in[\adv]}:&\exists \vec w \in \bin^{2\lambda}\ \text{ s.t. }\ \bigvee_{i\in[\adv]}\hx_i= \matr M' \vec w \
+%%\\  \mbox{or}\ & \exists \vec w \in \bin^{(\adv+1)\cdot\lambda}\ \text{ s.t. }\ \hx_{(\adv+1)}=\matr M_2\vec w \}\end{split}\]
+%%where 
+%%$$\matr M'=\begin{pmatrix}\matE &  \matr 0\\ \matr 0& \matE\end{pmatrix}\in\bin^{2\lambda\times2(\lambda-1)}$$
+%% and 
+%% $$\matr M_2=\begin{pmatrix}\matE & \matr 0 & \cdots& \matr 0\\
+%% \matr 0 & \ddots & \ddots& \vdots \\
+%% \vdots& \ddots& \ddots &\matr 0\\
+%%  \matr 0& \cdots & \matr 0 & \matE\end{pmatrix}\in\bin^{(\adv+1)\cdot\lambda\times(\adv+1)\cdot(\lambda-1)},$$
+%%i.e., $\matr M'$ and $\matr M_2$ contain $\matE$'s in the main diagonal and $\matr 0$ in the other positions. One can see that $\{\lang\}$ and $\{\Lor_\lambda\}$ are supported by our NIZ\pnum for linear languages in \cref{sec:lnizk} and our OR-proof given in \cref{sec:ornizk} respectively.
+%
+%
+%
+%%Let $\{\lang^\aczero\}$ be any family of languages such that for all $\x\in\lang^\aczero$, we can run $\relation_\lambda^\aczero(\x,\cdot)$ in $\aczero$, where $\relation_\lambda^\aczero(\x,\cdot)$ is the associated relation. 
+%%\footnote{We can assume that each $\relation^\aczero_\lambda(\x,\cdot)$ consists only of ${\AND}$ and $\OR$ gates, since by De Morgan Rules, we can move all $\NOT$ gates to just the inputs and the resulting circuit is still in $\aczero$. However, this may cause loss on efficiency.}
+%%Without loss of generality, we assume that all the $\AND$ and $\OR$ gates have fan-in of some polynomial $\adv=\adv(\lambda)$.
+%%Let $\LNIZ\pnum=\{\NIZ\pnumGen,\NIZ\pnumProve,\NIZ\pnumVer\}$ and $\ORNIZ\pnum=\{\ORGen,\ORProve,\allowbreak\ORVer\}$ be NIZ\pnums with simulators $\{\NIZ\pnumTGen,\NIZ\pnumSim\}$ and $\{\ORTGen,\allowbreak\ORSim\}$ for $\{\lang\}$ and $\{\Lor_\lambda\}$ respectively.
+%%%\[\Lor_{\matE}=\{ \hx_0,\hx_1:\exists \vec w \in \bin^{2t}, \text{ s.t. } \hx_0= \matr M \vec w \lor \hx_1=\matr M \vec w\}\]
+%%%where $\matr M=\begin{pmatrix}\matE & \matr 0\\ \matr 0& \matE\end{pmatrix}$ for $\matE\in\ZeroSamp$.
+%%We give our NIZ\pnum for $\{\lang^\aczero_\lambda\}$ and its simulator in \cref{fig:con-acnizk,fig:con-acnizk-sim} respectively.
+%
+%\begin{proof}
+%\heading{Complexity.}
+%%<<<<<<< HEAD
+%%First we note that each $\party_{i\in[\pnum-1]}$ (respectively, $\party_\pnum$) consumes $4\log k+q\cdot n/k$ (respectively, $2\log n+2\log k+q$) bits of memory to store bits in $\urs$ and at most two strongly 2-universal hash functions in $\mathcal H_n$ and one in $\mathcal H_{n/k}$ for comparison at any point in the protocol. %$\party_\pnum$ consumes $2\log n$ bits of memory to store $h_\pnum$ and $f$.
+%%Memory used for $g$ is not counted since all $h_i$ and $f$ can be deleted before generating or receiving $g$, and the users can use the freed memory for it.
+%%%The memory for storing the function in $\mathcal G_r$ is not counted since the users has deleted the function(s) in $\mathcal F_k$ from the memory at that time and can reuse the memory for storing the function in $\mathcal F_k$ to store the one in $\mathcal G_r$.
+%%%Specifically, each $\party_{i\in[\pnum-1]}$ stores at most $q\cdot \frac{n}{n}$ bits in $\urs$ and two functions in $\mathcal F_k$, where each function in $\mathcal H_n$can be represented by only $2\log k$. $\party_\pnum stores$ $q$ bits in $\urs$, two functions in $\mathcal F_k$ and $\mathcal F_{\frac{n}{n}}$ respectively.
+%%The communication between all parties only involves $(h_i)_{i\in[\pnum]}$, $f$, and $g$, which can be represented by $2\pnum\log k+2\log (n/k)+\log \lambda$ bits in total.
+%%%
+%%%%$q = \sqrt[\pnum]{\frac{2\lambda}{n}}\cdot k\cdot\frac{n}{n}=n \sqrt[\pnum]{\frac{2\lambda}{n}}$
+%%%
+%%%%Next we prove that the probability that $\party_i$ aborts for some $i\in[\pnum]$ is at most $\exp(-\lambda\delta^2/2)$.
+%%%
+%%%%Assuming that $h_i$ is generated as $h_i\getsr \mathcal H_u$ rather than $h_i\getsr \mathcal H$ for all $i\in[\pnum]$, and $\event_a$ be the event that $h_i\in\mathcal H$ for all $i\in[\pnum]$.  Then we have 
+%%%%$$\Pr[\event_a]\geq (1-\frac{1}{2^k})^{\pnum}=\gamma.$$
+%%%%Let $\set_i=(h_i(j))_{j\in\Z_q}$ for all $i\in[\pnum]$.
+%%=======
+%First we note that each $\party_{i\in[\pnum]}$ consumes $4\log n+\log\lambda+q$ bits of memory to store q bits in $\urs$, a strong universal hash function in $\mathcal G_{\lambda,r}$, and at most two strongly 2-universal hash functions in $\mathcal H_n$ for comparison at any point in the protocol. %$\party_\pnum$ consumes $2\log n$ bits of memory to store $h_\pnum$ and $f$.
+%%Memory used for $g$ is not counted since all $h_i$ and $f$ can be deleted before generating or receiving $g$, and the users can use the freed memory for it.
+%%The memory for storing the function in $\mathcal G_r$ is not counted since the users has deleted the function(s) in $\mathcal H_n$ from the memory at that time and can reuse the memory for storing the function in $\mathcal H_n$ to store the one in $\mathcal G_r$.
+%%Specifically, each $\party_{i\in[\pnum-1]}$ stores at most $q\cdot \frac{n}{n}$ bits in $\urs$ and two functions in $\mathcal H_n$, where each function in $\mathcal H_n$can be represented by only $2\log n$. $\party_\pnum stores$ $q$ bits in $\urs$, two functions in $\mathcal H_n$ and $\mathcal F_{\frac{n}{n}}$ respectively.
+%%The communication between all parties only involves $(h_i)_{i\in[\pnum]}$, $f$, and $g$, which can be represented by $2\pnum\log n+2\log (n/k)+\log \lambda$ bits in total.
+%
+%%$q = \sqrt[\pnum]{\frac{2\lambda}{n}}\cdot k\cdot\frac{n}{n}=n \sqrt[\pnum]{\frac{2\lambda}{n}}$
+%
+%%Next we prove that the probability that $\party_i$ aborts for some $i\in[\pnum]$ is at most $\exp(-\lambda\delta^2/2)$.
+%
+%%Assuming that $h_i$ is generated as $h_i\getsr \mathcal H_u$ rather than $h_i\getsr \mathcal H$ for all $i\in[\pnum]$, and $\event_a$ be the event that $h_i\in\mathcal H$ for all $i\in[\pnum]$.  Then we have 
+%%$$\Pr[\event_a]\geq (1-\frac{1}{2^k})^{\pnum}=\gamma.$$
+%%Let $\set_i=(h_i(j))_{j\in\Z_q}$ for all $i\in[\pnum]$.
+%%>>>>>>> 55f330a20141b67cc25a1c99843653429dfe56a9
+%\heading{Correctness.} To prove correctness, it is sufficient to prove that the probability that the protocol aborts is at most $\frac{2}{\lambda}$.
+%
+%Without loss of generality, we assume that $h_\pnum$ is randomly sampled from the strongly 2-universal hash function family $\mathcal F_n$ instead (see \cref{fig:con-hash}).
+%Defining the indictor $Y_i$ as
+%$Y_{i}=\begin{cases} 1 & x_i=h_\pnum(i)\in\cap_{l=1}^{\pnum-1}\set_l\\
+%0 & \text{otherwise}
+%\end{cases}$,
+%%Defining the indictor $Y_i$ as $Y_i=1$ if 
+%%$$x_i=h_\pnum(i)\in\cap_{l=1}^{\pnum-1}\set_l$$ and $Y_i=0$ otherwise,
+%we have
+%\[\begin{split}
+%\Pr[Y_i=1]=&\Pr[ x_i\in\cap_{l=1}^{\pnum-1}\set_l]
+%=\prod_{l=1}^{\pnum-1}\Pr[ x_i\in\set_l]=(\frac{q}{n})^{\pnum-1},
+%\end{split}\]
+%and for any $i\neq j$, we have
+%\[\begin{split}
+%&\Pr[Y_i=1\land Y_j=1]\\
+%=&\Pr[x_i,x_j\in \cap_{l=1}^{\pnum-1}\set_l]\\
+%=&\prod_{l=1}^{\pnum-1}\Pr[x_i,x_j\in \set_l]\ ( \because \mbox{independence of $\set_1,\cdots \set_{\pnum-1}$})\\
+%=&\prod_{l=1}^{\pnum-1}(\Pr[x_i\in\set_l]\cdot\Pr[x_j\in \set_l]) \ ( \because \mbox{pairwise independence of $x_i$ and $x_j$})\\
+%=&\Pr[x_i\in\cap_{l=1}^{\pnum-1}\set_l]\cdot\Pr[x_j\in \cap_{l=1}^{\pnum-1}\set_l]
+%=\Pr[Y_i=1]\cdot \Pr[Y_j=1],
+%\end{split}\]
+%i.e., $Y_i$ and $Y_j$ are pairwise independent.
+%
+%Moreover, we have
+%$$\expect[Y_i]=\Pr[Y_i=1]\cdot 1+\Pr[Y_i=0]\cdot 0=\Pr[Y_i=1]=(\frac{q}{n})^{\pnum-1},$$
+%$$\expect[Y_i^2]=\Pr[Y_i^2=1]\cdot 1+\Pr[Y_i^2=0]\cdot 0=\Pr[Y_i^2=1]=\expect[Y_i],$$
+%$$\var[Y_i]=\expect[Y_i^2]-\expect[Y_i]^2\geq\expect[Y_i]=(\frac{q}{n})^{\pnum-1}.$$
+%
+%%Hence the expected value of $|\sk_1|$ (which is equivalent to $|\sk_2|=\cdots=|\sk_\pnum|$) is
+%%$$
+%%\sum_{ x\in[n]}\Pr[\msb_\kk( x)\in\set_1\cap\set_2\cap\cdots\cap\set_\pnum]=n\cdot (\frac{q}{2^k})^\pnum=\lambda.
+%%$$
+%%Then the probability that $\party_i$ aborts for some $i$ is $\exp(-\lambda\delta^2/2)$ due to Chernoff bound.
+%
+%According to \cref{thm:cheb}, we have
+%\[\begin{split}
+%\Pr\Big[|Y_i\cdot q-\expect[Y_i]\cdot n|\geq \frac{\expect[Y_i]\cdot q}{2}\Big]\leq \frac{4}{q\expect[Y_i]},
+%\end{split}\]
+%$$
+%\mbox{i.e.,}\ \Pr\Big[Y_i\cdot q\leq \frac{\expect[Y_i]\cdot q}{2}=\lambda\Big]\leq \frac{4}{q\expect[Y_i]}=\frac{2}{\lambda}.
+%$$
+%
+%%i.e.,
+%%\[\begin{split}
+%%\Pr\Big[|Y_i\cdot n-2\lambda|\geq \lambda|\event_a\Big]\leq \frac{2}{\lambda\Pr[\event_a]}.
+%%\end{split}\]
+%%Then we have 
+%%\[\begin{split}
+%%\Pr\Big[Y_i\cdot n\geq \lambda|\event_a\Big]\leq \frac{2}{\lambda\cdot\gamma}.
+%%\end{split}\]
+%Since the number of indices shared by the parties when $h_\pnum\getsr\mathcal H_n$ must be more than that when $h_\pnum\getsr\mathcal F_n$, the probability the protocol aborts is at most $\frac{2}{\lambda}$, completing this part of proof.
+
+%\heading{$(m,\epsilon_1+\epsilon_2),\amem)$-security.}
+%Let $f:\bin^n\rightarrow\bin^\amem$ be any storage function applied by the adversary. %Let $\{ h_1(j)\}_{j\in\Z_q},\cdots,\{ h_\pnum(j)\}_{j\in\Z_q}$ be sequences of approximate pairwise independent random variables generated as $t_i^j=h_i(j)$ where $h_i\getsr \mathcal H_n$ for all $i\in[\pnum]$ and all $j\in\Z_q$.
+%%Let $\{ h_\pnum(j)\}_{j\in\Z_q}$ be a sequence of $\kk$-approximate pairwise independent random variables with size $\nn$. 
+%Let $\vec u=(u_i)_{i\in[q]}$ be the sequence such that $u_i= h_\pnum(i)$ if there are indices $i_1,\cdots,i_{\pnum-1}$ satisfying
+%$ h_1(i_1)=\cdots= h_{\pnum-1}(i_{\pnum-1})= h_\pnum(i)$ and $ u_i=\bot$ otherwise, and let $\vec s$ be the sequence $\vec u$ restricted to $u_i\neq \bot$.
+%We have the following lemma.
+%The proof of this lemma is given in \cref{sec:pairwise}
+%\begin{lemma}
+%\label{lem:pairwise}
+%$\vec s$ is generated by $\mathcal H_n$.
+%%Then the sequence $(s_i)_{i\in[q]}$ restricted to those positions different from $\bot$ is pairwise independent.
+%\end{lemma}
+
+%\begin{proof}
+%%Let $ t_i^j=h_i(j)$ for all $i\in[\pnum]$ and $j\in\Z_q$ and $( u_j)_{j\in\Z_q}$ be the sequence such that $ u_j= h_1(j)$ if there exist indices $j_2,\cdots,j_{\pnum}$ satisfying
+%%$\msb_\kk( h_1(j))=\msb_\kk( t_i^{j_2})=\cdots=\msb_\kk( t_\pnum^{j_\pnum})$ and $ u_i=\bot$ otherwise.
+%Let $\hx_1,\hx_2$ be any distinct elements in $GF(n)$.
+%%To prove this lemma, it is sufficient to show that 
+%%the sequence $( u_i)_{i\in[q]}$ restricted to $ u_i\neq\bot$ is $\kk$-approximately pairwise independent, i.e. $( u_i)_{i\in[q]}$ satisfies
+%%$
+%%\Pr[ u_i=\hx_1\land  u_j=\hx_2| u_i\neq \bot\land  u_j\neq\bot]=\frac{1}{k(k-1)}
+%%$
+%%for all $i,j\in\Z_q$. 
+%Due to approximately pairwise independence, we have 
+%$
+%\Pr[ h_\pnum(i)=\hx_1\land  h_\pnum(j)=\hx_2]=\frac{1}{n(n-1)}
+%$
+%for all $i,j\in[q]$,
+%and
+%$
+%\Pr[\exists i_l,j_l: h_l(i_l)=\hx_1\land h_l(j_l)=\hx_2]=\frac{q(q-1)}{n(n-1)}
+%$
+%for all $l\in[\pnum-1]$.
+%Hence, for any $i,j\in\Z_q$, we have
+%\[\begin{split}
+%&\Pr[ u_i=\hx_1\land  u_j=\hx_2]\\
+%=&\Pr[\exists (i_l,j_l)_{l\in[\pnum-1]}: 
+% h_1(i_1)=\cdots= h_{\pnum-1}(i_{\pnum-1})=\hx_1= h_\pnum(i)\land\\
+% &\tab h_1(j_1)=\cdots= h_{\pnum-1}(j_{\pnum-1})=\hx_2= h_\pnum(j)]\\
+%=&\Pr[ h_\pnum(i)=\hx_1\land  h_1(j)=x_2]\cdot\prod_{l=1}^\pnum\Pr[\exists i_l,j_l: h_l(i_1)=\hx_1\land  h_l(j_l)=\hx_2]\\
+%%=\Pr[&t_1^i=x_1\land h_1(j)=x_2]\cdot\Pr[\exists i_2,\cdots,i_\pnum,j_2,\cdots,j_\pnum: \\&
+%%\msb_\kk(t_2^{i_2})=\cdots=\msb_\kk(t_\pnum^{i_\pnum})=\msb_\kk(x_1)\land\\
+%%&\msb_\kk(t_2^{j_2})=\cdots=\msb_\kk(t_\pnum^{j_\pnum})=\msb_\kk(x_2)]\\
+%=&\frac{1}{n(n-1)}\cdot \Big(\frac{q(q-1)}{n(n-1)}\Big)^{\pnum-1},
+%\end{split}\]
+%\[\begin{split}
+%&\Pr[ u_i\neq\bot\land  u_j\neq \bot]
+%\\
+%=&\Pr[\exists (i_l,j_l)_{l\in[\pnum-1]}: h_1(i_1)=\cdots= h_{\pnum-1}(i_{\pnum-1})= h_\pnum(i)\land\\
+%&\tab  h_1(j_1)=\cdots= h_{\pnum-1}(j_{\pnum-1})= h_\pnum(j)]
+%\\
+%=&\prod_{l=1}^\pnum\Pr[\exists i_l,j_l: h_l(i_l)=h_\pnum(i)\land  h_l(j_l)= h_\pnum(j)]
+%=\Big(\frac{q(q-1)}{n(n-1)}\Big)^{\pnum-1},
+%\end{split}\]
+%
+%$$
+%\mbox{i.e.,} \Pr[ u_i=x_1\land  u_j=x_2| u_i\neq \bot\land  u_j\neq\bot]=\frac{\Pr[ u_i=\hx_1\land  u_j=\hx_2]}{\Pr[ u_i\neq\bot\land  u_j\neq \bot]}=\frac{1}{n(n-1)}.
+%$$
+%Hence, the distribution of $(u_i,u_j)$ is identical to that of $(h_\pnum(i),h_\pnum(j))$.
+%Moreover, for each $l\in\set\backslash\{i,j\}$ we have $u_l=h_\pnum(l)$ where $h_\pnum$ can be determined by $u_i$ and $u_j$. Hence, the distribution of $(u_i)_{i\in\set}$ is identical to that of $(h_\pnum(i))_{i\in\set}$, completing the proof of \cref{lem:pairwise}.
+%\end{proof}
+%We refer the reader to \cref{sec:pairwiselem} for the proof of \cref{lem:pairwise}.
+
+%\begin{proof}
+%%Let $ t_i^j=h_i(j)$ for all $i\in[\pnum]$ and $j\in\Z_q$ and $( u_j)_{j\in\Z_q}$ be the sequence such that $ u_j= h_1(j)$ if there exist indices $j_2,\cdots,j_{\pnum}$ satisfying
+%%$\msb_\kk( h_1(j))=\msb_\kk( t_i^{j_2})=\cdots=\msb_\kk( t_\pnum^{j_\pnum})$ and $ u_i=\bot$ otherwise.
+%Let $\hx_1,\hx_2$ be any distinct elements in $GF(n)$.
+%%To prove this lemma, it is sufficient to show that 
+%%the sequence $( u_i)_{i\in[q]}$ restricted to $ u_i\neq\bot$ is $\kk$-approximately pairwise independent, i.e. $( u_i)_{i\in[q]}$ satisfies
+%%$
+%%\Pr[ u_i=\hx_1\land  u_j=\hx_2| u_i\neq \bot\land  u_j\neq\bot]=\frac{1}{k(k-1)}
+%%$
+%%for all $i,j\in\Z_q$. 
+%Due to approximately pairwise independence, we have 
+%$
+%\Pr[ h_\pnum(i)=\hx_1\land  h_\pnum(j)=\hx_2]=\frac{1}{n(n-1)}
+%$
+%for all $i,j\in[q]$,
+%and
+%$
+%\Pr[\exists i_l,j_l: h_l(i_l)=\hx_1\land h_l(j_l)=\hx_2]=\frac{q(q-1)}{n(n-1)}
+%$
+%for all $l\in[\pnum-1]$.
+%Hence, for any $i,j\in\Z_q$, we have
+%\[\begin{split}
+%&\Pr[ u_i=\hx_1\land  u_j=\hx_2]\\
+%=&\Pr[\exists (i_l,j_l)_{l\in[\pnum-1]}: 
+% h_1(i_1)=\cdots= h_{\pnum-1}(i_{\pnum-1})=\hx_1= h_\pnum(i)\land\\
+% &\tab h_1(j_1)=\cdots= h_{\pnum-1}(j_{\pnum-1})=\hx_2= h_\pnum(j)]\\
+%=&\Pr[ h_\pnum(i)=\hx_1\land  h_1(j)=x_2]\cdot\prod_{l=1}^\pnum\Pr[\exists i_l,j_l: h_l(i_1)=\hx_1\land  h_l(j_l)=\hx_2]\\
+%%=\Pr[&t_1^i=x_1\land h_1(j)=x_2]\cdot\Pr[\exists i_2,\cdots,i_\pnum,j_2,\cdots,j_\pnum: \\&
+%%\msb_\kk(t_2^{i_2})=\cdots=\msb_\kk(t_\pnum^{i_\pnum})=\msb_\kk(x_1)\land\\
+%%&\msb_\kk(t_2^{j_2})=\cdots=\msb_\kk(t_\pnum^{j_\pnum})=\msb_\kk(x_2)]\\
+%=&\frac{1}{n(n-1)}\cdot \Big(\frac{q(q-1)}{n(n-1)}\Big)^{\pnum-1},
+%\end{split}\]
+%\[\begin{split}
+%&\Pr[ u_i\neq\bot\land  u_j\neq \bot]
+%\\
+%=&\Pr[\exists (i_l,j_l)_{l\in[\pnum-1]}: h_1(i_1)=\cdots= h_{\pnum-1}(i_{\pnum-1})= h_\pnum(i)\land\\
+%&\tab  h_1(j_1)=\cdots= h_{\pnum-1}(j_{\pnum-1})= h_\pnum(j)]
+%\\
+%=&\prod_{l=1}^\pnum\Pr[\exists i_l,j_l: h_l(i_l)=h_\pnum(i)\land  h_l(j_l)= h_\pnum(j)]
+%=\Big(\frac{q(q-1)}{n(n-1)}\Big)^{\pnum-1},
+%\end{split}\]
+%
+%$$
+%\mbox{i.e.,} \Pr[ u_i=x_1\land  u_j=x_2| u_i\neq \bot\land  u_j\neq\bot]=\frac{\Pr[ u_i=\hx_1\land  u_j=\hx_2]}{\Pr[ u_i\neq\bot\land  u_j\neq \bot]}=\frac{1}{n(n-1)}.
+%$$
+%Hence, the distribution of $(u_i,u_j)$ is identical to that of $(h_\pnum(i),h_\pnum(j))$.
+%Moreover, for each $l\in\set\backslash\{i,j\}$ we have $u_l=h_\pnum(l)$ where $h_\pnum$ can be determined by $u_i$ and $u_j$. Hence, the distribution of $(u_i)_{i\in\set}$ is identical to that of $(h_\pnum(i))_{i\in\set}$, completing the proof of \cref{lem:pairwise}.
+%\end{proof}
+
+%Due to \cref{lem:pairwise}, one can see that the distribution of $\set_1\cap\cdots \cap\set_\pnum$ is identical to that of $\{h_\pnum(i))\}_{i\in\set}$.
+%Let $\mathcal S^*$, $\mathcal Z^*$, and $\mathcal F^*$ be the sets of all possible values of $\vec s$, $\vec z=\A(\urs)$, and $(\{h_i\}_{i\in[\pnum]},f)$ respectively conditioned on that $\event_a$ occurs.
+%Combining the above lemma with \cref{thm:cm}, there exists an event $\event$ such that
+%$\Pr[\event]\geq 1-\epsilon_1-\epsilon_2$ and
+%\[\begin{split}
+%I(\key;g_\pnum|\vec z,\vec s,\event))
+%%&=I(\key;g|\vec z=\widehat{\vec z},\vec s=\widehat{\vec s},\event))\\
+%=H(\key)-H(\key|g_\pnum,\vec z,\vec s,\event)\leq \theta
+%\end{split}\]
+%where $\vec z=f(\urs)$.
+%%for any $\widehat{\vec s}\in\mathcal S^*$. 
+%%The first equation is due to the fact that $\vec s=\widehat{\vec s}$ implies $\event_a$.
+%%Since $\Pr[\event_a]=(1-\frac{1}{n})^\pnum$, we have
+%%$$\Pr[\event_1\land\event_a]=\Pr[\event_1|\event_a]\Pr[\event_a]= (1-\epsilon_1-\epsilon_2-\frac{1}{2^k})(1-\frac{1}{n})^\pnum\geq 1-\epsilon_1-\epsilon_2-\frac{\pnum+1}{n}.$$
+%Moreover, since $\vec s$ is determined by $\{h_i\}_{i\in[\pnum]}$ and
+%%$$H(\key|g,\vec z=\widehat{\vec z},\vec s=\widehat{\vec s}),\event)=H(\key|g,\vec z=\widehat{\vec z},\{h_i\}_{i\in[\pnum]}=\{\widehat h_i\}_{i\in[\pnum]},f=\widehat f,\event)$$
+%%for any $(\widehat h_i,\widehat f)_{i\in[\pnum]}\in\mathcal F^*$.
+%%which implies 
+%%$$
+%%H(\key)-H(\key|g,\vec z=\widehat{\vec z},(h_i)_{i\in[\pnum]}=(\widehat h_i)_{i\in[\pnum]},f=\widehat f,\event)\leq \amem.
+%%$$
+%%Then one can easily see that we have
+%%$$
+%%H(\key)-H(\key|g,\vec z,(h_i)_{i\in[\pnum]},f,\event)\leq \amem.
+%%$$
+%the public keys $(\pk_i)_{i\in[\pnum]}$ between all parties only contain $\{h_i,g_i\}_{i\in[\pnum]}$, we have 
+%\[\begin{split}
+%I(\key;(\vec z,(\pk_i)_{i\in[\pnum]},\event)
+%=&H(\key)-H(\key|g_\pnum,\vec z,(h_i,g_i)_{i\in[\pnum]},\event)\leq \theta.
+%%=&H(\key)-\sum_{\widehat{\vec z}\in\mathcal Z^*,((\widehat h_i)_{i\in[\pnum]},f)\in\mathcal F^*}\Pr[\vec z=\widehat{\vec z},(h_i)_{i\in[\pnum]}=(\widehat h_i)_{i\in[\pnum]},f=\widehat f]\cdot \\
+%%    &H(\key|g,\vec z=\widehat{\vec z},(h_i)_{i\in[\pnum]}=(\widehat h_i)_{i\in[\pnum]},\event)\\
+%%=&\sum_{\widehat{\vec z}\in\mathcal Z^*,((\widehat h_i)_{i\in[\pnum]},f=\widehat f)\in\mathcal F^*}\Pr[\vec z=\widehat{\vec z},(h_i)_{i\in[\pnum]}=(\widehat h_i)_{i\in[\pnum]},f=\widehat f]\cdot \\
+%%     &(H(\key)-H(\key|g,\vec z=\widehat{\vec z},(h_i)_{i\in[\pnum]}=(\widehat h_i)_{i\in[\pnum]},f=\widehat f,\event))\\
+%     %=&H(\key)-H(\key|g,\vec z=\widehat{\vec z},(h_i)_{i\in[\pnum]}=(\widehat h_i)_{i\in[\pnum]},f=\widehat f,\event)\leq \amem,
+%\end{split}\]
+%%completing this part of proof.
+%
+%Putting all the above together, \cref{thm:bsmke} immediately follows.
+%\end{proof}
+%\heading{The special case where $k=n$.} Although we require that $q\leq\min\{k,n/k\}$, one can easily see that our proof also holds if set $k=n$ and require that $q\leq n$ instead. In this case, the strongly 2-universal hash function family we use is exactly the one in \cref{fig:con-hash}.
+
+\heading{Example with asymptotic complexity.} Let $n=\lambda^{\pnum+1}$, $\amem=\lambda^{\pnum+1}/2$, $\epsilon_1=1/\lambda^\pnum$, $\epsilon_2=1/\sqrt{\lambda}$, and $\theta = \negl(\lambda)$. We have $r=O(\lambda)$. In this case, each $\party_{i\in[\pnum]}$ consumes about
+$q=n\sqrt[\pnum]{2\lambda/n}=O(\lambda^\pnum)$
+%$$q\cdot \frac{n}{n} = \sqrt[\pnum]{\frac{2\lambda}{n}}\cdot k\cdot\frac{n}{n}=n \sqrt[\pnum]{\frac{2\lambda}{n}}=O(\lambda^{4-\frac{1}{\pnum}})$$ bits of memory and $\party_\pnum$ consumes 
+%$q=k\sqrt[\pnum]{\frac{2\lambda}{n}}=O(\lambda^{2-\frac{1}{\pnum}})$
+bits of memory and the communication cost, i.e., the total size of the public keys, is $O(\lambda)$.
+%If we set $k=n$ (i.e., all $h_i$ are sampled from $\mathcal F_n$) instead, then $\party_{i\in[\pnum]}$ consumes
+%$q=n\sqrt[\pnum]{\frac{2\lambda}{n}}=O(\lambda^{4-\frac{3}{\pnum}})$
+%bits of memory.
+
+\heading{Concrete example.}
+We now give a concrete example of the system based on the data given in \cite{C:CacMau97}.
+Assume that all users have access to a $40$ Gbit/s broadcast channel used for $2\times 10^5$ seconds (about two days), we have $n = 8.6 \times 10^{15}$. Let $\amem=4.5 \times 10^{15}$. With $\theta = 10^{-20}$ and error probabilities $\epsilon_1=10^{-20}$ and $\epsilon_2=10^{-3}$, the parameters are $\delta = 0.476$, $\rho = 0.077$, $\lambda = 1.3 \times 10^7$, and $r = 5.0 \times 10^5$. Except with probability about $10^{-3}$, Eve knows less than $10^{-20}$ bits about the $61$ KByte session key.
+%In order to share $\lambda$ bits,
+To obtain this $r$-bit session key in a $3$-party protocol, each party consumes about $1.2\times 10^{13}$ bits of memory, and the communication consists of about $3.9\times 10^7$ bits in total. %In a $5$-party protocol, each party consumes about $1.7\times 10^{14}$ bits of memory in total.
+%The public communication between all parties consists of about $235.3$ bits in total. 
+%Setting $k=2.08\times 10^8$, to share $\lambda$ bits in a $3$-party protocol, $\party_1$ and $\party_2$ consumes about $4.3 \times 10^{15}$ bits of memory, while $\party_3$ only consumes $1.04\times 10^8$ bits of memory. The public communication between all parties consists of about $235.3$ bits in total. 
+%If we set $k=n$, all parties consumes about $1.2\times 10^{13}$ bits of memory, and the public communication consists of about $336.4$ bits in total.
+
+%\heading{Trade-off in the $2$-party setting.}
+%The key exchange system in \cite{C:CacMau97} can be treated as a special case where we set $k=n$. In this case, to share a session key with the length $r = 5.0 \times 10^5$, each party consumes $3.3\times10^{11}$ as in \cite{C:CacMau97} and the total communication consists of $230.6$ bits. Our work demonstrates the trade-off that, e.g., if we set $k=1.04\times 10^8$, then one party consumes $4.3\times 10^{15}$ bits of memory, while another consumes only $5.2\times 10^7$ bits of memory, and the total communication consists of $178$ bits.
+
+
+ 
+%Since $\lambda=\frac{n}{2}\cdot (\frac{q}{n})^\pnum$,
+%in order to have $\lambda$ common indices, each $\party_{i\in[\pnum-1]}$ must store $n \sqrt[\pnum]{\frac{2\lambda}{n}}$
+%%$$q\cdot \frac{n}{n} = \sqrt[\pnum]{\frac{2\lambda}{n}}\cdot k\cdot\frac{n}{n}=n \sqrt[\pnum]{\frac{2\lambda}{n}}$$
+% bits in $\urs$ and $\party_\pnum$ must store $q=k\sqrt[\pnum]{\frac{2\lambda}{n}}$ bits in $\urs$. 
+%In \cref{fig:comparison-mem}, we present the memory consumed by each party regarding different values of $k$ and different number of parties.
+%Notice that the special case with $k=n$ and $\pnum=2$ is exactly the 2-party key agreement for public discussion.
+%
+%\begin{table}[htb]
+%	\setlength\tabcolsep{0.3eM}
+%	\begin{center}
+%		\begin{minipage}[c]{\textwidth} \scriptsize
+%			\begin{center}
+%				\begin{tabular}{|l|l|l|l|l|l|}\hline
+%					\multicolumn{1}{|l|}{} & \multicolumn{1}{c|}{$\pnum=2$} & \multicolumn{1}{c|}{$\pnum=3$} &\multicolumn{1}{c|}{$\pnum=5$} & \multicolumn{1}{c|}{$\pnum=10$} & \multicolumn{1}{c|}{$\pnum=100$}   \\
+%					\hline
+%					$k=2.6\times 10^{7}$ & $(8.6\times 10^{15},2.6\times 10^7)$ & $(8.6\times 10^{15},2.6\times 10^7)$ & $(8.6\times 10^{15},2.6\times 10^7)$& $(8.6\times 10^{15},2.6\times 10^7)$& $(8.6\times 10^{15},2.6\times 10^7)$   \\
+%					$k=2.6\times 10^{11}$ & $(8.6\times 10^{13},2.6\times 10^9)$ & $(4.0\times 10^{14},1.2\times 10^{10})$ & $(1.4\times 10^{15},4.1\times 10^{10})$ & $(3.6\times 10^{15},1.0\times 10^{11})$  & $(7.8\times 10^{15},2.4\times 10^{11})$   \\
+%					$k=8.6\times 10^{15}$ & $(4.7\times 10^{11},4.7\times 10^{11})$ & $(1.2\times 10^{13},1.2\times 10^{13})$ & $(1.7\times 10^{14},1.7\times 10^{14})$& $(1.2\times 10^{15},1.2\times 10^{15})$& $(7.1\times 10^{15},7.1\times 10^{15})$ \\
+%					\hline
+%				\end{tabular}
+%				\vspace{10pt}
+%				\caption{The amount of memory consumed by each party. $2\lambda\leq k\leq n$ and $\pnum$ denotes the number of parties. By $(x,y)$ we mean that each $\party_{i\in[\pnum-1]}$ consumes $x$ bits of memory and $\party_\pnum$ consumes $y$ bits of memory. Here we omit the amount of memory used to store the strongly 2-universal hash functions since it is quite small.
+%				}
+%				\label{fig:comparison-mem}
+%			\end{center}
+%		\end{minipage}
+%	\end{center}
+%%		\vspace*{-1cm}
+%\end{table}
+%
+%The public communication for the selected indices consists of $2(\pnum-1) \log n+\log n+\log r$ bits in total and .
+
+%remark on applications
+\heading{Extensions.} Similar to our constructions in previous sections, our construction in the BSM can also be converted into a BPRF and a multi-party IB-NIKE. We refer the reader to \cref{sec:ibnike} for the details.
+%We refer the reader to the full paper for the details.
+
+%Parts of Jiaxin Pan's work was supported by the Research Council of Norway under Project No. 324235.
+
+
+\input{impossibility}
+
+\subsection*{\bf Acknowledgements}
+Part of this work was supported by the National Natural Science Foundation of China under Grant Numbers 62472073 and 62272091.

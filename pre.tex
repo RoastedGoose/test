@@ -1,0 +1,428 @@
+
+\section{Preliminaries}
+\label{sec:pre}
+\heading{Notations.}
+In this paper, algorithms are modeled as \emph{functions} or \emph{(streaming) word-RAMs}. A function represents a circuit with a specified domain and range, and we measure its complexity by its depth (i.e., the parallel running time). A word-RAM has access to memory and registers, each holding one word. Its running time is measured in the number of basic operations (e.g., addition, subtraction, multiplication, bit-shifting, and memory access). A word-RAM is a streaming one if it receives inputs in a streaming manner and its local memory is measured in bits.
+
+%Rewinding random bits used by RAMs is not permitted, so if an algorithm wants to access previously used random bits it must store them.
+
+We write $a \getsr \A(b)$ (respectively, $a=\A(b)$) to denote the random variable output by a probabilistic (respectively, deterministic) algorithm $\A$ on input $b$.
+By $x \getsr \BS$ we denote the process of sampling an element $x$ from a set or distribution $\BS$ uniformly at random. 
+%Let $\mathcal R$ be the randomness space of $\A$, $a\getsr \A(b)$ is equivalent to $a=\A(b;r)$ for $r\getsr \mathcal R$.
+By $\negl$ we denote an unspecified negligible function. %By $\poly$ we denote an unspecified polynomial function.
+
+
+By $\vec x\in\bin^n$ we denote a column vector with size $n$,
+% and by, say, $\vec x\in\one\times\bin^{n-1}$ we mean that the first element of $\vec x$ is $1$. 
+ by $x_i$ we denote the $i$th element of a vector $\vec{x}$.
+By $[n]$ we  denote the set $\{1, \cdots , n\}$, by $[t_1, t_2]$ we denote the set $\{t_1, t_1+1,\cdots ,t_2\}$, and by $\msb_k(\vec x)$ we denote the most significant $k$ bits in (the bit string representing) $\vec x$. By $\log n$ we mean $\lceil\log n\rceil$.
+For some set or sequence $\set$, by $\vec x_\set$ we denote the sequence of all bits in $\vec x$ with indices (ordered lexicographically) in $\set$.
+%By $||\vec x||$ we denote the hamming weight of $\vec x$. 
+%By $\vec x_1\cdots,\vec x_\ell$ for some $\ell$, we denote $(\vec x_1^\top,\cdots,\vec x_\ell^\top)^\top$, i.e., the concatenation of $(\vec x_i)_{i\in[\ell]}$.
+For a matrix $\matA$, 
+we denote the set $\{\vec x \: | \: \matr A\vec x = \vec 0 \}$ by $\Ker(\matr A)$.  
+%we denote the sets $\{\vec y \: | \: \exists \vec x \;\; \mbox{s.t.} \;\; \vec y = \matA\vec x \}$ and $\{\vec x \: | \: \matr A\vec x = \vec 0 \}$ by $\Ima(\matr A)$ (i.e., the span of $\matr A$) and $\Ker(\matr A)$ respectively.  
+%By $\matr A^\bot\in\bin^{n\times (n-t')}$ we denote a non-zero matrix of rank $n-t'$ in $\Ker(\matr A^\top)$. Note that for any $\vec y\notin \Ima(\matr A)$, we have $\vec y^\top\matr A^\bot\neq \vec 0$. By $\overline{\matr A}$ (respectively, $\underline{\matr A}$) we denote the upper $(n-1)\times t$ matrix (respectively, lower $1\times t$ vector) of $\matr A$.
+%Let $b\in \bin$, by $b\matr A$ we denote a zero matrix $\matr 0\in\bin^{n\times t}$ if $b=0$ or $\matr A$ if $b=1$.
+%By $(a_{ij})_{i\in [l],j\in [m]}$ we denote the matrix 
+%$\begin{pmatrix}a_{11} \cdots a_{1m}\\\vdots \ddots \vdots \\a_{l1}\cdots a_{lm}\\ \end{pmatrix}$. 
+%Let $\matr A=(a_{ij})_{i\in [l],j\in [m]}$ be an $l\times m$ matrix and $\matr B=(\matr B_{ij})_{i\in [m],j\in [n]}$ be a large matrix consisting of $m\times n$ matrices $\matr B_{ij}$ for all $i\in[m]$ and $j\in[n]$. 
+By $\matr I_n$ we denote an identity matrix in $\bin^{n\times n}$.
+%By $\vec e_n^i$ we denote the column vector in $\bin^n$ with the $i$th element being $1$ and the other elements being $0$. 
+By $\matr 0$ we denote a zero vector or matrix. 
+
+By $H(x)$ we denote the \emph{Shannon entropy} of a random variable $x$ with alphabet $\mathcal{X}$ defined as
+	$$H(x) = -\sum_{\hat x \in \mathcal{X}} \Pr[x=\hat x] \log \Pr(x=\hat x).$$
+By $H(x\mid y)$ we denote the \emph{conditional entropy} of $x$ conditioned on a random variable $y$ with alphabet $\mathcal Y$ defined as
+	$$
+	H(x\mid y) = \sum_{\hat y \in \mathcal{Y}}\Pr[y=\hat y]\cdot H(x\mid y=\hat y).
+	%&= - \mathbb{E}_{\hat x \in \mathcal{X}, \hat y \in \mathcal{Y}}\log\Pr(x=\hat x \big{|} y=\hat y).
+	$$
+By $I(x;y)$ we denote the \emph{mutual information} of $x$ and $y$ defined as $$I(x;y) = H(x) - H(x \mid y),$$ which is the reduction of the uncertainty of $x$ when $y$ is learned.
+By $\expect[x]$ and $\var[x]$ we denote the \emph{expected value} and \emph{variance} of the variable $x$.
+By $\tvd(x, y)$ we denote the \emph{total variation distance} of two random variables $x$, $y$ with alphabets $\mathcal{X}$ and $\mathcal{Y}$ defined as 
+	$$ \tvd(x,y) = (1/2)\sum_{\hat{x} \in \mathcal{X} \cup \mathcal{Y}}|\Pr[x = \hat{x}]-\Pr[y = \hat{x}]|.$$
+	A sequence of random variables $x_1,\cdots,x_q$ with alphabet $\mathcal X$ is said to be \emph{independent} if for any $\hat x_1,\cdots, \hat x_q \in \mathcal X$, we have
+	$$\Pr[\wedge_{i=1}^q x_i = \hat x_i] = \prod_{i=1}^q\Pr[x_i = \hat x_i].$$
+	 If we only require that 
+	$$\Pr[x_i = \hat x_i\land x_j = \hat x_j] = \Pr[x_i = \hat x_i]\cdot \Pr[x_j = \hat x_j]$$
+	 holds for any $1\leq i<j\leq q$, then the sequence is said to be \emph{pairwise independent}.
+	
+%\subsection{Probability Bounds}
+%In this section, we introduce several probability bounds as follows.
+%\begin{definition}[Pairwise independence]
+%\label{def:pairwise}
+%For any $q\in\N$, a sequence of random variables $x_1,\cdots,x_q$ with alphabet $\mathcal X$ are pairwise independent if for any $1\leq i<j\leq q$ and any $\hat x_1, \hat x_2 \in \mathcal X$, we have
+%	$$\Pr[x_i = \hat x_1 \land x_j = \hat x_2] = \frac{1}{|\mathcal{Y}|^2}.$$
+%\end{definition}
+%
+%\begin{definition}[Independence]
+%\label{def:pairwise}
+%For any $q\in\N$, a sequence of random variables $x_1,\cdots,x_q$ with alphabet $\mathcal X$ are pairwise independent if for any $\hat x_1, \cdots \hat x_q \in \mathcal X$, we have
+%	$$\Pr[x_i = \hat x_1 \land x_j = \hat x_2] = \frac{1}{|\mathcal{Y}|^2}.$$
+%\end{definition}
+
+%\begin{theorem}[Chernoff bound]
+%	Let $x = \Sigma_{i=1}^{n} x_i$, where $x_i = 1$ with probability $p_i$ and $x_i = 0$ with probability $1-p_i$, and all $x_i$ are independent. Let $\mu = \mathbb{E}[x] = \Sigma_{i=1}^{n}p_i$. Then 
+%	\begin{compactitem}
+%		\item $\Pr[x \geq (1+\delta)\mu] \leq e^{-\frac{\delta^2}{2+\delta}\mu}$ for all $\delta > 0$,
+%		\item $\Pr[x \leq (1-\delta)\mu] \leq e^{-\frac{\delta^2}{2}\mu}$ for all $0 < \delta < 1$.
+%	\end{compactitem}
+%\end{theorem}
+
+
+
+
+
+%\begin{definition}[Mutual information]
+%	The \emph{mutual information} is defined as
+%	$$I(x;y) = H(x) - H(x \big{|} y).$$
+%\end{definition}
+%By $\vec f_n^i$ we denote the vector in $\bin^{n}$ such that the first $i-1$ entries are $0$'s and the other entries are $1$'s. By $\matr E_n$ we denote the following $n\times (n-1)$ matrix, where the entries of the two main diagonals are $1$'s and the other entries are $0$'s.
+%$$\matr E_n=
+%\begin{pmatrix}
+%1 &   &   &          &\\
+%1 & 1 &   &          &\\
+%%  & 1 & 1 &          &\\
+%  &   &   & \ddots &\\
+%  &   &   &          & 1 & 1\\
+%  &   &   &          &   & 1
+%\end{pmatrix}\in\bin^{n\times(n-1)}.
+%$$
+%One can check that ${\vec f_n^1}\in\Ker(\matr E_n^\top)$ and $\matr E_n\vec f_{n-1}^i=\vec e_n^i+\vec e_n^n$ for $i\in[n-1]$.%, and in $\matE\km^i\in\bin^{\lambda}$ for some $i\in[\lambda-1]$, the $i$th entry and the last entry are $1$'s and the other entries are $0$'s.
+%By $\matr M^n_0$, $\matr M^n_1$, and $\matr N_n$, we denote the following $n \times n$ matrices:
+%$\matr M^n_0 = \begin{pmatrix}\vec 0 &0\\ \matr I_{n-1} & \vec 0\end{pmatrix}$,
+%$\matr M^n_1  = \begin{pmatrix}&\vec 0 &1\\ &\matr I_{n-1} & \vec 0\end{pmatrix}$,
+%$\matr N_n=\begin{pmatrix}\vec 0& \matr 0\\1&\vec 0 \end{pmatrix}$.
+
+
+%Let $X$ and $Y$ be random variables over a finite set $S$. The {\it statistical distance} between $X$ and $Y$ is defined to be
+%\begin{equation*}
+%\Dist(X,Y) = \frac{1}{2} \sum_{s \in S} |\Pr[X=s]-\Pr[Y=s]|.
+%\end{equation*}
+%We say that $X$ and $Y$ are $\epsilon$-close if $\Dist(X,Y) \le \epsilon$.
+
+
+
+
+%For positive integers $k>1, \eta \in \Z^+$ and a matrix $\matr{A} \in \{0,1\}^{(k+\eta) \times k}$, we denote the upper square matrix of $\matr{A}$ by $\up{\matr{A}} \in \{0,1\}^{k \times k}$ and the lower $\eta$ rows of $\matr{A}$ by $\low{\matr{A}} \in \{0,1\}^{\eta \times k}$.
+%We define $\Span(\matr A):=\{\matr A\vec r|\vec r\in\{0,1\}^k\}\subset \{0,1\}^{(k+\eta)}$.
+%Similarly, for a column vector $\vec{v} \in \{0,1\}^{k+\eta}$, we denote the upper $k$ elements by  $\up{\vec{v}} \in \{0,1\}^{k}$ and the lower $\eta$ elements of $\vec{v}$ by $\low{\vec{v}} \in \{0,1\}^{\eta}$.
+%For a bit string $\mes \in \bits^{n}$, $\mes_i$ denotes the $i$th bit of $\mes$ ($i\leq n$) and $\firstm i$ denotes the first $i$ bits of $\mes$.
+
+
+%\heading{Games.} We follow~\cite{C:BlaKilPan14} to use code-based games for defining and proving security. A game $\gameg$ contains procedures $\initialize$ and $\finalize$, and some additional procedures $\procfont{P}_1,\ldots, \procfont{P}_n$, which are defined in pseudo-code. All variables in a game are initialized as 0, and all sets are empty (denote by $\emptyset$).
+%An adversary $\advA=\{\adv\}_{\lambda\in\N}$ is executed in game $\gameg$ w.r.t. the security parameter $\lambda$ (denote by ${\gameg}^{\adv}$) if $\adv$ first calls $\initialize$, obtaining its output. Next, it may make arbitrary queries to $\procfont{P}_i$ (according to their specification) and obtain their output. Finally, it makes one single call to $\finalize(\cdot)$ and stops. We use $ \gameg^{\adv} \outp d$ to denote that $\gameg$ outputs $d$ after interacting with ${\adv}$, and $d$ is the output of $\finalize$.
+
+
+
+
+%
+
+%% entropy definitions
+
+%end entropy definitions
+
+
+%\subsection{Function Families and Word-Random Access Machine}
+%
+%%We now recall the definitions of function family. .
+%
+%\begin{definition}[Function family]
+%
+%\end{definition}
+
+%\begin{definition}[$\nczero$]
+%\label{def:nczero}
+%The class of (non-uniform) $\aczero$ function families is the set of all function families $\mathcal{F} = \{f_{\lambda}\}_{\lambda\in\N}$ for which there is a polynomial $p(\cdot)$ and constant $d$ such that for each $\lambda$, $f_{\lambda}$ can be computed by a (randomized) circuit of size $p(\lambda)$, depth $d$, and fan-in 2 using {$\AND$}, {$\OR$}, and {$\NOT$} gates.
+%\end{definition}
+
+%\begin{definition}[$\aczero$]
+%\label{def:aczero}
+%The class of (non-uniform) $\aczero$ function families is the set of all function families $\mathcal{F} = \{f_{\lambda}\}_{\lambda\in\N}$ for which there is a polynomial $p(\cdot)$ and constant $d$ such that for each $\lambda$, $f_{\lambda}$ can be computed by a (randomized) circuit of size $p(\lambda)$, depth $d$, and unbounded fan-in using {$\AND$}, {$\OR$}, and {$\NOT$} gates.
+%\end{definition}
+%One can easily see that $\nczero$ is a subset of $\aczero$, and for any polynomial $n=n(\lambda)$ and $\vec x,\vec y\in\bin^n$ where either $\vec x$ or $\vec y$ has only constant Hamming weight, the inner product of $\vec x$ and $\vec y$ is computable in $\nczero$.
+
+%Notice that we can assume that an $\aczero$ circuit has no $\NOT$ gates since we can remove all $\NOT$ gates to just the input, according to the De Morgan Rules. Moreover, we have $\nczero\subsetneq\aczero$ by known results.
+
+%\begin{definition}[Sparse vector]
+%Let $\lambda$ be the security parameter. A vector $\vec x$ is said to be \emph{sparse} if there exists a constant $c$ and a function $t(\cdot)$ such that $t(\lambda)\leq O(\log^c\lambda)$ and $||\vec x||=t(\lambda)$.
+%\end{definition}
+
+%\begin{lemma}[Polylog inner products \cite{C:DegVaiVas16}]
+%\label{lem:polylog-ip}
+%For any constant $c$ and any function $t(\cdot)$ such that $t(\cdot)\leq O(\log^c\lambda)$, there exists a function family $\{\ip:\bin^\lambda\times\bin^\lambda\}_{\lambda\in\N}$ such that for any $\vec x,\vec y\in\bin^\lambda$, where $\min(||x||,||y||)\leq t(\lambda)$, $\ip(x,y)=\langle x,y \rangle$.
+%\end{lemma}
+
+%\begin{lemma}[Polylog inner products \cite{C:DegVaiVas16}]
+%\label{lem:polylog-ip}
+%There exists a function family $\{\ip:\bin^\lambda\times\bin^\lambda\}_{\lambda\in\N}\in\aczero$ such that 
+%for any $\vec x,\vec y\in\bin^\lambda$, where at least one of $\vec x$ and $\vec y$ is sparse, we have $\ip(x,y)=\langle x,y \rangle$.\end{lemma}
+%Notice that for any polynomial $n = n(\lambda)$, we have $\{f_n\}_{\lambda\in\N} \in \ncone$ iff $\{f_\lambda\}_{\lambda\in\N}\in\ncone$. Hence, we can also replace $\lambda$ by $n$ in the above lemma.
+
+%Let $\{\PARITY\}_{\lambda\in\N}$ be the function family such that for all $\lambda\in\N$, $\PARITY$ on input any $\vec x\in\bin^\lambda$ outputs $\sum_{i=1}^\lambda x_i$. The following theorem states that any $\aczero$ circuit has very small correlation with $\PARITY$.
+%\begin{theorem}[\cite{Has14,IMP12}]
+%\label{thm:correlation}
+%For any $\A = \{a_{\lambda}\}_{\lambda\in\N}\in\aczero$ with size $p$ and constant depth $d$ and any $\lambda\in\N$, we have
+%\[\begin{split}
+%\Bigg|\Pr_{\vec x\getsr\bin^\lambda}&[a_{\lambda}(\vec x)=1|\PARITY(\vec x)=1]\\
+%&-\Pr_\vec {x\getsr\bin^\lambda}[a_{\lambda}(\vec x)=1|\PARITY(\vec x)=0] \Bigg|\leq 2^{-\Omega(\lambda/\log^{d-1}(p))}.\end{split}
+%\]
+%\end{theorem}
+%One can see that for any polynomial $p$ in $\lambda$, $2^{-\Omega(\lambda/\log^{d-1}(p))}=2^{-\Omega(\lambda/\log^{d-1}(\lambda))}$ is negligible.
+
+
+
+
+%\begin{proof}
+%%First, we note that $\matE\vec r$ for $\vec r\getsr\bin^\lambda$ is uniformly distributed in $\bin^\lambda$ subject to the constraint that $\PARITY(\matE\vec r)=0$.
+%Let $\A=\{\adv\}_\lambda\in\aczero$ be any adversary that distinguishing $\matE\vec r$ and $\matE\vec r+\vece$ for $\vec r\getsr\bin^\lambda$ with non-negligible advantage, we show $\{\PARITY\}_{\lambda\in\N}\in\aczero$, which leads to a contradiction.
+%
+%First, we note that for any vector $\vec x\in\bin^\lambda$, the following distributions are identical.
+%$$\matE\vec r+\vec x\ \mbox{and}\ \matE\vec r+\vece \cdot b,$$
+%where $\vec r\getsr\bin^\lambda$ and $b=\PARITY(\vec x)$. This is due to the fact that the first $\lambda-1$ bits of a vector $\vec y=(y_i)_{i=1}^\lambda$ sampled from either distribution are uniformly distributed (since $\overline{\matr E}_\lambda$ is of full rank), and $y_\lambda=\sum_{i=1}^{\lambda-1}y_i$ must hold in both cases.
+%Hence, we have
+%$$|\Pr[\adv(\matE\vec r+\vec x)=1|\PARITY(\vec x)=1]=\Pr[a_{\lambda}(\matE\vec r+\vece)=1]$$
+%and 
+%$$|\Pr[\adv(\matE\vec r+\vec x)=1|\PARITY(\vec x)=0]=\Pr[a_{\lambda}(\matE\vec r)=1]$$
+%for $\vec r\getsr\bin^\lambda$. Let the former probability be $p$ and the latter be $q$. To decide $\PARITY(\vec x)$ given any $\vec x\in\bin^\lambda$, we just have to determine whether $\Pr[\adv(\matE\vec r+\vec x)|\vec r\getsr\bin^{\lambda-1}]<\frac{p+q}{2}$ by taking samples from $\adv(\matE\vec r+\vec x)$ in parallel and using the threshold function to check whether more than a $\frac{p+q}{2}$ fraction of the samples are $1$. Due to the fact $p$ and $q$ are non-negligibly separated, $\PARITY(\vec x)$ can be decided from polynomial number of samples with exponentially small failure probability. Also, all the operations can be performed in $\aczero$ since all the row vectors in $\matE$ have only constant hamming weight, i.e., $\matE\vec r$ can be computed in $\aczero$, completing the proof.
+%\end{proof}
+
+
+%\begin{definition}[$\maczero$]
+%The class of (non-uniform) $\maczero$ function families is the set of all function families $\mathcal{F} = \{f_{\lambda}\}_{\lambda\in\N}$ for which there is a polynomial $p(\cdot)$ and constant $d$ such that for each $\lambda$, $f_{\lambda}$ can be computed by a (randomized) circuit of size $p(\lambda)$, depth $d$, and unbounded fan-in using {$\AND$} and {$\OR$} gates.
+%\end{definition}
+
+
+
+
+
+
+
+\subsection{Fine-Grained Multi-Party NIKE}
+\label{def:munike}
+In this section, we define fine-grained multi-party NIKE and multi-party key exchange in the BSM. In the following, 
+a circuit (respectively, word-RAM) family is a family of (possibly randomized) circuits (respectively, word-RAMs) with respect to all security parameters $\lambda\in\N$, denoted by $\{f_{\lambda}\}_{\lambda\in\N}$. For brevity, we refer to it as $\{f_{\lambda}\}$.
+%In this section, we give the definitions of $\Sigma$-protocol, NIZK, and non-interactive zap. 
+%Below, for a language description $\rho$ with the associated language $\lang_\rho$ and relation $\relation_\rho$, by $\x\in\lang_\rho$ we mean that there exists $\w$ such that $\relation_\rho(\x,\w)=1$.
+%\heading{NIZK.} We now give the definition of fine-grained NIZK with composable zero-knowledge and statistical/perfect soundness.
+%Let $\dist_{\lambda}$ be a probability distribution over a collection of relations $\Relation=\{\relation_{\matr M}\}_{\matr M\in\dist_{\lambda}}$ parametrized by a matrix $\matr M\in \bin^{n\times t}$ of rank $t'\leq n$ generated as $(\matr M^\top,\matr M^\bot) \getsr \dist_{\lambda}$ with the associated language 
+%\[{\mathcal L}_{\matr M}=\{ {\vec t}:\exists \vec w \in \bin^t, \text{ s.t. } \vec t= \matr M \vec w\}.\]
+%Notice that similar to witness sampleable distribution in the classical world~\cite{AC:JutRoy13}, we require that $\dist_\lambda$ additionally outputs a non-zero matrix $\matr M^\bot\in\bin^{n\times (n-t')}$ in the kernel of $\matr M^\top$. %We note that the matrix distribution in \cref{def:matrdist} is sampleable. 
+%An example of sampleable distribution is $\ZeroSamp(n)$, which can additionally sample a non-zero vector in the kernel of its output. \footnote{In fact, the rightmost vector $(r_1,\cdots,r_{n-1},1)^\top$ of the intermediate matrix generated by $\RSamp(n)$ (see \cref{fig:lsamp}) forms a vector in the kernel of $\matr M^\top$. See the proof of Lemma 3 in \cite{AC:EgaWanTan19} for more details}
+
+%We define the notions of $\QANIZK$, designated-prover $\QANIZK$ ($\DPQANIZK$), designated-verifier $\QANIZK$ (\( \DVQANIZK \)), designated-prover-verifier $\QANIZK$ (\( \DPVQANIZK \)) as follow.
+
+We now define the multi-party NIKE and its security. We require that the users be in $\mathcal C_1$ and the adversaries be in $\mathcal C_2$. In this work, $\mathcal C_1$ and $\mathcal C_2$ represent classes of circuit families in the bounded-parallel-time model, and represent classes of word-RAM families in the bounded-time model. In the BSM, $\mathcal C_1$ refers to a class of streaming word-RAM families with bounded storage, which receive inputs in a streaming manner and store the outputs.
+\begin{definition}[Multi-party non-interactive key exchange]
+\label{def:nike}
+A \emph{$\cc_1$-$\pnum$-party non-interactive key exchange scheme (NIKE)} consists of two algorithm families $\mathsf{NIKE}=\{\gen,\allowbreak\share\}\in\cc_1$ such that
+	\begin{compactitem}
+	\item $\gen$ on input $\urs\in\bin^n$ for some $n=n(\lambda)$ outputs a public key $\pk$ and a secret key $\sk$. 
+	\item $\share$ is a deterministic algorithm that on input a set of public keys $(\pk_i)_{i\in\cs}$, an index $i$, and a secret key $\sk_i$ outputs either $\key\in\mathcal K_\lambda$ or the abort symbol $\bot\notin\mathcal K_\lambda$, where $i\in\cs$ and $\mathcal K_\lambda$ is the session key space.
+	\end{compactitem}
+	
+	\emph{$\epsilon$-correctness} is satisfied if for all $\lambda\in\N$, all $i,j\in\cs$, we have
+	$$\Pr[\exists \key\in\mathcal K_\lambda:\share(i,\sk_i,(\pk_i)_{i\in\cs})=\share(j,\sk_j,(\pk_i)_{i\in\cs})=\key]\geq 1-\epsilon
+	$$
+	where
+	$\urs\getsr\bin^n$ and $(\pk_i,\sk_i)\getsr\Gen(\urs)$ for all $i\in\cs$.
+%		 is satisfied if for any adversary $\advA=\{\adv\}\in\cc_2$ and an infinite number of values $\lambda\in\N$, we have
+%$$\Pr[\key\getsr \adv((\pk_i)_{i\in\cs})]\leq\epsilon,$$
+%where $(\pk_i,\sk_i)\getsr\Gen$ for all $i\in\cs$, $\key=\share(j,\sk_j,(\pk_i)_{i\in\cs})$ for some $j\in[K]$, and $\key'\getsr\mathcal K_\lambda$.
+
+	\emph{$\cc_2$-$\epsilon$-security} (respectively, \emph{$\cc_2$-$\epsilon$-weak security}) is satisfied if for any adversary $\advA=\{\adv\}\in\cc_2$ and all sufficiently large $\lambda\in\N$, we have
+$$|\Pr[1\getsr \adv(\urs,(\pk_i)_{i\in\cs},\key)]-\Pr[1\getsr \adv(\urs,(\pk_i)_{i\in\cs},\key')]|\leq\epsilon$$
+$$(\mbox{respectively,}\ \Pr[\key\getsr \adv(\urs,(\pk_i)_{i\in\cs})]\leq\epsilon)$$
+where $\urs\getsr\bin^n$, $(\pk_i,\sk_i)\getsr\Gen(\urs)$ for all $i\in\cs$, $\key=\share(1,\sk_1,(\pk_i)_{i\in\cs})$, and $\key'\getsr\mathcal K_\lambda$.
+In the plain model, we use the convention $\urs=\bot$.
+If $\share$ outputs $\bot$ in a security experiment, the actual value $\bot$ is given to the adversary; thus abort probabilities are accounted for by the corresponding correctness and security bounds.
+
+\emph{$(\amem,\epsilon,\theta)$-security in the BSM} is satisfied if for any function $f:\bin^n\rightarrow\bin^\amem$, we have
+$$\exists \event:\ \Pr[\event]\geq 1-\epsilon\ \mbox{and}\ I(\key;(f(\urs),(\pk_i)_{i\in[\pnum]})\mid\event)\leq \theta,$$
+where $\urs\getsr\bin^n$, $(\pk_i,\sk_i)\getsr\Gen(\urs)$ for all $i\in\cs$, and $\key=\share(1,\sk_1,\allowbreak(\pk_i)_{i\in\cs})$.
+
+%\begin{definition}[$(\mu,\mu')$-local key security] 
+%\end{definition}
+
+\end{definition}
+
+\heading{Remarks on the BSM.} 
+Here we note that the security in the BSM captures the situation where
+all parties have access to $\urs$ and the adversary is allowed to apply any (potentially unbounded) storage function $f$ with an output length limit of $\amem$ and store information on $\urs$. Afterwards, $\urs$ becomes inaccessible, and all parties broadcast public keys, which are typically required to be short, and share a session key in a non-interactive way.
+Notice that we consider the traditional BSM \cite{C:CacMau97} rather than the streaming BSM proposed by Dodis, Quach, and Wichs~\cite{EC:DodQuaWic23}. In the streaming BSM, the parties are allowed to communicate interactively with perhaps multiple rounds of long messages.
+
+\heading{Extendability of Multi-Party NIKE.}
+%Roughly, The extendability of NIKE is satisfied if the sharing algorithm of NIKE can be decomposed into two algorithms. The first algorithm, given a private key and partial public keys as input, outputs a partial private key. The second algorithm, taking the partial private key and a public key as input, generates an output almost identical to the output of the original sharing algorithm.
+%Roughly, the extendability of a multi-party NIKE says that the sharing procedure involves combining the secret key with public keys of other users sequentially. Each intermediate value, termed as a “local key”, essentially represents a shared key (without privacy amplification) amongst a subgroup of all parties. 
+We now define a property of multi-party NIKE called extendability.
+Roughly, the extendability of a multi-party NIKE says that the sharing procedure involves an algorithm termed as $\combine$, which sequentially combines a user's secret key with other public keys, and the intermediate value produced by $\combine$, referred to as a local key, can be used to derive the shared key by using another algorithm $\extract$. %This process results in a shared key for a multi-party NIKE if $\combine$ combines a secret key using the public keys of all other users.
+\begin{definition}[Extendability]
+\label{def:ext}
+	A $\cc_1$-$\pnum$-party non-interactive key exchange scheme $\mathsf{NIKE}=\{\gen,\allowbreak\share\} \in \cc_1$ satisfies \emph{$\epsilon$-extendability} if there exist two deterministic algorithm families $\{\combine, \allowbreak\extract \} \in \cc_1$ such that, for every $\lambda\in\N$, the following holds. Let
+	\[
+	\urs\getsr\bin^n\ \mbox{and}\
+	(\pk_i,\sk_i)\getsr\gen(\urs)\quad\text{for all}\ i\in[\pnum].
+	\]
+	There exists an event $\event$ with $\Pr[\event]\geq 1-\epsilon$ such that, conditioned on $\event$, for every $\indexset \subseteq [\pnum]$, nonempty $\indexset' \subseteq \indexset$, $j \in \indexset$, and $i^{\prime} \in \indexset'$, we have
+%	\item for any set $\indexset \subseteq [\pnum-1]$ and $i^{\prime}, j^{\prime} \in \indexset$, we have
+%	$$ \combine^1(\indexset, \sk_{i^{\prime}}, (\pk_i)_{i \in \indexset}) = \combine^1(\indexset, \sk_{j^{\prime}}, (\pk_i)_{i \in \indexset}),$$
+%	where $(\pk_i, \sk_i) \getsr \gen$ for any $i \in [\pnum]$.
+%<<<<<<< HEAD
+%	\[\begin{split}\combine&(\indexset, \indexset',\localkey_{\indexset'}, \{\pk_i\}_{i \in \indexset\slash\indexset'}) =
+%	 \combine(\indexset, \{j\}, \sk_j, \{\pk_i\}_{i \in \indexset\slash\{j\}})\end{split}\]
+	\[\begin{split}\combine&(\localkey_{\indexset'}, \{\pk_i\}_{i \in \indexset\backslash\indexset'}) =
+	 \combine(\sk_j, \{\pk_i\}_{i \in \indexset\backslash\{j\}})\end{split}\]
+	%\item%=======
+%	\item for any set $\indexset \subseteq [\pnum]$, $\indexset_1 \subseteq \indexset$, and $j \in \indexset$, let $\indexset_2 = \{j\}$, $\localkey_2 = \sk_{j}$, and $\localkey_1 = \combine(\indexset_1, \{i^{\prime}\}, \sk_{i^{\prime}}, \allowbreak \{\pk_i\}_{i \allowbreak \in \indexset_1\slash\{i^{\prime}\}})$ for any $i^{\prime} \in \indexset_1$, we have
+%	$$ \combine(\indexset, \indexset_1, \localkey_1, \{\pk_i\}_{i \in \indexset\slash\indexset_1}) = \combine(\indexset, \indexset_2, \localkey_2, \{\pk_i\}_{i \in \indexset\slash\indexset_2}),$$
+%	\item let $\localkey = \combine([\pnum], \{j\}, \sk_{j}, \{\pk_i\}_{i \in [\pnum]\slash\{j\}})$ for any $j \in [\pnum]$ we have
+%>>>>>>> refs/remotes/origin/main
+	and
+	\[
+	\extract(\localkey_{[\pnum]}, \pk_{\pnum}) = \share(1,\sk_1,(\pk_i)_{i\in\cs}),
+	\]
+	%\end{compactitem}
+	where $\localkey_{\indexset'} = \combine(\sk_{i^{\prime}}, \allowbreak \{\pk_i\}_{i \allowbreak \in \indexset'\backslash\{i^{\prime}\}})$ and $\localkey_{[\pnum]} = \combine(\sk_{1}, \{\pk_i\}_{i >1})$.
+\end{definition}
+%We also give the definition of restricted extendability, which is sufficient for constructing the restricted BPRF.
+We also give the definition of restricted extendability, which requires that $\combine$ only generates the local key of the users with consecutive indices.
+
+%\heading{Restricted extendability.} For a $\cc_1$-$\pnum$-party non-interactive key exchange scheme $\mathsf{NIKE}=\{\gen,\allowbreak\share\} \in \cc_1$, the restricted $\epsilon$-extendability is the special case of $\epsilon$-extendability where we require the set $\indexset = [\leftindex+1, \pnum-1-\rightindex] \subseteq [\pnum-1]$ for some $\leftindex, \rightindex \in [0, \pnum-1]$ such that $\leftindex + \rightindex \leq \pnum-1$.
+%\begin{definition}[Restricted extendability] 
+%\label{def:resext}
+%\emph{$(\epsilon,\epsilon')$-restricted extendability} is defined in exactly the same way as $(\epsilon,\epsilon')$-extendability except that the set $\indexset \subseteq [\pnum]$ is restricted to $\indexset = [\leftindex, \rightindex] \subseteq [\pnum]$ for any $\leftindex, \rightindex \in [\pnum]$ and $\indexset'$ is restricted to $\indexset' = [\subleftsize, \subrightsize]$ for any $\subleftsize, \subrightsize \in [\pnum]$ such that $\rightsize\geq\subrightsize\geq\subleftsize \geq \leftsize$.
+%\end{definition}
+\begin{definition}[Restricted extendability] 
+\label{def:resext}
+\emph{$\epsilon$-restricted extendability} is defined in exactly the same way as $\epsilon$-extendability except that the set $\indexset \subseteq [\pnum]$ is restricted to $\indexset = [\leftindex, \rightindex] \subseteq [\pnum]$ for any $\leftindex, \rightindex \in [\pnum]$ and $\indexset'$ is restricted to $\indexset' = [\subleftsize, \subrightsize]$ for any $\subleftsize, \subrightsize \in [\pnum]$ such that $\rightsize\geq\subrightsize\geq\subleftsize \geq \leftsize$.
+\end{definition}
+
+
+\heading{Local key independence in the BSM.} Next we define a natural property called local key independence for NIKE in the BSM.
+Roughly, it says that public information and auxiliary key pairs reveal only limited
+information about local keys, and that adding one more independently generated key
+pair reveals only limited additional information through the common URS. %\begin{definition}[Local key independence]
+%A $\pnum$-party NIKE in the BSM with (restricted) extendability satisfies
+%\emph{$\mu$-local key independence in the BSM} if we have
+%%$$\exists \event:\ \Pr[\event]\geq 1-\delta\ \mbox{and}\ I(\localkey_{[i]};(\pk_j,\pk_j',\sk_j')_{j\in[n]})\leq \mu,$$
+%$$I(\localkey_{[i]};(\pk_j,\pk_j',\sk_j')_{j\in[\pnum]})\leq \mu,$$
+%where $\urs\getsr\bin^n$, $(\pk_j,\sk_j)\getsr\Gen(\urs)$, $(\pk_j',\sk_j')\getsr\Gen(\urs)$ for all $j\in\cs$, and $\localkey_{[i]}=\combine(\sk_1,(\pk_j)_{2\leq j\leq i\}})$.
+%\end{definition}
+\begin{definition}[Local key independence]
+\label{def:localkeyind}
+A $\pnum$-party NIKE in the BSM with $\epsilon$-(restricted) extendability satisfies
+\emph{$((\mu_i)_{i\in[\pnum]},t)$-local key independence in the BSM}, for $t\in\N$, if the following holds. In the key-generation experiment of \cref{def:ext} (or \cref{def:resext}), let $\event$ be the corresponding extendability event. Conditioned on the same $\urs$, independently sample $(\pk_j',\sk_j')\getsr\Gen(\urs)$ for $j\in[t]$ and set $\localkey_{[i]}=\combine(\sk_1,(\pk_j)_{2\leq j\leq i})$. Then, for every $i\in[\pnum]$, we have
+\[
+I(\localkey_{[i]};(\pk_j)_{j\in[i]},(\pk_j',\sk_j')_{j \in [t]}\mid \event)\leq \mu_i,
+\]
+and for every $i\in[\pnum]$ with $i>1$, we have
+\[
+\begin{split}
+&I(\localkey_{[i-1]};(\pk_i,\sk_i)\mid(\pk_j)_{j\in[i-1]},(\pk_j',\sk_j')_{j\in[t]},\event)\\
+&\leq
+I(\localkey_{[i-1]};(\pk_i,\sk_i)\mid(\pk_j)_{j\in[i-1]},(\pk_j',\sk_j')_{j\in[t]},\urs,\event)+\mu_i.
+\end{split}
+\]
+\end{definition}
+%The second condition only bounds the residual dependence caused by the common URS. After conditioning on the URS, the remaining averaging step is handled by \cref{lem:DM04}.
+
+%Also, depending on the specific applications, it might be anticipated that one of the parties will use only a small amount of memory, denoted as $\umem'$.
+
+%\begin{definition}[Multi-party key agreement in the BSM]
+%\label{def:bsmnike}
+%A \emph{$((\umem,\umem'),\ucom)$-$\pnum$-party key agreement} in the bounded storage model (BSM) is a protocol between $\pnum$ parties $(\party_i)_{i\in[\pnum]}$ where the memory of one party is bounded by $\umem'$ and the memory of each of the remaining parties is bounded by $\umem$.
+%	\begin{compactitem}
+%	\item For each $i\in[\pnum]$, $\party_i$ observes a random string $\urs\getsr\bin^n$ for some $n$ in a streaming manner, and generates a key pair $(\pk_i,\sk_i)$ and stores it. 
+%	\item When $\urs$ disappeared, each party $(\party_i)_{i\in[\pnum]}$ publishes $\pk_i$, and each $\party_i$ generates a session key $\key_i\in\bin^k$.
+%	\end{compactitem}
+%	
+%	\emph{$\epsilon_c$-correctness} is satisfied if we have
+%	$\Pr[\key_1=\cdots=\key_\pnum]\geq 1-\epsilon_c.
+%	$
+%	and the communication complexity between users is bounded by $\ucom$, i.e., $|\trans|\leq \ucom$
+%	when the above protocol is executed honestly.
+%	
+%\emph{$(\amem,\epsilon,\theta)$-security} is satisfied if for any storage function $\advA$ with domain $\bin^n$ and range $\bin^\amem$, we have
+%$$\exists \event:\ \Pr[\event]\geq 1-\epsilon\ \mbox{and}\ I(\key;(\A(\urs),\trans,\event))\leq \theta.$$
+%\end{definition}
+
+
+%\begin{definition}[Adaptive security]
+%\label{def:as}
+%$\nike$ is said to satisfy \emph{adaptive security} if for any adversary $\advA=\{\adv\}$, an infinite number of values $\lambda\in\N$, and any polynomial number $n=n(\lambda)$, we have
+%$$|\Pr[\AS_\real^{\adv,n}\Rightarrow 1]-\Pr[\AS_\rand^{\adv,n}\Rightarrow 1]|\leq\negl(\lambda),$$
+%where the experiments are defined as in \cref{fig:sec-as}.
+%
+%\begin{figure}[h]
+%\begin{center}
+%\framebox{
+%\small
+%  \begin{tabular}{l|l}
+%    \begin{minipage}[t]{0.45\textwidth}
+%    
+%                    \underline{$\init$:}\\
+%    $(\pk_i,\sk_i)\getsr\gen$ for all $i\in[n]$\\
+%    
+%    \underline{$\ShareO(\cs)$:}\\
+%    $\Qc\leftarrow \Qc\cup\{\cs\}$\\
+%    $\key_\cs=\share(i,\sk_i,(\pk_i)_{i\in\cs})$ for some $i\in\cs$\\
+%    Return $\key_\cs$
+%	
+%	\end{minipage} & \begin{minipage}[t]{0.45\textwidth}
+%
+%	
+%	\underline{$\ShareO^*(\cs^*)$:}\\
+%    $\key=\share(\pk_{\cs^*},i,\sk_i)$ for some $i\in\cs^*$\\
+%    \fbox{$\key\getsr\mathcal K$}\\
+%	
+%       \underline{$\finalize(\beta)$:}\\
+%       If $\cs^*\notin\Qc$, return $\beta$\\
+%       Else return $0$
+%    \end{minipage} 
+%      \end{tabular}
+%      }
+%\end{center}
+%\caption{Definition of $\AS_\real$ and \fbox{$\AS_\rand$}.}
+%\label{fig:sec-as}
+%\end{figure}
+%\end{definition}
+%
+%\begin{definition}[Strengthened adaptive security]
+%\label{def:sas}
+%$\nike$ is said to satisfy \emph{strengthened adaptive security} if for any adversary $\advA=\{\adv\}$, an infinite number of values $\lambda\in\N$, and any polynomial number $n=n(\lambda)$, we have
+%$$|\Pr[\SAS_\real^{\adv,n}\Rightarrow 1]-\Pr[\SAS_\rand^{\adv,n}\Rightarrow 1]|\leq\negl(\lambda),$$
+%where the experiments are defined as in \cref{fig:sec-sas}.
+%
+%\begin{figure}[h]
+%\begin{center}
+%\framebox{
+%\small
+%  \begin{tabular}{l|l}
+%    \begin{minipage}[t]{0.4\textwidth}
+%    
+%                    \underline{$\init$:}\\
+%    $(\pk_i,\sk_i)\getsr\gen$ for all $i\in[n]$\\
+%    
+%    \underline{$\share(i)$:}\\
+%    $\Qc\leftarrow \Qc\cup\{i\}$\\
+%    Return $\key_i$
+%	
+%	\end{minipage} & \begin{minipage}[t]{0.5\textwidth}
+%
+%	
+%	\underline{$\ShareO^*(\cs)$:}\\
+%    $\key=\share((\pk_i)_{i\in\cs},i,\sk_i)$ for some $i\in\cs$\\
+%    \fbox{$\key\getsr\mathcal K$}\\
+%	
+%       \underline{$\finalize(\beta)$:}\\
+%       If $i\notin\cs$ for all $i\in\Qc$, return $\beta$\\
+%       Else return $0$
+%    \end{minipage} 
+%      \end{tabular}
+%      }
+%\end{center}
+%\caption{Definition of $\SAS_\real$ and \fbox{$\SAS_\rand$}.}
+%\label{fig:sec-sas}
+%\end{figure}
+%\end{definition}

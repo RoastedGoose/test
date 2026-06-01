@@ -1,0 +1,1182 @@
+%<<<<<<< HEAD
+%<<<<<<< HEAD
+%\section{Bit-fixing Pseudorandom Functions}
+%In this section, we propose a bit-fixing pseudorandom function (BPRF) in the bounded time model. a special case of BPRF we called restricted bit-fixing pseudorandom functions (rBPRF) in the bounded-parallel-time model. We first give the definition of the BPRF and rBPRF. To build BPRF and rBPRF, additional property we called extendability is needed, which is a nature property of our multi-party NIKE scheme. We show that the rBPRF (respectively, BPRF) can be constructed from our multi-party NIKE in the bounded-parallel-time model (respectively, bounded time model). Both rBPRF and BPRF can be used to further construct fine-grained identity-based NIKE (IB-NIKE). Finally, we show how to construct IB-NIKE from rBPRF in the bounded-parallel-time model or BPRF in the bounded time model.
+%\subsection{Definition}
+%=======
+%\section{Fine-Grained Multi-Party IB-NIKE and Bit-Fixing PRF}
+%=======
+\section{Fine-Grained Multi-Party IB-NIKE and BPRF}
+\label{sec:ibnike}
+%>>>>>>> refs/remotes/origin/main
+%In this section, we construct a bit-fixing pseudorandom function (BPRF) in the bounded time model and a special case of BPRF we called restricted bit-fixing pseudorandom functions (restricted BPRF) in the bounded-parallel-time model. We first give the definition of the BPRF and restricted BPRF. To build BPRF and restricted BPRF, additional property we called extendability is needed, which is a nature property of our multi-party NIKE scheme. We show that the restricted BPRF (respectively, BPRF) can be constructed from our multi-party NIKE in the bounded-parallel-time model (respectively, bounded time model). Both restricted BPRF and BPRF can be used to further construct fine-grained identity-based NIKE (IB-NIKE). Finally, we show how to construct IB-NIKE from restricted BPRF in the bounded-parallel-time model or BPRF in the bounded time model.
+In this section, we propose multi-party IB-NIKE schemes in the fine-grained setting. We first give the definitions of fine-grained multi-party IB-NIKE and BPRF, and then give a generic construction of multi-party IB-NIKE based on BPRF. Next we present a generic construction of BPRF from multi-party NIKE with an additional property we refer to as extendability, which is satisfied by all our multi-party NIKE schemes. Throughout this section, we focus on IB-NIKE for a constant number of parties with a larger, constant-size identity space, and BPRF with constant-size input space.
+
+%We employ the construction of multi-party IB-NIKE based on BPRF in \cite{FC:HKKW19} and observe its applicability in fine-grained settings. Consequently, our main focus is on how to instantiate the BPRF in the fine-grained settings.
+
+%definition of IB-NIKE and BPRF
+\subsection{Definitions}
+We now give the definitions of IB-NIKE and BPRF in the fine-grained setting.
+
+%As in \cite{FC:HKKW19}, our resulting construction of IB-NIKE is based on BPRF.
+%IB-NIKE Definition
+%\subsection{Identity-based Non-interactive Key Exchange} 
+\begin{definition}[Identity-based non-interactive key exchange]
+	A \emph{$\cc_1$-$\pnum$-identity-based non-interactive key exchange (IB-NIKE)} consists of three algorithm families $\ibnike=\{\ibsetup, \allowbreak \ibextract,\allowbreak \ibshare\} \allowbreak \in \cc_1$ such that:
+	\begin{compactitem}
+%<<<<<<< HEAD
+		\item $\ibsetup$ on input $\urs \in \bin^{n}$ for some $n = n(\lambda)$ outputs a master secret key $\ibmsk$. 
+		\item $\ibextract$ is a deterministic algorithm that on input a master secret key $\ibmsk$ and an identity $\ibid \in \mathcal{ID}_{\lambda}$, where $\mathcal{ID}_{\lambda}$ is the identity space with \emph{constant size}, outputs a secret key $\ibsk_{\ibid}$ for $\ibid$.
+		\item $\ibshare$ is a deterministic algorithm that on input a list $\ibidlist \subseteq \mathcal{ID}_{\lambda}$ consisting of $\pnum$ identities and a secret key $\ibsk_{\ibid}$ for $\ibid \in \ibidlist$   outputs a shared key $\ibshk\in\ibshkspace$ for $\ibidlist$, where $\ibshkspace$ is the shared key space. We assume that the identities in $\ibidlist$ are always lexicographically ordered.
+	\end{compactitem} 
+	
+	\emph{$\epsilon$-correctness} is satisfied if for all $\lambda \in \mathbb{N}$, all lists of $\pnum$ distinct identities $\ibidlist \subseteq \mathcal{ID}_{\lambda}$, all $\ibid_i, \ibid_j \in \ibidlist$, we have 
+%=======
+%		\item $\ibsetup$ on input $\urs \in \bin^{n}$ for some $n = n(\lambda)$ outputs a master secret key $\ibmsk$. Let $\ibidspace$ be the identity space and $\ibshkspace$ be the shared key space.
+%		\item $\ibextract$ is a deterministic algorithm that on input a master secret key $\ibmsk$ and an identity $\ibid \in \ibidspace$ outputs a secret key $\ibsk_{\ibid}$ for $\ibid$.
+%		\item $\ibshare$ is a deterministic algorithm that on input a list $\ibidlist \subseteq \ibidspace$ consisting of $\pnum$ identities and a secret key $\ibsk_{\ibid}$ for $\ibid \in \ibidlist$   outputs a shared key $\ibshk$ for $\ibidlist$. We assume that the identities in $\ibidlist$ are always lexicographically ordered.
+%	\end{compactitem} 
+%	
+%	\emph{$\epsilon$-correctness} is satisfied if for all $\lambda \in \mathbb{N}$, all list of $\pnum$ distinct identities $\ibidlist \subseteq \ibidspace$, and all $\ibid_i, \ibid_j \in \ibidlist$, we have 
+%>>>>>>> 7765052cb0547b133543592f0f1ff52d07407e63
+	$$ \Pr[\ibshare(\ibsk_{\ibid_i}, \ibidlist) = \ibshare(\ibsk_{\ibid_j}, \ibidlist)] \geq 1-\epsilon, $$
+	where $\ibsk_{\ibid_i} = \ibextract(\ibmsk, \ibid_{i})$ and $\ibsk_{\ibid_j} = \ibextract(\ibmsk, \ibid_{j})$ for $\urs \getsr \bin^{n}$ and $\ibmsk \getsr \ibsetup(\urs)$.
+	
+%	$\cc_2$-$\epsilon$-security is satisfied if for any adversary $\advA = \{\adv\} \in \cc_2$ and all sufficient large $\lambda \in \mathbb{N}$, we have
+%	\[
+%		\Pr \left[ b=1 \Bigg{|} \begin{split} &\ibmsk \getsr \ibsetup(\urs);\\ &\ibidlist \getsr \adv^{\oextract(\cdot)};\\ &\ibshk = \ibshare(\ibsk_{\ibid}, \ibidlist);\\ & b \getsr \adv^{\oextract(\cdot)}(\ibshk);\end{split} \right]
+%		- \Pr \left[ b=1 \Bigg{|} \begin{split} &\ibmsk \getsr \ibsetup(\urs);\\ &\ibidlist \getsr \adv^{\oextract(\cdot)};\\ &\ibshk \getsr \ibshkspace;\\ & b \getsr \adv^{\oextract(\cdot)}(\ibshk);\end{split} \right] \leq \epsilon,
+%	\]
+%	where $\ibid \in \ibidlist$, $\ibsk_{\ibid} = \ibextract(\ibmsk, \ibid)$, $\oextract(\ibid) = \ibextract(\allowbreak \ibmsk, \ibid)$, and $\adv$ is not allowed to query $\oextract(\cdot)$ for any identity $\ibid \in \ibidlist$.
+	\emph{$\cc_2$-$\epsilon$-security} is satisfied if for any adversary $\advA = \{\adv\} \in \cc_2$, all sufficiently large $\lambda \in \mathbb{N}$, and any list of $\pnum$ distinct identities $\ibidlist^* \subseteq \mathcal{ID}_{\lambda}$, we have
+%Feb13	\[
+%		\Pr \left[ b=1 \Bigg{|} \begin{split} &\ibmsk \getsr \ibsetup(\urs);\\ &\ibshk = \ibshare(\ibsk_{\ibid^*}, \ibidlist^*);\\ & b \getsr \adv(\ibshk,(\ibsk_{\ibid})_{\ibid\in\ibidspace\slash\ibidlist^*});\end{split} \right]
+%		- \Pr \left[ b=1 \Bigg{|} \begin{split} &\ibmsk \getsr \ibsetup(\urs);\\ &\ibshk \getsr \ibshkspace;\\ & b \getsr \adv(\ibshk, (\ibsk_{\ibid})_{\ibid\in\ibidspace\slash\ibidlist^*});\end{split} \right] \leq \epsilon,
+%	\]
+%	where $\ibid^* \in \ibidlist^*$ and $\ibsk_{\ibid} = \ibextract(\ibmsk, \ibid)$ for any $\ibid \in \ibidspace$.
+	\[\begin{split}
+		|\Pr[1 \getsr \adv&(\urs,\ibshk,(\ibsk_{\ibid})_{\ibid\in\mathcal{ID}_{\lambda}\backslash\ibidlist^*})] \\-& \Pr[1\getsr \adv(\urs,\ibshk^{\prime},(\ibsk_{\ibid})_{\ibid\in\mathcal{ID}_{\lambda}\backslash\ibidlist^*})]| \leq \epsilon,
+	\end{split}\]
+	where $\ibmsk \getsr \ibsetup(\urs)$, $\urs \getsr \bin^{n}$, $\ibshk = \ibshare(\ibsk_{\ibid^*}, \ibidlist^*)$, $\ibshk^{\prime} \getsr \ibshkspace$, $\ibid^* \in \ibidlist^*$, and $\ibsk_{\ibid} = \ibextract(\ibmsk, \ibid)$ for any $\ibid \in \mathcal{ID}_{\lambda}$.
+	
+	\emph{$(\amem, \epsilon, \theta)$-security in the BSM} is satisfied if for any function $f : \bin^{n} \rightarrow \bin^{\amem}$ and any list of $\pnum$ distinct identities $\ibidlist^* \subseteq \mathcal{ID}_{\lambda}$, we have
+	$$\exists \event:\ \Pr[\event]\geq 1-\epsilon\ \mbox{and}\ I(\ibshk;(f(\urs), (\ibsk_{\ibid})_{\ibid \in \mathcal{ID}_{\lambda}\backslash\ibidlist^*})\mid\event)\leq \theta,$$
+%Feb14	where $\urs \getsr \bin^{n}$ for some $n \in \mathbb{N}$, $\ibsk_{\ibid} = \ibextract(\allowbreak\ibmsk, \ibid)$ for $\ibmsk \getsr \ibsetup(\urs)$, and $\ibshk = \ibshare(\ibsk_{\ibid}, \ibidlist^*)$ for some $\ibid \in \ibidlist^*$.
+	where $\urs \getsr \bin^{n}$, $\ibsk_{\ibid} = \ibextract(\allowbreak\ibmsk, \ibid)$ for $\ibmsk \getsr \ibsetup(\urs)$, and $\ibshk = \ibshare(\ibsk_{\ibid}, \ibidlist^*)$ for some $\ibid \in \ibidlist^*$.
+\end{definition}
+
+%\heading{  Remark.} Our definition of IB-NIKE differs slightly from the definition in \cite{FC:HKKW19}. Specifically, our IB-NIKE security model does not give the adversary any direct oracle access to shared keys. This is because the adversary can always compute any shared key after extracting the secret key of one relevant identity other than the target identities. 
+%%We also note that any adversary can make arbitrary queries to the oracle $\oextract$, which is some constant for our constant users.
+%Moreover, instead of giving the adversary oracle access to the secret keys for some identities as in \cite{FC:HKKW19}, we give all secret keys for identities not in $\ibidlist$ since we focus on the constant size of users in the fine-grained settings.
+%%This also implies that our selective security model is sufficient since it can be efficiently reduce to an adaptive one.
+%%We also note that our selective security model is sufficient, as it can be efficiently reduce to an adaptive one due to the constant security loss.
+%\heading{Remark.} 
+%We note that the selective security is equivalent to the adaptive security for our constructions in the fine-grained settings, since we only consider IB-NIKE with constant identity space.
+
+We now define two types of sets
+$$\csys_{\fixstring, \inputlen} = \{\preimage = (\prebit_i)_{i \in [\inputlen]} \in \bin^{\inputlen} \mid \forall i : \prebit_i = \fixbit_i \vee \fixbit_i = \anychar \}$$ for any $\fixstring = (\fixbit_i)_{i \in [\inputlen]} \in (\{0,1, \anychar\})^{\inputlen}$, and $$\mathcal{T}_{\preimage, \inputlen} = \{\fixstring \in \{0,1,\bot\}^{\inputlen} \mid \preimage \notin \csys_{\fixstring,\inputlen} \}$$ for any $\preimage \in \bin^{\inputlen}$, and give the definition of BPRF and its restricted version, both of which can be converted into multi-party IB-NIKEs, as shown below. Here we note that BPRF in the fine-grained setting is of independent interest, since it also generically implies broadcast encryption with constant users in the fine-grained setting, using the technique in \cite{AC:BonWat13}.
+
+%We , and give the definition of BPRF as follows.
+
+%
+%Furthermore, the construction for constant users suggests that the "reveal" oracle in \cite{ACISP:CheHuaZha14} can be simulated by evaluating shared keys with relevant secret keys, and the "extract" oracle can be replaced by directly giving all secret keys for identities not in the challenge list.
+
+
+%Moreover, we require all algorithm families are performed in a circuit class $\cc_1$, and security against adversaries in $\cc_2$.
+
+%\subsection{Definition}
+%<<<<<<< HEAD
+%%>>>>>>> refs/remotes/origin/main
+%=======
+%>>>>>>> refs/remotes/origin/main
+\begin{definition}[Bit-fixing pseudorandom functions]
+\label{bfprf}
+%A \emph{$\cc_1$-$(\inputlen, \outputlen)$-bit-fixing pseudorandom function (BPRF)} consists of four algorithm families $\bprf = \{\bprfsetup, \bprfeval, \bprfdel, \bprfceval \} \in \cc_1$ such that for a set system $\csys \subseteq \{0,1\}^{\inputlen}$,
+%A \emph{$\cc_1$-$(\inputlen, \outputlen)$-bit-fixing pseudorandom function (BPRF)} consists of four algorithm families $\bprf = \{\bprfsetup, \bprfeval, \bprfdel, \bprfceval \} \in \cc_1$ such that
+A \emph{$\cc_1$-$\inputlen$-bit-fixing pseudorandom function (BPRF)} consists of four algorithm families $\bprf = \{\bprfsetup, \bprfeval, \bprfdel, \bprfceval \} \in \cc_1$ such that
+%with input length $\inputlen = \inputlen(\lambda)$, output length $\outputlen  = \outputlen(\lambda)$, and 
+%\begin{compactitem}
+%	\item $\bprfsetup$ on input $\urs \in \bin^n$ for some $n = n(\lambda)$ outputs a master secret key $\bprfmsk$.
+%	\item $\bprfeval$ is a deterministic algorithm that on input a master secret key $\bprfmsk$ and a preimage $\preimage \in \{0,1\}^{\inputlen}$ outputs an image $\image \in \{0,1\}^{\outputlen}$.
+%	\item $\bprfdel$ is a deterministic algorithm that on input a master secret key $\bprfmsk$ and a string $\fixstring$ outputs a constrained key $\bprfsk_{\fixstring} \in \bprfskspace$, where $\bprfskspace$ is the constrained key space.
+%	\item $\bprfceval$ is a deterministic algorithm that on input a constrained key $\bprfsk_{\fixstring}$ and a preimage $\preimage \in \csys_{\fixstring,\inputlen}$ outputs an image $\image \in \{0,1\}^{\outputlen}$.
+%\end{compactitem}
+\begin{compactitem}
+	\item $\bprfsetup$ on input $\urs \in \bin^n$ for some $n = n(\lambda)$ outputs a master secret key $\bprfmsk$.
+	\item $\bprfeval$ is a deterministic algorithm that on input a master secret key $\bprfmsk$ and a preimage $\preimage \in \{0,1\}^{\inputlen}$ outputs an image $\image \in \bprfy$.
+	\item $\bprfdel$ is a deterministic algorithm that on input a master secret key $\bprfmsk$ and a string $\fixstring$ outputs a constrained key $\bprfsk_{\fixstring} \in \bprfskspace$, where $\bprfskspace$ is the constrained key space.
+	\item $\bprfceval$ is a deterministic algorithm that on input a constrained key $\bprfsk_{\fixstring}$ and a preimage $\preimage \in \csys_{\fixstring,\inputlen}$ outputs an image $\image \in \bprfy$.
+\end{compactitem}
+
+
+
+%$\bprfcorrectness$ is satisfied if for all $\fixstring$, $\fixstring^{\prime} \in (\{0,1\}\cup\{\anychar\})^{\inputlen}$, and all \preimage such that $\preimage \in \csys_{\fixstring} \cap \csys_{\fixstring^{\prime}}$, we have
+%$$ \Pr[\bprfceval(\bprfsk_{\fixstring}, \preimage) = \bprfceval(\bprfsk_{\fixstring^{\prime}}, \preimage)] \geq 1-\epsilon$$
+%where $\bprfsk_{\fixstring} \getsr \bprfdel (\bprfmsk, \fixstring)$, $\bprfsk_{\fixstring^{\prime}} \getsr \bprfdel (\bprfmsk, \fixstring^{\prime})$, and $\bprfmsk \getsr \bprfsetup$.
+%Feb13For any BPRF with preimage length $\inputlen$, we define $\csys_{\fixstring}$ as 
+%$$\csys_{\fixstring} = \{\preimage = (\prebit_i)_{i \in [\inputlen]} \mid \forall i : \prebit_i = \fixbit_i \vee \fixbit_i = \anychar \}$$ for any $\fixstring = (\fixbit_i)_{i \in [\inputlen]} \in (\{0,1, \anychar\})^{\inputlen}$.
+
+\emph{$\bprfcorrectness$} is satisfied if for all $\fixstring \in (\{0, 1, \anychar\})^{\inputlen}$ and all $\preimage$ such that $\preimage \in \csys_{\fixstring,\inputlen}$, we have
+$$ \Pr[\bprfceval(\bprfsk_{\fixstring}, \preimage) = \bprfeval(\bprfmsk, \preimage)] \geq 1-\epsilon,$$
+where $\bprfsk_{\fixstring} = \bprfdel (\bprfmsk, \fixstring)$ for $\urs\getsr \bin^n$ and $\bprfmsk \getsr \bprfsetup(\urs)$.
+
+
+%$\bprfsecurity$ is satisfied if for any adversary $\mathcal{A} = \{\adv\} \in \cc_2$ and all sufficiently large $\lambda \in \mathbb{N}$, we have
+%%\[ \Pr[1 \getsr \adv^{\odel(\cdot)}(\image)] - \Pr[1 \getsr \adv^{\odel(\cdot)}(\image^{\prime})] \leq \epsilon \]
+%\[
+%	\Pr \left[ b = 1 \Bigg{|} \begin{split} &\bprfmsk \getsr \bprfsetup(\urs);\\ &\preimage \getsr \adv^{\odel(\cdot)};\\ &\image \getsr \bprfeval(\bprfmsk, \preimage);\\ &b \getsr \adv^{\odel(\cdot)}(\image);  \end{split} \right]
+%	- \Pr \left[ b = 1 \Bigg{|} \begin{split} &\bprfmsk \getsr \bprfsetup(\urs);\\ &\preimage \getsr \adv^{\odel(\cdot)};\\ &\image^{\prime} \getsr \bin^{\outputlen};\\ &b \getsr \adv^{\odel(\cdot)}(\image^{\prime});  \end{split} \right] \leq \epsilon,
+%\]
+%%where $\odel(\fixstring) = \bprfdel(\bprfmsk, \fixstring)$, $\image \getsr \bprfeval(\bprfmsk, \preimage)$ for any $\preimage$, $\bprfmsk \getsr \bprfsetup$, and $\image^{\prime} \getsr \{0,1\}^{\outputlen}$.
+%where $\odel(\fixstring) = \bprfdel(\bprfmsk, \fixstring)$, and $\adv$ is not allowed to query $\odel(\cdot)$ for any string $\fixstring$ such that $\preimage \in \csys_{\fixstring}$.
+\emph{$\bprfsecurity$} is satisfied if for any adversary $\mathcal{A} = \{\adv\} \in \cc_2$, all sufficiently large $\lambda \in \mathbb{N}$, and any $\preimage \in \bin^{\inputlen}$, we have
+%\[ \Pr[1 \getsr \adv^{\odel(\cdot)}(\image)] - \Pr[1 \getsr \adv^{\odel(\cdot)}(\image^{\prime})] \leq \epsilon \]
+%\[
+%	\Pr \left[ b = 1 \Bigg{|} \begin{split} &\bprfmsk \getsr \bprfsetup(\urs);\\ &\image \getsr \bprfeval(\bprfmsk, \preimage);\\ &b \getsr \adv(\image, (\bprfsk_{\fixstring})_{\preimage \notin \csys_{\fixstring}});  \end{split} \right]
+%	- \Pr \left[ b = 1 \Bigg{|} \begin{split} &\bprfmsk \getsr \bprfsetup(\urs);\\ &\image \getsr \bin^{\outputlen};\\ &b \getsr \adv(\image, (\bprfsk_{\fixstring})_{\preimage \notin \csys_{\fixstring}});  \end{split} \right] \leq \epsilon,
+%\]
+%where $\bprfsk_{\fixstring} = \bprfdel(\bprfmsk, \fixstring)$ for all $\fixstring$ such that $\preimage \notin \csys_{\fixstring}$.
+%Feb13\[
+%	\Pr \left[ b = 1 \Bigg{|} \begin{split} &\bprfmsk \getsr \bprfsetup(\urs);\\ &\image \getsr \bprfeval(\bprfmsk, \preimage);\\ &b \getsr \adv(\image, \bfkset);  \end{split} \right]
+%	- \Pr \left[ b = 1 \Bigg{|} \begin{split} &\bprfmsk \getsr \bprfsetup(\urs);\\ &\image \getsr \bin^{\outputlen};\\ &b \getsr \adv(\image, \bfkset);  \end{split} \right] \leq \epsilon,
+%\]
+%where $\bfkset = \{\bprfdel(\bprfmsk, \fixstring) \mid \text{all }\fixstring \in \{0,1,\bot\}^{\inputlen}\text{ such that }\preimage \notin \csys_{\fixstring}\}$.
+\[
+	|\Pr[1\getsr\adv(\urs,\image, \{\bprfsk_{\fixstring}\}_{\fixstring\in\fixstringset})]-\Pr[1\getsr \adv(\urs,\image^{\prime}, \{\bprfsk_{\fixstring}\}_{\fixstring\in\fixstringset})]| \leq \epsilon,
+\]
+%Feb13 where $\urs \getsr \bin^{n}$, $\bprfmsk \getsr \bprfsetup(\urs)$, $\image \getsr \bprfeval(\bprfmsk, \preimage)$, $\image^{\prime} \getsr \bin^{\outputlen}$, $\bfkset = \{\bprfdel(\bprfmsk, \fixstring) \mid \text{all }\fixstring \in \{0,1,\bot\}^{\inputlen}\text{ such that }\preimage \notin \csys_{\fixstring}\}$.
+%where $\urs \getsr \bin^{n}$, $\bprfmsk \getsr \bprfsetup(\urs)$, $\image \getsr \bprfeval(\bprfmsk, \preimage)$, $\image^{\prime} \getsr \bin^{\outputlen}$, and $\bprfsk_{\fixstring} = \bprfdel(\bprfmsk, \fixstring)$ for all $\fixstring \in \fixstringset$.
+where $\urs \getsr \bin^{n}$, $\bprfmsk \getsr \bprfsetup(\urs)$, $\image \getsr \bprfeval(\bprfmsk, \preimage)$, $\image^{\prime} \getsr \bprfy$, and $\bprfsk_{\fixstring} = \bprfdel(\bprfmsk, \fixstring)$ for all $\fixstring \in \fixstringset$.
+
+\emph{$(\amem, \epsilon, \theta)$-security} in the BSM is satisfied if for any function $f : \bin^{n} \rightarrow \bin^{\amem}$ and any $\preimage \in \bin^{\inputlen}$, we have
+%	$$\exists \event:\ \Pr[\event]\geq 1-\epsilon\ \mbox{and}\ I(\image;(f(\urs), (\bprfsk_{\fixstring})_{\preimage \notin \csys_{\fixstring}})|\event))\leq \theta,$$
+%	where $\urs \getsr \bin^{n}$ for some $n \in \mathbb{N}$, $\bprfmsk \getsr \bprfsetup(\urs)$, $\bprfsk_{\fixstring} = \bprfdel(\bprfmsk, \fixstring)$ for all $\fixstring$ such that $\preimage \notin \csys_{\fixstring}$, and $\image = \bprfeval(\bprfmsk, \preimage)$.
+	$$\exists \event:\ \Pr[\event]\geq 1-\epsilon\ \mbox{and}\ I(\image;(f(\urs), \{\bprfsk_{\fixstring}\}_{\fixstring\in\fixstringset})\mid\event)\leq \theta,$$
+	where $\urs \getsr \bin^{n}$, $\bprfmsk \getsr \bprfsetup(\urs)$, $\bprfsk_{\fixstring} = \bprfdel(\bprfmsk, \fixstring)$ for all $\fixstring \in \fixstringset$, and $\image = \bprfeval(\bprfmsk, \preimage)$.
+\end{definition}
+%We revisit the definition of BPRF here, as it can also enable applications such as broadcast encryption \cite{AC:BonWat13}. Additionally, we provide the definition of the restricted BPRF, which proves to be sufficient for the construction of IB-NIKE.
+%\heading{  Remark.} 
+%We note that in the security game, any adversary can make arbitrary queries to the oracle $\oextract$, which is constant for our input size.
+%\heading{  Remark.} Our definition of BPRF differs slightly from the definition in \cite{AC:BonWat13}. Specifically, our security model of BPRF does not give the adversary any direct oracle access to the image. This is because the adversary can always compute any image after receiving constrained key of one relevant set excluding the target preimage. 
+%%We also note that any adversary can make arbitrary queries to the oracle $\oextract$, which is some constant for our constant users.
+%Moreover, instead of giving the adversary oracle access to the constrained keys for some sets as in \cite{AC:BonWat13}, we compute the constrained keys for all sets such that the target preimage is not contained in any of them and give the outputs. This is because we focus on the constant size of users in the fine-grained settings.
+%%This also implies that our security model can be efficiently reduce to an adaptive one.
+%We also note that our selective security model is sufficient, as it can be efficiently reduced to an adaptive one due to the constant security loss.
+
+%\heading{Remark.} 
+%%<<<<<<< HEAD
+%Similar to IB-NIKE, our BPRF constructions in the fine-grained settings arrive adaptive security for free, as our input space of BPRF is constant.
+%
+%Moreover, in our fine-grained settings, the oracle for evaluating the ouput in \cite{AC:BonWat13} can be simulated by evaluating the output with relevant constrained keys, and the oracle for constrained key queries can be replaced by directly giving all constrained keys that cannot be used to evaluate the challenge input.
+%=======
+%Similar to IB-NIKE, our BPRF constructions in the fine-grained settings arrive adaptive security for free, as our size of the input is constant.
+%Moreover, in our fine-grained settings, the oracle for evaluating the ouput in \cite{AC:BonWat13} can be simulated by evaluating the output with relevant constrained keys, and the oracle for constrained key queries can be replaced by directly giving all constrained keys that cannot be used to evaluate the challenge input.
+%>>>>>>> 0883f1e4c25ae9b17085253077be13347af3b3f1
+
+
+%\heading{  Restricted bit-fixing pseudorandom functions.} A \emph{$\cc_1$-$(\inputlen, \outputlen)$-restricted bit-fixing pseudorandom function (restricted BPRF)} is a special case of $\cc_1$-$(\inputlen, \outputlen)$-BPRF for a set system $\csys \subseteq \{0,1\}^{\inputlen}$ where we require the set system $\csys$ only consists of all sets $\csys_{\fixstring}$ for $\fixstring \in \{\bot\}^{\leftindex-1} \cup \bin^{\rightindex-\leftindex+1} \cup \{\bot\}^{\inputlen-\rightindex}$ for any $\leftindex, \rightindex \in [\inputlen]$. 
+%\begin{definition}[Restricted bit-fixing pseudorandom functions.] A \emph{$\cc_1$-$(\inputlen, \outputlen)$-restricted bit-fixing pseudorandom function (restricted BPRF)} is defined in exactly the same way as $\cc_1$-$(\inputlen, \outputlen)$-BPRF except that we require that $\fixstring \in \{\bot\}^{\leftindex-1} \cup \bin^{\rightindex-\leftindex+1} \cup \{\bot\}^{\inputlen-\rightindex}$ for all $\leftindex, \rightindex \in [\inputlen]$. 
+%\end{definition}
+\begin{definition}[Restricted bit-fixing pseudorandom functions] A \emph{$\cc_1$-$\inputlen$-restricted bit-fixing pseudorandom function (restricted BPRF)} is defined in exactly the same way as $\cc_1$-$\inputlen$-BPRF except that we require that $\fixstring \in \{\bot\}^{\leftindex-1} \times \bin^{\rightindex-\leftindex+1} \times \{\bot\}^{\inputlen-\rightindex}$ for all $\leftindex, \rightindex \in [\inputlen]$.
+\end{definition}
+%Note that a $\cc_1$-$(\inputlen, \outputlen)$-BPRF implies a $\cc_1$-$(\inputlen, \outputlen)$-restricted BPRF since $\{\bot\}^{\leftindex} \cup \bin^{\inputlen-\leftindex-\rightindex} \allowbreak \cup \{\bot\}^{\rightindex} \subseteq \{0,1,\bot\}^{\inputlen}$.
+
+%$\bprfsecurity$ is satisfied if for any adversary $\mathcal{A} = \{\adv\} \in \cc_2$ and all sufficiently large $\lambda \in \mathbb{N}$, we have
+%\[ \Pr[1 \getsr \adv^{\odel(\cdot),\oeval(\cdot)}(\image)] - \Pr[1 \getsr \adv^{\odel(\cdot),\oeval(\cdot)}(\image^{\prime})] \leq \epsilon \]
+%where $\odel(\fixstring) = \bprfdel(\bprfmsk, \fixstring)$, $\oeval(\preimage) = \bprfeval(\bprfmsk, \preimage)$, $\image \getsr \bprfeval(\bprfmsk, \preimage)$ for any $\preimage$, $\bprfmsk \getsr \bprfsetup$, and $\image^{\prime} \getsr \{0,1\}^{\outputlen}$.
+
+%Note that we omit the $\oeval(\preimage) = \bprfeval(\bprfmsk, \preimage)$ queries here since making constrained queries $\odel$ is sufficient to compute $\oeval$. More specifically, we can compute $\bprfeval(\bprfmsk, \preimage)$ by finding an $\fixstring$ such that $\preimage \in \csys_{\fixstring}$ and computing $\bprfceval(\bprfsk_{\fixstring}, \preimage)$ where $\bprfsk_{\fixstring}$ is the output of $\odel(\fixstring)$. The output of $\bprfeval(\bprfmsk, \preimage)$ is equal to $\bprfceval(\bprfsk_{\fixstring}, \preimage)$ with high probability (more than $1-\epsilon$) according to $\bprfcorrectness$.
+
+
+\subsection{Constructions of Multi-Party IB-NIKE}
+\label{sec:bprf-ibnike}
+In this section, we give our constructions of multi-party IB-NIKE in the bounded-parallel-time model, bounded-time model, and BSM, respectively. These constructions are similar to those in \cite{HKKW13}, with the distinction that the underlying BPRFs can be restricted BPRFs and are built in the fine-grained setting.
+
+%construction of IBNIKE
+%ibnike construction
+%Let $\mathsf{BPRF}$ be a $\cc_1$-$(\pnum, \bprfoutputsize)$-restricted BPRF with $\epsilon_1$-correctness and $\epsilon_2$-security for any constant $\pnum$. We construct $\ibnike$ satisfying $2\epsilon_1$-correctness and $\cc_2$-$\epsilon_2$-security as in \cref{fig:con-ibnike}.
+%Let $\mathsf{BPRF}$ be a $\aczerotwo$-$(\pnum, \bprfoutputsize)$-restricted BPRF with $\epsilon_1$-correctness and $\ncone$-$\epsilon_2$-security for $\epsilon_1 = 0$, $\epsilon_2 = \negl$, and any constant $\pnum$. We construct $\ibnike$ satisfying $2\epsilon_1$-correctness and $\cc_2$-$\epsilon_2$-security as in \cref{fig:con-ibnike}.
+%\begin{theorem}
+%\label{thm:ibnike}
+%If $\bprf = \{\bprfsetup, \bprfeval, \bprfdel, \bprfceval \}$ is a $\cc_1$-$(\pnum, \bprfoutputsize)$-restricted BPRF with $\epsilon_1$-correctness and $\epsilon_2$-security for any constant $\pnum$, then for some constant $|\ibidspace|$ such that $\ibparty = \pnum/|\ibidspace|$ is some integer, IB-NIKE in \cref{fig:con-ibnike} is a $\cc_1$-$\ibparty$-IB-NIKE with $2\epsilon_1$-correctness and $\cc_2$-$\epsilon_2$-security.
+\heading{Construction in the bounded-parallel-time model.}
+%Let $\mathsf{BPRF}$ be a $\aczerotwo$-$(\pnum, \bprfoutputsize)$-restricted BPRF with $\epsilon_1$-correctness and $\ncone$-$\epsilon_2$-security for $\epsilon_1 = 0$, $\epsilon_2 = \negl$, and any constant $\pnum$. We construct $\ibnike$ satisfying $2\epsilon_1$-correctness and $\ncone$-$\epsilon_2$-security as in \cref{fig:con-ibnike}.
+%Feb14 Let $\ncbprf = \{ \bprfsetup,\allowbreak \bprfeval, \bprfdel, \bprfceval \} $ be an \allowbreak $\aczerotwo$-$(\pnum, \bprfoutputsize)$-\allowbreak restricted BPRF for some constant $\pnum$ and some $\bprfoutputsize$. Let $\ibparty$ be any constant. Our $\ncibnike = \{ \ibsetup,\allowbreak \ibextract,\allowbreak \ibshare \}$ with space $\bin^{\pnum/\ibparty}$ is defined as in \cref{fig:con-ibnike}.
+%Let $\ncbprf = \{ \bprfsetup,\allowbreak \bprfeval, \bprfdel, \bprfceval \} $ be an \allowbreak $\aczerotwo$-$(\pnum, \bprfoutputsize)$-\allowbreak restricted BPRF with URS length $n$ for some constant $\pnum$, some $\bprfoutputsize$, and some $n = n(\lambda)$. Let $\ibparty$ be any constant. Our $\ncibnike = \{ \ibsetup,\allowbreak \ibextract,\allowbreak \ibshare \}$ with identity space $\bin^{\pnum/\ibparty}$ and URS length $n$ is defined as in \cref{fig:con-ibnike}.
+%Let $\ncbprf = \{ \bprfsetup,\allowbreak \bprfeval, \bprfdel, \bprfceval \} $ be an \allowbreak $\aczerotwo$-$\pnum$-\allowbreak restricted BPRF with URS length $n$ and image length $\bprfoutputsize$ for some constant $\pnum$, some $\bprfoutputsize$ and some $n = n(\lambda)$. Let $\ibparty$ be any constant. Our $\ncibnike = \{ \ibsetup,\allowbreak \ibextract,\allowbreak \ibshare \}$ with identity space $\bin^{\pnum/\ibparty}$ and URS length $n$ is defined as in \cref{fig:con-ibnike}.
+Let $\ncbprf = \{ \bprfsetup,\allowbreak \bprfeval, \bprfdel, \bprfceval \} $ be an \allowbreak $\aczerotwo$-$\pnum$-\allowbreak restricted BPRF with URS length $n$ and image space $\bprfy$ for some constant $\pnum$, and some $n = n(\lambda)$. Let $\ibparty$ be any constant such that $\pnum/\ibparty$ is an integer. Our $\ncibnike = \{ \ibsetup,\allowbreak \ibextract,\allowbreak \ibshare \}$ with identity space $\bin^{\pnum/\ibparty}$ and URS length $n$ is defined as in \cref{fig:con-ibnike}.
+\begin{theorem}
+\label{thm:nc-ibnike-security}
+%If $\ncbprf = \{\bprfsetup, \bprfeval,\bprfdel, \allowbreak\bprfceval\}$ is a $\aczerotwo$-$(\pnum, \bprfoutputsize)$-restricted BPRF with $\epsilon_1$-correctness and $\ncone$-$\epsilon_2$-security for some constant $\pnum \geq 2$, then 
+%For some constant space $\ibidspace$ such that $\ibparty = \pnum/|\ibidspace|$ is some integer, then $\ncibnike$ in \cref{fig:con-ibnike} is a $\aczerotwo$-$\ibparty$-IB-NIKE with $2\cdot\epsilon_1$-correctness and $\ncone$-$\epsilon_2$-security.
+If $\ncbprf$ satisfies \allowbreak $\epsilon_1$\allowbreak-correctness and $\ncone$-$\epsilon_2$-security, then $\ncibnike$ in \cref{fig:con-ibnike} is an $\aczerotwo$-$\ibparty$-IB-NIKE with $2\cdot\epsilon_1$-correctness and $\ncone$-$\epsilon_2$-security.
+\end{theorem}
+\begin{figure}[h!]
+\begin{center}
+\framebox{
+\small
+  \begin{tabular}{ll}
+    \begin{minipage}[t]{0.7\textwidth}
+    	\underline{$\ibsetup(\urs)$:}
+    	\item Return $\ibmsk \getsr \bprfsetup(\urs)$\\
+	
+	\underline{$\ibextract(\ibmsk, \ibid)$:}
+	%\item Let $\ibidspacesize = $
+	\item For $i \in [\ibparty]$
+	\item \tab $\bprfsk_{i} = \bprfdel(\ibmsk, \fixstring_{i})$ where $\fixstring_{i} = (\anychar^{(i-1)\pnum/\ibparty}, \ibid, \anychar^{(\ibparty-i)\pnum/\ibparty})$
+	\item Return $\ibsk_{\ibid} = (\bprfsk_{i})_{i \in [\ibparty]}$
+	\\
+	
+%    \end{minipage}&  \begin{minipage}[t]{0.42\textwidth}
+        \underline{$\ibshare(\ibsk_{\ibid}, \ibidlist)$:}
+        \item Parse $\ibidlist = \{ \ibid_i \}_{i \in [\ibparty]}$ and $\ibsk_{\ibid} = (\bprfsk_{i})_{i \in [\ibparty]}$
+	\item Return $\ibshk_{\ibidlist} = \bprfceval(\bprfsk_{i^*}, (\ibid_i)_{i \in [\ibparty]}) $ where $i^* \in [\ibparty]$ s.t. $\ibid_{i^*} = \ibid$
+    \end{minipage} 
+      \end{tabular}
+      }
+\end{center}
+\caption{Construction of $\ncibnike=\{\ibsetup, \ibextract, \ibshare \}$.}
+\label{fig:con-ibnike}
+\end{figure}
+
+\begin{proof}
+\heading{Complexity.} First note that $\{\ibsetup, \ibextract, \ibshare\}$ are computable in $\aczerotwo$ since they run $\bprfdel$ and $\bprfceval$ for a constant number of times.
+
+\heading{Correctness.}
+	%	For any list of $\ibparty$ distinct identities $\ibidlist \subseteq \ibidspace$, $i,j \in [\ibparty]$, let event $A : \bprfceval  \allowbreak (\bprfsk_{i},\ibidlist) = \bprfeval(\ibmsk, \ibidlist)$ and event $B : \bprfceval\allowbreak(\bprfsk_{j}, \allowbreak \ibidlist) = \bprfeval(\ibmsk, \ibidlist)$. By the $\epsilon_1$-correctness of $\ncbprf$, we have $\Pr[A] = \Pr[B] \geq 1-\epsilon_1$. Thus we have
+%\[\begin{split}
+%	&\Pr[\ibshare(\ibsk_{\ibid_i}, \ibidlist) = \ibshare(\ibsk_{\ibid_j}, \ibidlist)]\\
+%	=&\Pr[\bprfceval(\bprfsk_{i}, \ibidlist) = \bprfceval(\bprfsk_{j}, \ibidlist)]\\
+%	\geq& \Pr[A, B] = \Pr[A] + \Pr[B] - \Pr[A \cup B]\\
+%	\geq& \Pr[A] + \Pr[B] -1 \geq 1-2\epsilon_1.
+%\end{split}\]
+	For any list of $\ibparty$ distinct identities $\ibidlist^* \subseteq \ibidspace$ and any $i,j \in [\ibparty]$, by the $\epsilon_1$-correctness of $\ncbprf$, we have 
+	\[\begin{split}\Pr[\bprfceval & (\bprfsk_{i},\ibidlist^*) = \bprfeval(\ibmsk, \ibidlist^*)] \geq 1-\epsilon_1
+	\end{split}\]
+	\[\begin{split}
+	 \mbox{and}\tab \Pr[\bprfceval\allowbreak(\bprfsk_{j}, \allowbreak \ibidlist^*) = \bprfeval(\ibmsk, \ibidlist^*)] \geq 1-\epsilon_1,\end{split}\]
+	where $\ibmsk \getsr \bprfsetup(\urs)$ for $\urs \getsr \bin^{n}$ and $\bprfsk_i = \bprfdel(\ibmsk, \fixstring_{i})$ for $\fixstring_i \in \{0, 1, \bot\}^{\pnum}$ and any $i \in [\ibparty]$. Therefore by a union bound, we have 
+	$$
+	\Pr[\bprfceval (\bprfsk_{i},\ibidlist^*)=\bprfceval\allowbreak(\bprfsk_{j}, \allowbreak \ibidlist^*)]\geq 1-2\epsilon_1,
+	$$
+	$$\mbox{	i.e.,}\tab \Pr[\ibshare(\ibsk_{\ibid_i}, \ibidlist^*) = \ibshare(\ibsk_{\ibid_j}, \ibidlist^*)] \geq 1-2\epsilon_1,$$ where $\ibsk_{\ibid_i} = \ibextract(\ibmsk, \ibid_i)$ for $\ibmsk \getsr \ibsetup(\urs)$ and any $i \in [\ibparty]$.
+
+%\heading{  Security.}
+%	Let $\lambda$ be the security parameter and $\mathcal{A} = \{\adv\} \in \ncone$ be any adversary against the $\ncone$-security of $\ncbprf$. The proof proceeds via a sequence of hybrid games as in \cref{fig:security-ibnike}.
+\heading{Security.}
+	Let $\lambda$ be the security parameter and $\mathcal{A} = \{\adv\} \in \ncone$ be any adversary against the $\ncone$-security of $\ncibnike$. For any $\preimage \in \bin^{\pnum}$, we construct $\advB=\{\advb\} \in \ncone$ against the security of $\ncbprf$ as follows.
+%\begin{compactitem}
+%	$\advb$ sends honest generated $\ibshk_{\ibidlist^*} $ and $\ibsk_{\ibid\in\ibidspace\slash\ibidlist^*}$ to $\adv$.
+%	Finally, $\advb$ relays $\adv$'s guess bit.
+%\end{compactitem}
+%\heading{  $\gameg_0$.} This is the original security game where $\adv$ decides to be challenge on an identity list $\ibidlist^*$ after potentially querying $\oextract(\cdot)$. Then $\adv$ gets $\ibshare(\ibsk_{\ibid}, \ibidlist^*)$ for some $\ibid \in \ibidlist^*$. After potentially further querying $\oextract(\cdot) \allowbreak= \ibextract(\ibmsk, \ibid)$ (but only on $\ibid \notin \ibidlist^*$), $\adv$ finally outputs a guess bit $b$.
+%\heading{  $\gameg_0$.} This is the original security game where for any list of $\ibparty$ distinct identities $\ibidlist^* \subseteq \ibidspace$, $\adv$ gets $\ibshk_{\ibidlist^*} = \ibshare(\ibsk_{\ibid}, \ibidlist^*)$ for some $\ibid \in \ibidlist^*$ and $\ibsk_{\ibid\in\ibidspace\slash\ibidlist^*}$ and outputs a bit $b$.
+
+%\heading{  $\gameg_1$.} $\gameg_1$ and $\gameg_0$ only differ in the way that $\ibshk_{\ibidlist^*}$ is generated, namely, $\ibshk_{\ibidlist^*} \getsr \ibshkspace$. 
+
+%\begin{figure}[h!]
+%\begin{center}
+%\framebox{
+%\small
+%	\begin{tabular}{l}
+%	\begin{minipage}[t]{0.9\textwidth}
+%	Games $\gameg_0$, \fbox{$\gameg_1$}
+%		\item $\ibmsk \getsr \bprfsetup(\urs)$
+%		
+%		\item On receiving a challenge $\ibidlist^*$ from $\adv$\\
+%		\tab parse $\ibidlist^* = \{ \ibid_i \}_{i \in [\ibparty]}$\\
+%%		\tab $\ibsk_{\ibid} = (\bprf.\bprfsk_{i} \getsr \bprf.\bprfdel(\ibmsk, \fixstring))_{i \in [\pnum]} $
+%%		\tab and $(\bprf.\bprfsk_{i})_{i \in [\pnum]} = \ibsk_{\ibid}$\\
+%		\tab Let $i^* \in [\ibparty]$ and $\fixstring_{i^*} = (\anychar^{i^*-1}, \ibid_{i^*}, \anychar^{n-i^*})$\\
+%		\tab $\bprfsk_{i^*} = \bprfdel(\ibmsk, \fixstring_{i^*})$\\
+%		\tab $\ibshk_{\ibidlist^*} = \bprfceval(\bprfsk_{i^*}, (\ibid_i)_{i \in [\ibparty]})$ \fbox{$\ibshk_{\ibidlist^*} \getsr \ibshkspace$}\\
+%		\tab Return $\ibshk_{\ibidlist^*}$
+%			
+%		\item Every time on receiving a $\oextract(\ibid)$ query from $\adv$\\
+%		\tab Let $\ibidspacesize = |\ibidspace|$\\
+%		\tab For every $i \in [\ibparty]$, $\fixstring_{i} = (\anychar^{(i-1)\ibidspacesize}, \ibid, \anychar^{(\pnum-i)\ibidspacesize})$
+%		and $\bprfsk_{i} = \bprfdel(\ibmsk, \fixstring_{i})$\\
+%		\tab Let $\ibsk_{\ibid} = (\bprfsk_{i})_{i \in [\ibparty]}$\\
+%%		\tab Check if $\ibid \in \ibidlist^*$\\
+%		\tab If $\ibid \in \ibidlist^*$, abort and return $\bot$\\
+%		\tab Else, return $\ibsk_{\ibid}$ to $\adv$
+%		
+%		\item On receiving $b$ from $\adv$, output $b$
+%	\end{minipage}
+%	\end{tabular}
+%}
+%\end{center}
+%\caption{The challengers in $\gameg_0$, $\gameg_1$.}
+%\label{fig:security-ibnike}
+%\end{figure}
+%\begin{figure}[h!]
+%\begin{center}
+%\framebox{
+%\small
+%	\begin{tabular}{l}
+%	\begin{minipage}[t]{0.9\textwidth}
+%	Games $\gameg_0$, \fbox{$\gameg_1$}
+%		\item $\ibmsk \getsr \bprfsetup(\urs)$
+%%		
+%%		\item On receiving a challenge $\ibidlist^*$ from $\adv$\\
+%%		\item \\
+%		\item Let $\ibidlist^* = \{ \ibid_i \}_{i \in [\ibparty]} \subseteq \ibidspace^{\ibparty}$ and $i^* \in [\ibparty]$
+%%		\item parse $\ibidlist^*$
+%%		\tab $\ibsk_{\ibid} = (\bprf.\bprfsk_{i} \getsr \bprf.\bprfdel(\ibmsk, \fixstring))_{i \in [\pnum]} $
+%%		\tab and $(\bprf.\bprfsk_{i})_{i \in [\pnum]} = \ibsk_{\ibid}$\\
+%		\item $\fixstring_{i^*} = (\anychar^{i^*-1}, \ibid_{i^*}, \anychar^{n-i^*})$
+%		\item $\bprfsk_{i^*} = \bprfdel(\ibmsk, \fixstring_{i^*})$
+%		\item $\ibshk_{\ibidlist^*} = \bprfceval(\bprfsk_{i^*}, (\ibid_i)_{i \in [\ibparty]})$ \fbox{$\ibshk_{\ibidlist^*} \getsr \ibshkspace$}
+%%		\item Return $\ibshk_{\ibidlist^*}$
+%%			
+%		\item For each $\ibid \notin \ibidlist^*$\\
+%		\tab Let $\ibidspacesize = |\ibidspace|$\\
+%		\tab For each $i \in [\ibparty]$, $\fixstring_{i} = (\anychar^{(i-1)\ibidspacesize}, \ibid, \anychar^{(\pnum-i)\ibidspacesize})$
+%		and $\bprfsk_{\fixstring_{i}} = \bprfdel(\ibmsk, \fixstring_{i})$\\
+%		\tab Let $\ibsk_{\ibid} = (\bprfsk_{\fixstring_{i}})_{i \in [\ibparty]}$
+%%		\tab Check if $\ibid \in \ibidlist^*$\\
+%%		\tab If $\ibid \in \ibidlist^*$, abort and return $\bot$\\
+%		\item Return $\ibshk_{\ibidlist^*}$ and $(\ibsk_{\ibid})_{\ibid \notin \ibidlist^*}$ to $\adv$
+%		
+%		\item On receiving $b$ from $\adv$, output $b$
+%	\end{minipage}
+%	\end{tabular}
+%}
+%\end{center}
+%\caption{The challengers in $\gameg_0$, $\gameg_1$.}
+%\label{fig:security-ibnike}
+%\end{figure}
+
+%\begin{lemma}
+%\label{lem:ibnike-g0tog1}
+%	$$ |\Pr[\gameg_1^{\adv} \Rightarrow 1] - \Pr[\gameg_0^{\adv} \Rightarrow 1]| \leq \epsilon_2 $$
+%\end{lemma}
+%\begin{proof}
+%	We construct an adversary $\advB = \{\advb \in \ncone\}$ against the security of $\bprf$ as follows.
+	
+%	On receiving a challenge $\ibidlist^*$ from $\adv$, $\advb$ forwards $\ibidlist^*$ to its challenger and returns the answer $\ibshk_{\ibidlist^*} = \bprfeval(\ibmsk, \ibidlist^*)$ to $\adv$. Every time on receiving a query $\oextract(\ibid)$ from $\adv$, $\advb$ checks if $\ibid \in \ibidlist^*$. If $\ibid \notin \ibidlist^*$, $\advb$ forwards $\fixstring_i = (\anychar^{(i-1)\ibidspacesize}, \ibid, \anychar^{(\pnum-i)\ibidspacesize})$ to its oracle $\odel(\fixstring_i)$ for every $i \in [\ibparty]$ and returns the answers $\ibsk_{\ibid} = (\bprfsk_{i})_{i \in [\ibparty]}$ to $\adv$. Finally, on receiving $b \in \bin$ from $\adv$, $\advb$ returns $b$.
+%	On receiving $(\image, (\bprfsk_{\fixstring})_{\preimage \notin \csys_{\fixstring}})$ where $\bprfsk_{\fixstring} = \bprfdel(\bprfmsk, \fixstring)$ for all $\fixstring$ such that $\preimage \notin \csys_{\fixstring}$ and $\image \getsr \bprfeval(\bprfmsk, \preimage)$ or $\image \getsr \bin^{\bprfoutputsize}$ where $\bprfmsk \getsr \bprfsetup(\urs)$, $\advb$ returns $\ibshk = \image$ and $(\bprfsk_{\fixstring})_{\preimage \notin \csys_{\fixstring}}$ to $\adv$. On receiving $b \in \bin$ from $\adv$, $\advb$ forwards $b$ to its challenger.
+%Feb14	On receiving $(\image, \{\bprfsk_{\fixstring}\}_{\fixstring\in\fixstringsetcon})$ where $\bprfsk_{\fixstring} = \bprfdel(\bprfmsk, \fixstring)$ for all $\fixstring \in \fixstringsetcon$ and $\image \getsr \bprfeval(\bprfmsk, \preimage)$ or $\image \getsr \bin^{\bprfoutputsize}$ where $\bprfmsk \getsr \bprfsetup(\urs)$, $\advb$ returns $\ibshk = \image$ and $\{\bprfsk_{\fixstring}\}_{\fixstring\in\fixstringsetcon}$ to $\adv$. On receiving $b \in \bin$ from $\adv$, $\advb$ forwards $b$ to its challenger.
+%	On receiving $(\image, \{\bprfsk_{\fixstring}\}_{\fixstring\in\fixstringsetcon})$ where $\bprfsk_{\fixstring} = \bprfdel(\bprfmsk, \fixstring)$ for all $\fixstring \in \fixstringsetcon$ and $\image \getsr \bprfeval(\bprfmsk, \preimage)$ or $\image \getsr \bin^{\bprfoutputsize}$ where $\bprfmsk \getsr \bprfsetup(\urs)$ for $\urs \getsr \bin^{n}$, $\advb$ returns $\ibshk = \image$ and $\{\bprfsk_{\fixstring}\}_{\fixstring\in\fixstringsetcon}$ to $\adv$. On receiving $b \in \bin$ from $\adv$, $\advb$ forwards $b$ to its challenger.
+%	On receiving $(\image, \{\bprfsk_{\fixstring}\}_{\fixstring\in\fixstringsetcon})$ where $\bprfsk_{\fixstring} = \bprfdel(\bprfmsk, \fixstring)$ for all $\fixstring \in \fixstringsetcon$ and $\image \getsr \bprfeval(\bprfmsk, \preimage)$ or $\image \getsr \bin^{\bprfoutputsize}$ where $\bprfmsk \getsr \bprfsetup(\urs)$ for $\urs \getsr \bin^{n}$, $\advb$ returns $\ibshk = \image$ and $\{\bprfsk_{\fixstring}\}_{\fixstring\in\fixstringsetcon}$ to $\adv$. On receiving $b \in \bin$ from $\adv$, $\advb$ forwards $b$ to its challenger.
+	On receiving $(\image, \{\bprfsk_{\fixstring}\}_{\fixstring\in\fixstringsetcon})$ where $\bprfsk_{\fixstring} = \bprfdel(\bprfmsk, \fixstring)$ for all $\fixstring \in \fixstringsetcon$ and $\image \getsr \bprfeval(\bprfmsk, \preimage)$ or $\image \getsr \bprfy$ where $\bprfmsk \getsr \bprfsetup(\urs)$ for $\urs \getsr \bin^{n}$, $\advb$ returns $\ibshk = \image$ and $\{\bprfsk_{\fixstring}\}_{\fixstring\in\fixstringsetcon}$ to $\adv$. On receiving $b \in \bin$ from $\adv$, $\advb$ forwards $b$ to its challenger.
+	
+	First we note that all operations in $\advb$ are in $\ncone$, since $\advb$ does not execute any additional operations other than running $\adv$.
+%	Moreover, when $\ibshk_{\ibidlist^*} \getsr \ibshare(\ibsk_{\ibid}, \ibidlist^*)$ (respectively, $\ibshk_{\ibidlist^*} \getsr \ibshkspace$), the view of $\adv$ is identical to its view in $\gameg_0$ (respectively, $\gameg_1$). Hence, the advantage of $\advb$ in breaking the security of $\ncbprf$ is	
+%	Moreover, when $\image \getsr \bprfeval(\bprfmsk, \preimage)$ (respectively, $\image \getsr \bin^{\bprfoutputsize}$) for any $\preimage \in \bin^{\pnum}$ where $\bprfmsk \getsr \bprfsetup(\urs)$ for $\urs \getsr \bin^{n}$, the view of $\adv$ is identical to its view in the security game for $\ncibnike$ when $\ibshk$ is honestly generated (respectively, generated as a randomness). Hence, the advantage of $\advb$ in breaking the security of $\ncbprf$ is the same as the advantage of $\adv$ in breaking the security of $\ncibnike$, completing the proof of \cref{thm:nc-ibnike-security}.
+	Moreover, when $\image \getsr \bprfeval(\bprfmsk, \preimage)$ (respectively, $\image \getsr \bprfy$) for any $\preimage \in \bin^{\pnum}$ where $\bprfmsk \getsr \bprfsetup(\urs)$ for $\urs \getsr \bin^{n}$, the view of $\adv$ is identical to its view in the security game for $\ncibnike$ when $\ibshk$ is honestly generated (respectively, generated at random). Hence, the advantage of $\advb$ in breaking the security of $\ncbprf$ is the same as the advantage of $\adv$ in breaking the security of $\ncibnike$, completing the proof of \cref{thm:nc-ibnike-security}.
+%	$$ |\Pr[\gameg_1^{\adv}\Rightarrow 1] - \Pr[\gameg_0^{\adv}\Rightarrow 1]|. $$.
+%\[
+%	\Pr \left[ b = 1 \Bigg{|} \begin{split} &\bprfmsk \getsr \bprfsetup(\urs);\\ &\image \getsr \bprfeval(\bprfmsk, \preimage);\\ &b \getsr \adv(\image, (\bprfsk_{\fixstring})_{\preimage \notin \csys_{\fixstring}});  \end{split} \right]
+%	- \Pr \left[ b = 1 \Bigg{|} \begin{split} &\bprfmsk \getsr \bprfsetup(\urs);\\ &\image \getsr \bin^{\outputlen};\\ &b \getsr \adv(\image, (\bprfsk_{\fixstring})_{\preimage \notin \csys_{\fixstring}});  \end{split} \right] \leq \epsilon,
+%\]
+%where $\bprfsk_{\fixstring} = \bprfdel(\bprfmsk, \fixstring)$ for all $\fixstring$ such that $\preimage \notin \csys_{\fixstring}$.
+%$$ |\Pr[\gameg_1^{\adv}\Rightarrow 1] - \Pr[\gameg_0^{\adv}\Rightarrow 1]|. $$.
+%\[
+%	\Pr \left[ b = 1 \Bigg{|} \begin{split} &\bprfmsk \getsr \bprfsetup(\urs);\\ &\image \getsr \bprfeval(\bprfmsk, \preimage);\\ &b \getsr \adv(\image, (\bprfsk_{\fixstring})_{\preimage \notin \csys_{\fixstring}});  \end{split} \right]
+%	- \Pr \left[ b = 1 \Bigg{|} \begin{split} &\bprfmsk \getsr \bprfsetup(\urs);\\ &\image \getsr \bin^{\outputlen};\\ &b \getsr \adv(\image, (\bprfsk_{\fixstring})_{\preimage \notin \csys_{\fixstring}});  \end{split} \right] \leq \epsilon,
+%\]
+%where $\bprfsk_{\fixstring} = \bprfdel(\bprfmsk, \fixstring)$ for all $\fixstring$ such that $\preimage \notin \csys_{\fixstring}$.
+%	Completing this part of proof.
+%\end{proof}
+%	Putting all of these together, \cref{thm:nc-ibnike-security} immediately follows.
+\end{proof}
+
+%IBNIKE in the bounded time model
+\heading{Construction in the bounded-time model and BSM.}
+%Part explaination
+%The construction of multi-party IB-NIKE in the bounded time model is the same as the one in the bounded-parallel-time model. The proof is also the same as the proof of \cref{thm:nc-ibnike-security} with the following two distinctions. For correctness, $\{\ibsetup, \ibextract, \ibshare\}$ are computable in $\tilde{O}(\lambda^{\pnum+k-1})$ since they only involve operations including running a constant number of $\bprf.\bprfdel$ and $\bprf.\bprfceval$. For security, the adversary $\advB = \{ \advb \}$ runs in time $\tilde{O}(\lambda^{\pnum+k-1})$ since they only involve operations including answering constant times of $\odel$ queries.
+%full theorem
+%Let $\cc_1$ (respectively, $\cc_2$) be the set of all word-RAM families such that for each $\mathcal{F} = \{f_{\lambda}\} \in \cc_1$ (respectively, $\mathcal{F} = \{f_{\lambda}\} \in \cc_2$) and each $\lambda \in \mathbb{N}$, $f_{\lambda}$ runs in time $\tilde{O}(\lambda^{\pnum+k-1})$ (respectively, $\tilde{O}(\lambda^{\pnum+k})$) for any constant $\pnum \geq 2, k \geq 3$.
+%Let $\cc_1$ (respectively, $\cc_2$) be the set of all word-RAM families such that for each $\mathcal{F} = \{f_{\lambda}\} \in \cc_1$ (respectively, $\mathcal{F} = \{f_{\lambda}\} \in \cc_2$) and each $\lambda \in \mathbb{N}$, $f_{\lambda}$ runs in time $\tilde{O}(T_1(\lambda))$ (respectively, $\tilde{O}(T_2(\lambda))$). Let $\ibparty$ be any constant.
+%Feb14Let $\cc_1$ and $\cc_2$ (respectively, $\cc_1^{\prime}$ and $\cc_2^{\prime}$) be the set of all word-RAM families (respectively, streaming word-RAM families) such that for each $\mathcal{F}_1 = \{f_{\lambda}^1\} \in \cc_1$ and $\mathcal{F}_2 = \{f_{\lambda}^2\} \in \cc_2$ (respectively, $\mathcal{F}_1 = \{f_{\lambda}^1\} \in \cc_1'$ and $\mathcal{F}_2 = \{f_{\lambda}^2\} \in \cc_2'$) and each $\lambda \in \mathbb{N}$, $f_{\lambda}^1$ runs in time $\tilde{O}(T_1(\lambda))$ and $f_{\lambda}^2$ runs in time $\tilde{O}(T_2(\lambda))$ (respectively, with memory bounds $O(\storagefunction_1(\lambda))$ and $O(\storagefunction_2(\lambda))$). Let $\ibparty$ be any constant.
+%Our construction $\tibnike$ (respectively, $\bsibnike$) with URS length $n$ is defined in exactly the same way as $\ncibnike$ (see \cref{fig:con-ibnike}) except that the underlying $\mathsf{NCBPRF}$ is replaced by a $\tbprf$ (respectively, $\bsbprf$), which is a $\cc_1$-$(\pnum, \bprfoutputsize)$-BPRF (respectively, $\cc_1^{\prime}$-$(\pnum, \bprfoutputsize)$-BPRF) with URS length $n$ for some constant $\pnum$, some $\bprfoutputsize$, and some $n = n(\lambda)$.
+%Let $\epsilon_1 = \negl$, $\epsilon_2 = \frac{1}{\lambda^{o(1)}}$. 
+%We construct $\ibnike$ satisfying $2\epsilon_1$-correctness and $\cc_2$-$\epsilon_2$-security as in \cref{fig:con-ibnike}.
+%Our $\tibnike = \{\ibsetup, \ibextract, \ibshare\}$ is defined in exactly the same way as $\ncibnike$ (see \cref{fig:con-ibnike}) except that the underlying $\mathsf{NCBPRF}$ is replaced by a $\cc_1$-$(\pnum, \bprfoutputsize)$-BPRF with $\epsilon_1$-correctness and $\cc_2$-$\epsilon_2$-security.
+%Let $\cc_1$ and $\cc_2$ be the set of all word-RAM families such that for each $\mathcal{F}_1 = \{f_{\lambda}^1\} \in \cc_1$ and $\mathcal{F}_2 = \{f_{\lambda}^2\} \in \cc_2$ and each $\lambda \in \mathbb{N}$, $f_{\lambda}^1$ runs in time $\tilde{O}(T_1(\lambda))$ and $f_{\lambda}^2$ runs in time $\tilde{O}(T_2(\lambda))$. Let $\ibparty$ be any constant.
+%Our construction in the bounded time model $\tibnike$ with URS length $n$ is defined in exactly the same way as $\ncibnike$ (see \cref{fig:con-ibnike}) except that the underlying $\mathsf{NCBPRF}$ is replaced by a $\cc_1$-$(\pnum, \bprfoutputsize)$-BPRF with URS length $n$ for some constant $\pnum$, some $\bprfoutputsize$, and some $n = n(\lambda)$.
+Let $\cc_1$ and $\cc_2$ be the set of all word-RAM families such that for each $\mathcal{F}_1 = \{f_{\lambda}^1\} \in \cc_1$ and $\mathcal{F}_2 = \{f_{\lambda}^2\} \in \cc_2$ and each $\lambda \in \mathbb{N}$, $f_{\lambda}^1$ runs in time $\tilde{O}(T_1(\lambda))$ and $f_{\lambda}^2$ runs in time $\tilde{O}(T_2(\lambda))$. Let $\ibparty$ be any constant.
+Our construction in the bounded-time model $\tibnike$ with URS length $n$ is defined in exactly the same way as $\ncibnike$ (see \cref{fig:con-ibnike}) except that the underlying $\mathsf{NCBPRF}$ is replaced by a $\cc_1$-$\pnum$-BPRF with URS length $n$ and image length $\bprfoutputsize$ for some constant $\pnum$, some $\bprfoutputsize$, and some $n = n(\lambda)$.
+Notice that for our instantiation of $\cc_1$-$\pnum$-BPRF given later in \cref{sec:munike-bprf}, we have $n=0$, i.e., the IB-NIKE is in the plain model.
+
+%Moreover, let $\cc_1^{\prime}$ and $\cc_2^{\prime}$ be the class of streaming word-RAM families with memory bounds $O(\storagefunction_1(\lambda))$ and $O(\storagefunction_2(\lambda))$. Let $\ibparty'$ be any constant.
+%Our construction in the BSM $\bsibnike$ with URS length $n'$ is defined in exactly the same way as $\ncibnike$ (see \cref{fig:con-ibnike}) except that the underlying $\mathsf{NCBPRF}$ is replaced by a $\bsbprf$, which is a $\cc_1^{\prime}$-$(\pnum, \bprfoutputsize')$-BPRF with URS length $n'$ for some constant $\pnum$, some $\bprfoutputsize'$, and some $n' = n'(\lambda)$. We have the following theorems.
+Moreover, let $\cc_1^{\prime}$ be the class of streaming word-RAM families with memory bounds $\umem$. Let $\ibparty'$ be any constant.
+Our construction in the BSM $\bsibnike$ with URS length $n'$ is defined in exactly the same way as $\ncibnike$ (see \cref{fig:con-ibnike}) except that the underlying $\mathsf{NCBPRF}$ is replaced by a $\cc_1^{\prime}$-$\pnum$-BPRF with URS length $n'$ and image length $\bprfoutputsize'$ for some constant $\pnum$, some $\bprfoutputsize'$, and some $n' = n'(\lambda)$. We have the following theorems.
+
+%\begin{theorem}
+%\label{thm:time-ibnike-security}
+%If $\tbprf$ (respectively, $\bsbprf$) is a $\cc_1$-$(\pnum, \bprfoutputsize)$-BPRF (respectively, $\cc_1^{\prime}$-$(\pnum, \bprfoutputsize)$-BPRF) with $\epsilon_1$-correctness (respectively, $\epsilon_1^{\prime}$-correctness) and $\cc_2$-$\epsilon_2$-security (respectivley, $(\cc_2^{\prime}, \epsilon^{\prime}, \epsilon_2^{\prime})$-security in the BSM), then $\tibnike$ (respectively, $\bsibnike$) is a $\cc_1$-$\ibparty$-IB-NIKE (respectively, $\cc_1^{\prime}$-$\ibparty$-IB-NIKE) with $2\cdot\epsilon_1$-correctness (respectively, $2\cdot\epsilon_1^{\prime}$-correctness) and $\cc_2$-$\epsilon_2$-security (respectively, $(\cc_2^{\prime}, \epsilon^{\prime}, \epsilon_2^{\prime})$-security in the BSM).
+%\end{theorem}
+%\begin{theorem}
+%\label{thm:time-ibnike-security}
+%If $\tbprf$ is a $\cc_1$-$(\pnum, \bprfoutputsize)$-BPRF with $\epsilon_1$-correctness and $\cc_2$-$\epsilon_2$-security, then $\tibnike$ is a $\cc_1$-$\ibparty$-IB-NIKE with $2\cdot\epsilon_1$-correctness and $\cc_2$-$\epsilon_2$-security.
+%\end{theorem}
+\begin{theorem}
+\label{thm:time-ibnike-security}
+If $\tbprf$ is a $\cc_1$-$\pnum$-BPRF with $\epsilon_1$-correctness and $\cc_2$-$\epsilon_2$-security, then $\tibnike$ is a $\cc_1$-$\ibparty$-IB-NIKE with $2\cdot\epsilon_1$-correctness and $\cc_2$-$\epsilon_2$-security.
+\end{theorem}
+%\begin{theorem}
+%\label{thm:bsm-ibnike-security}
+%If $\bsbprf$ is a $\cc_1^{\prime}$-$(\pnum, \bprfoutputsize')$-BPRF with $\epsilon_1^{\prime}$-correctness and $(\cc_2^{\prime}, \epsilon^{\prime}, \epsilon_2^{\prime})$-security in the BSM, then $\bsibnike$ is a $\cc_1^{\prime}$-$\ibparty'$-IB-NIKE with $2\cdot\epsilon_1^{\prime}$-correctness and $(\cc_2^{\prime}, \epsilon^{\prime}, \epsilon_2^{\prime})$-security in the BSM.
+%\end{theorem}
+%\begin{theorem}
+%\label{thm:bsm-ibnike-security}
+%If $\bsbprf$ is a $\cc_1^{\prime}$-$(\pnum, \bprfoutputsize')$-BPRF with $\epsilon_1^{\prime}$-correctness and $(\amem, \epsilon^{\prime}, \epsilon_2^{\prime})$-security in the BSM, then $\bsibnike$ is a $\cc_1^{\prime}$-$\ibparty'$-IB-NIKE with $2\cdot\epsilon_1^{\prime}$-correctness and $(\amem, \epsilon^{\prime}, \epsilon_2^{\prime})$-security in the BSM.
+%\end{theorem}
+\begin{theorem}
+\label{thm:bsm-ibnike-security}
+If $\bsbprf$ is a $\cc_1^{\prime}$-$\pnum$-BPRF with $\epsilon_1^{\prime}$-correctness and $(\amem, \epsilon^{\prime}, \epsilon_2^{\prime})$-security in the BSM, then $\bsibnike$ is a $\cc_1^{\prime}$-$\ibparty'$-IB-NIKE with $2\cdot\epsilon_1^{\prime}$-correctness and $(\amem, \epsilon^{\prime}, \epsilon_2^{\prime})$-security in the BSM.
+\end{theorem}
+%\begin{theorem}
+%\label{thm:bs-ibnike-security}
+%%If $\bsbprf = \{\bprfsetup, \bprfeval, \bprfdel, \bprfceval \}$ is a $\cc_1$-$(\pnum, \bprfoutputsize)$-BPRF with $\epsilon_1$-correctness and $(\cc_2, \epsilon^{\prime}, \epsilon_2)$-security for any constant $\pnum$, then for some constant space $\ibidspace$ such that $\ibparty = \pnum/|\ibidspace|$ is some integer, $\bsibnike$ is a $\cc_1$-$\ibparty$-IB-NIKE with $2\cdot\epsilon_1$-correctness and $(\cc_2, \epsilon^{\prime}, \epsilon_2)$-security.
+%%If $\bsbprf = \{\bprfsetup, \bprfeval, \bprfdel, \bprfceval \}$ is a $\cc_1$-$(\pnum, \bprfoutputsize)$-BPRF with $\epsilon_1$-correctness and $(\cc_2, \epsilon^{\prime}, \epsilon_2)$-security for any constant $\pnum$, then for some constant space $\ibidspace$ such that $\ibparty = \pnum/|\ibidspace|$ is some integer, $\bsibnike$ is a $\cc_1$-$\ibparty$-IB-NIKE with $2\cdot\epsilon_1$-correctness and $(\cc_2, \epsilon^{\prime}, \epsilon_2)$-security.
+%If $\bsbprf$ is a $\cc_1$-$(\pnum, \bprfoutputsize)$-BPRF with $\epsilon_1$-correctness and $(\cc_2, \epsilon^{\prime}, \epsilon_2)$-security in the BSM, then $\bsibnike$ is a $\cc_1$-$\ibparty$-IB-NIKE with $2\cdot\epsilon_1$-correctness and $(\cc_2, \epsilon^{\prime}, \epsilon_2)$-security in the BSM.
+%\end{theorem}
+%	\heading{  Correctness.}
+%	First we note that $\{\ibsetup, \ibextract, \ibshare\}$ runs in time $\tilde{O}(\lambda^{\pnum+k-1})$ since they only involve operations including running a constant number of $\bprf.\bprfdel$ and running $\bprf.\bprfceval$ once. For any 
+%	\heading{  Security.} 
+%	The proof of \cref{thm:time-ibnike-security} is the same as the proof of \cref{thm:nc-ibnike-security} with the following two distinctions. The algorithm families $\{\ibsetup, \ibextract, \ibshare\}$ and the reduction are computable in time $\tilde{O}(\lambda^{\pnum+k-1})$ and $\tilde{O}(\lambda^{\pnum+k})$, respectively, instead of $\aczerotwo$ and $\ncone$ as in \cref{thm:nc-ibnike-security}. The algorithm families $\{\ibsetup, \ibextract, \allowbreak \ibshare\}$ are computable in $\tilde{O}(\lambda^{\pnum+k-1})$ since they only involve operations including running a constant number of $\bprfdel$ and $\bprfceval$. The reduction runs in time $\tilde{O}(\lambda^{\pnum+k})$ since it involves operations including answering constant number of $\odel$ queries.
+%	The proof of \cref{thm:time-ibnike-security} is the same as the proof of \cref{thm:nc-ibnike-security} except that we argue that the algorithm families in the construction and the reduction are computable in time $\tilde{O}(\lambda^{\pnum+k-1})$ and $\tilde{O}(\lambda^{\pnum+k})$ respectively, instead of $\aczerotwo$ and $\ncone$ as in \cref{thm:nc-ibnike-security}. This follows from that the construction only runs $\bprfdel$ and $\bprfceval$ for a constant number of times and there is no additional complexity cost for the reduction except for running the adversary.
+The proofs of \cref{thm:time-ibnike-security,thm:bsm-ibnike-security} are very similar to the proof of \cref{thm:nc-ibnike-security} and thus we omit the details.
+	%The proof of \cref{thm:time-ibnike-security} is the same as the proof of \cref{thm:nc-ibnike-security} except that we argue that the algorithm families in the construction and the reduction are computable in time $\tilde{O}(T_1(\lambda))$ and $\tilde{O}(T_2(\lambda))$ respectively, instead of $\aczerotwo$ and $\ncone$ as in \cref{thm:nc-ibnike-security}. This follows from that the construction only runs $\bprfdel$ and $\bprfceval$ for a constant number of times and there is no additional complexity cost for the reduction except for running the adversary.
+%	The proof of \cref{thm:time-ibnike-security} is the same as the proof of \cref{thm:nc-ibnike-security} with the following two distinctions. For correctness, $\{\ibsetup, \ibextract, \ibshare\}$ are computable in $\tilde{O}(\lambda^{\pnum+k-1})$ since they only involve operations including running a constant number of $\bprf.\bprfdel$ and $\bprf.\bprfceval$. For security, the adversary $\advB = \{ \advb \}$ in \cref{lem:ibnike-g0tog1} runs in time $\tilde{O}(\lambda^{\pnum+k})$ since they only involve operations including answering constant times of $\odel$ queries.
+%	This theorem is the same as \cref{thm:ibnike-security} except that we assume a $\cc_1$-$(\pnum, \bprfoutputsize)$-BPRF in the bounded time model rather than the restricted BPRF in the bounded-parallel-time model. The $\epsilon_1$-correctness is satisfied since $\cc_1$-$(\pnum, \bprfoutputsize)$-restricted BPRF is the special case of $\cc_1$-$(\pnum, \bprfoutputsize)$-BPRF.
+%	
+%	We note that $\{\ibsetup, \ibextract, \ibshare\}$ are computable in $\tilde{O}(\lambda^{\pnum+k-1})$ since they only involve operations including running a constant number of $\bprf.\bprfdel$ and running $\bprf.\bprfceval$ once. Moreover, the adversary $\advB = \{ \advb \}$ we constructed also runs in time $\tilde{O}(\lambda^{\pnum+k-1})$ since they only involve operations including answering constant times of $\odel$ queries.
+
+%IBNIKE in the bounded storage model
+%\heading{Construction in the bounded storage model.}
+%%Part explaination
+%%The construction of multi-party IB-NIKE in the bounded time model is the same as the one in the bounded-parallel-time model. The proof is also the same as the proof of \cref{thm:nc-ibnike-security} with the following two distinctions. For correctness, $\{\ibsetup, \ibextract, \ibshare\}$ are computable in $\tilde{O}(\lambda^{\pnum+k-1})$ since they only involve operations including running a constant number of $\bprf.\bprfdel$ and $\bprf.\bprfceval$. For security, the adversary $\advB = \{ \advb \}$ runs in time $\tilde{O}(\lambda^{\pnum+k-1})$ since they only involve operations including answering constant times of $\odel$ queries.
+%%full theorem
+%%Let $\cc_1$ (respectively, $\cc_2$) be the class of streaming word-RAM families with memory bound $O(\lambda^{\pnum})$
+%%(respectively, $O(\lambda^{\pnum+1})$).
+%%Let $\cc_1$ (respectively, $\cc_2$) be the class of streaming word-RAM families with memory bound $O(T_1(\lambda))$
+%%(respectively, $O(T_2(\lambda))$).
+%Let $\cc_1$ (respectively, $\cc_2$) be the class of streaming word-RAM families with memory bound $O(\storagefunction_1(\lambda))$
+%(respectively, $O(\storagefunction_2(\lambda))$). Let $\ibparty$ be any constant.
+%%Let $\epsilon_1 = \negl$, $\epsilon_2 = \frac{1}{\lambda^{o(1)}}$. 
+%%We construct $\ibnike$ satisfying $2\epsilon_1$-correctness and $\cc_2$-$\epsilon_2$-security as in \cref{fig:con-ibnike}.
+%%Our $\bsibnike = \{\ibsetup, \ibextract,\allowbreak \ibshare\}$ (with URS length $n$) is defined the same as that in \cref{fig:con-ibnike} except that the underlying $\ncbprf$ is replaced by a $\cc_1$-$(\pnum, \bprfoutputsize)$-BPRF (with URS length $n$) and satisfying $\epsilon_1$-correctness and $(\cc_2, \epsilon^{\prime}, \epsilon_2)$-security.
+%Our construction $\bsibnike = \{\ibsetup, \ibextract,\allowbreak \ibshare\}$ (with URS length $n$) is defined in exactly the same way as that in \cref{fig:con-ibnike} except that the underlying $\ncbprf$ is replaced by $\bsbprf = \{\bprfsetup, \bprfeval, \bprfdel, \bprfceval \}$, which is a $\cc_1$-$(\pnum, \bprfoutputsize)$-BPRF (with URS length $n$) for some constant $\pnum$ and some $\bprfoutputsize$.
+%\begin{theorem}
+%\label{thm:bs-ibnike-security}
+%%If $\bsbprf = \{\bprfsetup, \bprfeval, \bprfdel, \bprfceval \}$ is a $\cc_1$-$(\pnum, \bprfoutputsize)$-BPRF with $\epsilon_1$-correctness and $(\cc_2, \epsilon^{\prime}, \epsilon_2)$-security for any constant $\pnum$, then for some constant space $\ibidspace$ such that $\ibparty = \pnum/|\ibidspace|$ is some integer, $\bsibnike$ is a $\cc_1$-$\ibparty$-IB-NIKE with $2\cdot\epsilon_1$-correctness and $(\cc_2, \epsilon^{\prime}, \epsilon_2)$-security.
+%%If $\bsbprf = \{\bprfsetup, \bprfeval, \bprfdel, \bprfceval \}$ is a $\cc_1$-$(\pnum, \bprfoutputsize)$-BPRF with $\epsilon_1$-correctness and $(\cc_2, \epsilon^{\prime}, \epsilon_2)$-security for any constant $\pnum$, then for some constant space $\ibidspace$ such that $\ibparty = \pnum/|\ibidspace|$ is some integer, $\bsibnike$ is a $\cc_1$-$\ibparty$-IB-NIKE with $2\cdot\epsilon_1$-correctness and $(\cc_2, \epsilon^{\prime}, \epsilon_2)$-security.
+%If $\bsbprf$ is a $\cc_1$-$(\pnum, \bprfoutputsize)$-BPRF with $\epsilon_1$-correctness and $(\cc_2, \epsilon^{\prime}, \epsilon_2)$-security in the BSM, then $\bsibnike$ is a $\cc_1$-$\ibparty$-IB-NIKE with $2\cdot\epsilon_1$-correctness and $(\cc_2, \epsilon^{\prime}, \epsilon_2)$-security in the BSM.
+%\end{theorem}
+%\begin{proof}
+%	\heading{  Correctness.}
+%	First we note that $\{\ibsetup, \ibextract, \ibshare\}$ runs in time $\tilde{O}(\lambda^{\pnum+k-1})$ since they only involve operations including running a constant number of $\bprf.\bprfdel$ and running $\bprf.\bprfceval$ once. For any 
+%	\heading{  Security.} 
+%	The proof of \cref{thm:bs-ibnike-security} is the same as the proof of \cref{thm:nc-ibnike-security} with the following two distinctions. The security of \cref{thm:bs-ibnike-security} is satisfied directly since $I(\image;(f(\urs), (\bprfsk_{\fixstring})_{\preimage \notin \csys_{\fixstring}})|\event)) = I(\ibshk;(f(\urs), (\ibsk_{\ibid})_{\ibid \in \ibidspace\slash\ibidlist})|\event))$ for some $\event$ such that $\Pr[\event] \geq 1-\epsilon^{\prime}$. Moreover, The algorithm families $\{\ibsetup, \ibextract,\allowbreak \ibshare\}$ and the reduction consume $O(\lambda^{\pnum})$ and $O(\lambda^{\pnum+1})$ bits of memory, respectively, instead of $\aczerotwo$ and $\ncone$ as in \cref{thm:nc-ibnike-security}. The algorithm families $\{\ibsetup, \allowbreak\ibextract, \allowbreak \ibshare\}$ consumes $O(\lambda^{\pnum})$ bits of memory since they only involve operations including running a constant number of $\bprfdel$ and $\bprfceval$. The reduction consumes $O(\lambda^{\pnum+1})$ since it involves operations including answering constant number of $\odel$ queries.
+	
+%	The security proof of \cref{thm:bs-ibnike-security} follows immediately since $I(\image;(f(\urs), (\bprfsk_{\fixstring})_{\preimage \notin \csys_{\fixstring}})|\event)) = I(\ibshk;(f(\urs), (\ibsk_{\ibid})_{\ibid \in \ibidspace\slash\ibidlist})|\event))$ for some $\event$ such that $\Pr[\event] \geq 1-\epsilon^{\prime}$.
+%	The security proof of \cref{thm:bs-ibnike-security} follows immediately since for any function $f : \bin^{n} \rightarrow \bin^{\amem}$ where $O(\lambda^{\pnum+1})$, any list of $\ibparty$ distinct identities $\ibidlist \subseteq \ibidspace$, and some $\event$ such that $\Pr[\event] \geq 1-\epsilon^{\prime}$, we have
+%	The security of $\bsibnike$ follows immediately from that of $\bsbprf$ and the rest of the proof is very similar to the proof of \cref{thm:nc-ibnike-security}. Hence, we omit the details.
+%	since for any function $f : \bin^{n} \rightarrow \bin^{\amem}$ where $\amem = O(\storagefunction_2(\lambda))$, any $\preimage=(\ibid_i)_{i \in [\pnum]} \in \bin^{\pnum}$, and some $\event$ such that $\Pr[\event] \geq 1-\epsilon^{\prime}$, we have
+%%	$$I(\ibshk;(f(\urs), (\ibsk_{\ibid})_{\ibid \in \ibidspace\slash\ibidlist})|\event)) = I(\image;(f(\urs), (\bprfsk_{\fixstring})_{\preimage \notin \csys_{\fixstring}})|\event)),$$
+%%	where $\urs \getsr \bin^{n}$, $\ibmsk \getsr \ibsetup(\urs)$, $\ibsk_{\ibid} = \ibextract(\allowbreak\ibmsk, \ibid)$, $\ibshk = \ibshare(\ibsk_{\ibid}, \ibidlist)$ for some $\ibid \in \ibidlist$, $\bprfmsk \getsr \bprfsetup(\urs)$, $\bprfsk_{\fixstring} = \bprfdel(\bprfmsk, \fixstring)$ for all $\fixstring$ such that $\preimage \notin \csys_{\fixstring}$, and $\image = \bprfeval(\bprfmsk, \preimage)$.
+%%	Moreover, the algorithm families $\{\ibsetup, \allowbreak\ibextract, \allowbreak \ibshare\}$ consumes $O(\lambda^{\pnum})$ bits of memory since they only run $\bprfdel$ and $\bprfceval$ for a constant number of times. %The reduction consumes 
+%	\[\begin{split}I\big(\ibshk;(f(\urs), (\ibsk_{\ibid})_{\ibid \in \ibidspace\slash\ibidlist})|\event\big) = I\big(\image;(f(\urs), \{\bprfsk_{\fixstring}\}_{\fixstring\in\fixstringsetcon})|\event\big)\leq \epsilon_2,\end{split}\]
+%	where $\urs \getsr \bin^{n}$, $\ibmsk \getsr \ibsetup(\urs)$, $\ibsk_{\ibid} = \ibextract(\allowbreak\ibmsk, \ibid)$ for all $ \ibid \in \ibidspace\slash\ibidlist$, $\ibshk = \ibshare(\ibsk_{\ibid}, \ibidlist)$ for some $\ibid \in \ibidlist$, $\bprfmsk \getsr \bprfsetup(\urs)$, $\bprfsk_{\fixstring} = \bprfdel\allowbreak(\bprfmsk, \fixstring)$ for all $\fixstring \in \fixstringsetcon$, $\ibidlist = \{\ibid_{i}\}_{i \in [\pnum]}$, and $\image = \bprfeval(\bprfmsk, \preimage)$, since $\ibsk_{\ibid})_{\ibid \in \ibidspace\slash\ibidlist}$ contains no more information on 
+	
+	
+%	Moreover, the algorithm families $\{\ibsetup, \allowbreak\ibextract, \allowbreak \ibshare\}$ consumes $O(\storagefunction_1(\lambda))$ bits of memory since they only run $\bprfdel$ and $\bprfceval$ for a constant number of times.
+	%Moreover, the construction consumes $O(\storagefunction_1(\lambda))$ bits of memory since they only run $\bprfdel$ and $\bprfceval$ for a constant number of times. 
+	%The reduction consumes $O(\lambda^{\pnum+1})$ since it does not compute anything.
+%	The proof of \cref{thm:time-ibnike-security} is the same as the proof of \cref{thm:nc-ibnike-security} with the following two distinctions. For correctness, $\{\ibsetup, \ibextract, \ibshare\}$ are computable in $\tilde{O}(\lambda^{\pnum+k-1})$ since they only involve operations including running a constant number of $\bprf.\bprfdel$ and $\bprf.\bprfceval$. For security, the adversary $\advB = \{ \advb \}$ in \cref{lem:ibnike-g0tog1} runs in time $\tilde{O}(\lambda^{\pnum+k})$ since they only involve operations including answering constant times of $\odel$ queries.
+%	This theorem is the same as \cref{thm:ibnike-security} except that we assume a $\cc_1$-$(\pnum, \bprfoutputsize)$-BPRF in the bounded time model rather than the restricted BPRF in the bounded-parallel-time model. The $\epsilon_1$-correctness is satisfied since $\cc_1$-$(\pnum, \bprfoutputsize)$-restricted BPRF is the special case of $\cc_1$-$(\pnum, \bprfoutputsize)$-BPRF.
+%	
+%	We note that $\{\ibsetup, \ibextract, \ibshare\}$ are computable in $\tilde{O}(\lambda^{\pnum+k-1})$ since they only involve operations including running a constant number of $\bprf.\bprfdel$ and running $\bprf.\bprfceval$ once. Moreover, the adversary $\advB = \{ \advb \}$ we constructed also runs in time $\tilde{O}(\lambda^{\pnum+k-1})$ since they only involve operations including answering constant times of $\odel$ queries.
+%\end{proof}
+
+\subsection{BPRF from Multi-Party NIKE with Extendability}
+\label{sec:munike-bprf}
+%In this section, we instantiate restricted BPRF and BPRF based on our multi-party NIKE with (restricted) extendability, and then show that all our multi-party NIKE schemes satisfy extendability.
+In this section, we instantiate (restricted) BPRF based on our multi-party NIKE with (restricted) extendability, and then show that all our multi-party NIKE schemes satisfy extendability.
+
+%%\subsection{Extendability of NIKE}
+%\heading{  Extendability of Multi-Party NIKE.}
+%%extendable
+%%extendable-intro
+%%The extendibility of NIKE is satisfied if the sharing algorithm of NIKE can be decomposed into two algorithm families. The first algorithm, given a private key and partial public keys as input, outputs a partial private key. The second algorithm, taking this partial private key and the remaining public keys as input, generates an output almost identical to the output of the original sharing algorithm.
+%The extendability of NIKE is satisfied if the sharing algorithm of NIKE can be decomposed into two algorithms. The first algorithm, given a private key and partial public keys as input, outputs a partial private key. The second algorithm, taking the partial private key and a public key as input, generates an output almost identical to the output of the original sharing algorithm.
+%\begin{definition}[Extendability]
+%\label{extendable}
+%	A $\cc_1$-$\pnum$-party non-interactive key exchange scheme $\mathsf{NIKE}=\{\gen,\allowbreak\share\} \in \cc_1$ satisfies \emph{$\epsilon$-extendability} if there exists two deterministic algorithm families $\{\combine^1, \combine^2\} \in \cc_1$, such that 
+%	\begin{compactitem}
+%%	\item for any set $\indexset \subseteq [\pnum-1]$, $\localkey \in $, and $i^{\prime}, j^{\prime} \in \indexset$, we have
+%%	$$ \combine^1(\indexset, \sk_{i^{\prime}}, (\pk_i)_{i \in \indexset}) = \combine^1(\indexset, \sk_{j^{\prime}}, (\pk_i)_{i \in \indexset}),$$
+%%	where $(\pk_i, \sk_i) \getsr \gen$ for any $i \in [\pnum]$.
+%%	\item for any set $\indexset \subseteq [\pnum-1]$ and $i^{\prime}, j^{\prime} \in \indexset$, we have
+%%	$$ \combine^1(\indexset, \sk_{i^{\prime}}, (\pk_i)_{i \in \indexset}) = \combine^1(\indexset, \sk_{j^{\prime}}, (\pk_i)_{i \in \indexset}),$$
+%%	where $(\pk_i, \sk_i) \getsr \gen$ for any $i \in [\pnum]$.
+%	\item for any set $\indexset \subseteq [\pnum-1]$ and $i^{\prime}, j^{\prime} \in \indexset$, let $\localkey = \combine^1(\indexset, \sk_{i^{\prime}}, (\pk_i)_{i \in \indexset})$, if the input of $\combine^2$ includes $(\pk_i)_{i \in \indexset}$, we have
+%	$$ \combine^2(\indexset, \localkey, (\pk_i)_{i \in \indexset}) = \combine^1(\indexset, \sk_{j^{\prime}}, (\pk_i)_{i \in \indexset}),$$
+%	where $(\pk_i, \sk_i) \getsr \gen$ for any $i \in [\pnum]$.
+%	Else if the input of $\combine^2$ includes $(\pk_i)_{i \in [\pnum]\slash\indexset}$, we have
+%	$$ \Pr[\combine^2(\indexset, \localkey, (\pk_i)_{i \in [\pnum]\slash\indexset}) = \share(\shareindex, \sk_{\shareindex}, (\pk_i)_{i \in [\pnum]})] \geq 1-\epsilon $$
+%	where $(\pk_i, \sk_i) \getsr \gen$ for any $i \in [\pnum]$.
+%	\end{compactitem}
+%\end{definition}
+
+%For any constant $\pnum$, we define $\combine$ on input a set $\indexset \subseteq [\pnum]$, a private key $\localkey$ for a set $\indexset^{\prime} \subseteq \indexset$, and all public key $(\pk_i)_{i \in \indexset}$, outputs a new $\localkey$ for a set $\indexset = \indexset \cup \indexset_{j}$. We also define $\extract$ on input a set $\indexset$, a private key $\localkey$ for the set $\indexset$, and all public key $(\pk_i)_{i \in [\pnum]\slash\indexset}$, outputs a shared key $\key$.
+%For any constant $\pnum$, we define $\combine$ on input a set $\indexset \subseteq [\pnum]$, a set $\indexset_1 \subseteq \indexset$, a private key $\localkey$, and public keys $(\pk_i)_{i \in \indexset\slash\indexset_1}$, outputs a new $\localkey$. We also define $\extract$ on input a private key $\localkey$ and a public key $\pk_{\pnum}$, outputs a shared key $\key$.
+
+%\begin{definition}[Extendability]
+%\label{extendable}
+%	A $\cc_1$-$\pnum$-party non-interactive key exchange scheme $\mathsf{NIKE}=\{\gen,\allowbreak\share\} \in \cc_1$ satisfies \emph{$\epsilon$-extendability} if there exists two deterministic algorithm families $\{\combine, \extract \} \in \cc_1$, such that
+%	\begin{compactitem}
+%%	\item for any set $\indexset \subseteq [\pnum-1]$ and $i^{\prime}, j^{\prime} \in \indexset$, we have
+%%	$$ \combine^1(\indexset, \sk_{i^{\prime}}, (\pk_i)_{i \in \indexset}) = \combine^1(\indexset, \sk_{j^{\prime}}, (\pk_i)_{i \in \indexset}),$$
+%%	where $(\pk_i, \sk_i) \getsr \gen$ for any $i \in [\pnum]$.
+%	\item for any set $\indexset \subseteq [\pnum]$, $\indexset_1 \subseteq \indexset$, and $j \in \indexset$, let $\indexset_2 = \{j\}$, $\localkey_2 = \sk_{j}$, and $\localkey_1 = \combine(\indexset_1, \{i^{\prime}\}, \sk_{i^{\prime}}, \allowbreak (\pk_i)_{i \allowbreak \in \indexset_1\slash\{i^{\prime}\}})$ for any $i^{\prime} \in \indexset_1$, we have
+%	$$ \combine(\indexset, \indexset_1, \localkey_1, (\pk_i)_{i \in \indexset\slash\indexset_1}) = \combine(\indexset, \indexset_2, \localkey_2, (\pk_i)_{i \in \indexset\slash\indexset_2}),$$
+%	\item let $\localkey = \combine([\pnum], \{j\}, \sk_{j}, (\pk_i)_{i \in [\pnum]\slash\{j\}})$ for any $j \in [\pnum]$ we have
+%	$$ \Pr[\extract(\localkey, \pk_{\pnum}) = \share(\shareindex, \sk_{\shareindex}, (\pk_i)_{i \in [\pnum]})] \geq 1-\epsilon ,$$
+%	\end{compactitem}
+%	where $(\pk_i, \sk_i) \getsr \gen$ for every $i \in [\pnum]$.
+%\end{definition}
+%
+%We also give the definition of restricted extendability, which is sufficient for constructing the restricted BPRF.
+%
+%%\heading{  Restricted extendability.} For a $\cc_1$-$\pnum$-party non-interactive key exchange scheme $\mathsf{NIKE}=\{\gen,\allowbreak\share\} \in \cc_1$, the restricted $\epsilon$-extendability is the special case of $\epsilon$-extendability where we require the set $\indexset = [\leftindex+1, \pnum-1-\rightindex] \subseteq [\pnum-1]$ for some $\leftindex, \rightindex \in [0, \pnum-1]$ such that $\leftindex + \rightindex \leq \pnum-1$.
+%\heading{  Restricted extendability.} The $\epsilon$-restricted extendability is the special case of $\epsilon$-extendability where the set $\indexset \subseteq [\pnum]$ is restricted to $\indexset = [\leftindex, \rightindex] \subseteq [\pnum]$ for any $\leftindex, \rightindex \in [\pnum]$ and $\indexset_1$ is restricted to $\indexset_1 = [\subleftsize, \subrightsize]$ for any $\subleftsize, \subrightsize \in [\pnum]$ such that $\subleftsize \geq \leftsize$ and $\subrightsize \leq \rightsize$.
+
+\heading{Restricted BPRF in the bounded-parallel-time model.}
+%Let $\mathsf{NCNIKE} = \{\gen,\share\}$ be a $\aczerotwo$-$\pnum$-NIKE with $\epsilon_1$-correctness, restricted $\epsilon_1$-extendability, and $\ncone$-$\epsilon_2$-security.
+% for $\epsilon_1 = 0$ and $\epsilon_2 = \negl$
+%Let $\mathsf{NCNIKE} = \{\gen,\share\}$ be a $\aczerotwo$-$\pnum$-NIKE with $\epsilon_1$-correctness, restricted $\epsilon_1$-extendability with associated algorithm families $\{\combine,\extract\}$, and $\ncone$-$\epsilon_2$-security. Let $\nikeshkspace$ be the shared key space and $\nikeshksize = |\nikeshkspace|$.
+%Feb 14Let $\mathsf{NCNIKE} = \{\gen,\share\}$ be an $\aczerotwo$-$\pnum$-NIKE with shared key space $\bin^{\nikeshksize}$ for some constant $\pnum$ and $\nikeshksize$ satisfying restricted $\epsilon_1$-extendability with associated algorithm families $\{\combine,\allowbreak\extract\}$, $\epsilon_1$-correctness, and $\ncone$-$\epsilon_2$-security.
+%Let $\mathsf{NCNIKE} = \{\gen,\share\}$ be an $\aczerotwo$-$\pnum$-NIKE with shared key space $\bin^{\nikeshksize}$ and URS length $n$ for some constant $\pnum$, some $\nikeshksize$, and some $n = n(\lambda)$ satisfying restricted $(\epsilon_1,\epsilon_1')$-extendability with associated algorithm families $\{\combine,\allowbreak\extract\}$, $\epsilon_1'$-correctness, and $\ncone$-$\epsilon_2$-security.
+%Let $\mathsf{NCNIKE} = \{\gen,\share\}$ be an $\aczerotwo$-$\pnum$-NIKE with shared key space $\bin^{\nikeshksize}$ and URS length $n$ for some constant $\pnum$, some $\nikeshksize$, and some $n = n(\lambda)$ satisfying restricted $\epsilon_1$-extendability with associated algorithm families $\{\combine,\allowbreak\extract\}$ and $\ncone$-$\epsilon_2$-security.
+Let $\mathsf{NCNIKE} = \{\gen,\share\}$ be an $\aczerotwo$-$\pnum$-NIKE with shared key space $\nikeshkspace$ and URS length $n$ for some constant $\pnum$, and some $n = n(\lambda)$ satisfying restricted $\epsilon_1$-extendability with associated algorithm families $\{\combine,\allowbreak\extract\}$ and $\ncone$-$\epsilon_2$-security.
+%We construct $\ncbprf$ satisfying $\epsilon_1$-correctness and $\ncone$-$2^{\pnum-1}\cdot\epsilon_2$-security as in \cref{fig:con-bprf}.
+Our $\ncbprf=\{\bprfsetup, \bprfeval, \bprfdel, \bprfceval\}$ is defined as in \cref{fig:con-bprf}.
+\begin{figure}[h!]
+\begin{center}
+\framebox{
+\small
+  \begin{tabular}{ll}
+    \begin{minipage}[t]{0.7\textwidth}
+    	\underline{$\bprfsetup(\urs)$:}
+	\item $(\pk_{\pnum}, \sk_{\pnum}) \getsr \gen(\urs)$
+	\item $(\pk_{i, \beta}, \sk_{i, \beta}) \getsr \gen(\urs)$ where $i \in [\pnum-1]$, $\beta \in \bin$
+    	\item Return $\bprfmsk = ((\pk_{i,\beta}, \sk_{i,\beta})_{i \in [\pnum-1], \beta \in \bin}), (\pk_{\pnum}, \sk_{\pnum}))$\\
+	
+%Feb14	\underline{$\bprfeval(\bprfmsk, \preimage)$:}
+%	\item Parse $\bprfmsk = ((\pk_{i,\beta}, \sk_{i,\beta})_{i \in [\pnum-1], \beta \in \bin}), (\pk_{\pnum}, \sk_{\pnum}))$ and $\preimage = (\preimage_i)_{i \in [\pnum-1]}$
+%	\item Return $\image = \share(\pnum, \sk_{\pnum}, ((\pk_{i,\preimage_i})_{i \in [\pnum-1]}, \pk_{\pnum}))$\\
+	\underline{$\bprfeval(\bprfmsk, \preimage)$:}
+	\item Parse $\bprfmsk = ((\pk_{i,\beta}, \sk_{i,\beta})_{i \in [\pnum-1], \beta \in \bin}), (\pk_{\pnum}, \sk_{\pnum}))$ and $\preimage = (\preimage_i)_{i \in [\pnum-1]}$
+	\item Return $\image = \share(1, \sk_{1,\preimage_1}, ((\pk_{i,\preimage_i})_{i \in [\pnum-1]}, \pk_{\pnum}))$\\
+	
+%    \end{minipage}&  \begin{minipage}[t]{0.42\textwidth}
+        \underline{$\bprfdel(\bprfmsk, \fixstring)$:}
+    	\item Parse $\bprfmsk = ((\pk_{i,\beta}, \sk_{i,\beta})_{i \in [\pnum-1], \beta \in \bin}), (\pk_{\pnum}, \sk_{\pnum}))$ and $\fixstring = (\fixstring_i)_{i \in [\pnum-1]}$
+	\item Let $\indexset = \{i \in [\pnum-1] \mid \fixstring_i \neq \anychar \}$
+	\item If $\indexset=\emptyset$, return $\bprfsk_{\fixstring}=\bprfmsk$
+	\item Otherwise, let $j \in \indexset$
+%	\item $\localkey = \combine(\indexset, \{j\}, \sk_{j, \fixstring_{j}}, \{\pk_{i,\fixstring_{i}}\}_{i \in \indexset\slash\{j\}})$
+	\item $\localkey = \combine(\sk_{j, \fixstring_{j}}, \{\pk_{i,\fixstring_{i}}\}_{i \in \indexset\backslash\{j\}})$
+	\item Return $\bprfsk_{\fixstring} = (\localkey, \indexset, \{\pk_{i,\beta}\}_{i \in [\pnum-1]\backslash\indexset, \beta \in \bin}, \pk_{\pnum})$\\
+	
+	\underline{$\bprfceval(\bprfsk_{\fixstring}, \preimage)$:}
+	\item If $\bprfsk_{\fixstring}$ is a master secret key, return $\bprfeval(\bprfsk_{\fixstring},\preimage)$
+	\item Parse $\bprfsk_{\fixstring} = (\localkey, \indexset, \{\pk_{i,\beta}\}_{i \in [\pnum-1]\backslash\indexset, \beta \in \bin}, \pk_{\pnum})$ and $\preimage = (\preimage_i)_{i \in [\pnum-1]}$
+%	\item $\localkey^* = \combine([\pnum], \indexset, \localkey, \{\{\pk_{i, \preimage_i}\}_{i\in[\pnum-1]\slash\indexset}, \pk_{\pnum}\})$	
+	\item $\localkey^* = \combine(\localkey, \{\{\pk_{i, \preimage_i}\}_{i\in[\pnum-1]\backslash\indexset}, \pk_{\pnum}\})$
+	\item Return $\image = \extract(\localkey^*, \pk_{\pnum})$
+    \end{minipage} 
+      \end{tabular}
+      }
+\end{center}
+\caption{Construction of $\ncbprf=\{\bprfsetup, \bprfeval, \bprfdel, \bprfceval \}$.}
+\label{fig:con-bprf}
+\end{figure}
+%\begin{theorem}
+%\label{thm:rbprf-security}
+%%	If $\mathsf{NCNIKE} = \{\gen, \share\}$ satisfies $\epsilon_1$-restricted extendability with associated algorithm families $\{\combine,\extract\}$, $\epsilon_1$ \allowbreak - \allowbreak correctness, and $\ncone$-$\epsilon_2$-security, then $\ncbprf$ in \cref{fig:con-bprf} is a $\aczerotwo$-$(\pnum-1,\nikeshksize)$-restricted BPRF with $\epsilon_1$-correctness and $\ncone$-$2^{\pnum-1}\cdot\epsilon_2$-security.
+%%	If $\mathsf{NCNIKE}$ satisfies $\epsilon_1$-restricted extendability with associated algorithm families $\{\combine,\extract\}$, $\epsilon_1$ \allowbreak - \allowbreak correctness, and $\ncone$-$\epsilon_2$-security, then $\ncbprf$ in \cref{fig:con-bprf} is a $\aczerotwo$-$(\pnum-1,\nikeshksize)$-restricted BPRF with $\epsilon_1$-correctness and $\ncone$-$\epsilon_2$-security.
+%%Feb14	$\ncbprf$ is an $\aczerotwo$-$(\pnum-1,\nikeshksize)$-restricted BPRF with $\epsilon_1'\cdot\epsilon_1$-correctness and $\ncone$-$\epsilon_2$-security.
+%%	$\ncbprf$ is an $\aczerotwo$-$(\pnum-1,\nikeshksize)$-restricted BPRF with $(\epsilon_1'+\epsilon_1-\epsilon_1'\cdot\epsilon_1)$-correctness and $\ncone$-$\epsilon_2$-security.
+%	$\ncbprf$ is an $\aczerotwo$-$(\pnum-1,\nikeshksize)$-restricted BPRF with $\epsilon_1$-correctness and $\ncone$-$\epsilon_2$-security.
+%\end{theorem}
+\begin{theorem}
+\label{thm:rbprf-security}
+%	If $\mathsf{NCNIKE} = \{\gen, \share\}$ satisfies $\epsilon_1$-restricted extendability with associated algorithm families $\{\combine,\extract\}$, $\epsilon_1$ \allowbreak - \allowbreak correctness, and $\ncone$-$\epsilon_2$-security, then $\ncbprf$ in \cref{fig:con-bprf} is a $\aczerotwo$-$(\pnum-1,\nikeshksize)$-restricted BPRF with $\epsilon_1$-correctness and $\ncone$-$2^{\pnum-1}\cdot\epsilon_2$-security.
+%	If $\mathsf{NCNIKE}$ satisfies $\epsilon_1$-restricted extendability with associated algorithm families $\{\combine,\extract\}$, $\epsilon_1$ \allowbreak - \allowbreak correctness, and $\ncone$-$\epsilon_2$-security, then $\ncbprf$ in \cref{fig:con-bprf} is a $\aczerotwo$-$(\pnum-1,\nikeshksize)$-restricted BPRF with $\epsilon_1$-correctness and $\ncone$-$\epsilon_2$-security.
+%Feb14	$\ncbprf$ is an $\aczerotwo$-$(\pnum-1,\nikeshksize)$-restricted BPRF with $\epsilon_1'\cdot\epsilon_1$-correctness and $\ncone$-$\epsilon_2$-security.
+%	$\ncbprf$ is an $\aczerotwo$-$(\pnum-1,\nikeshksize)$-restricted BPRF with $(\epsilon_1'+\epsilon_1-\epsilon_1'\cdot\epsilon_1)$-correctness and $\ncone$-$\epsilon_2$-security.
+	$\ncbprf$ is an $\aczerotwo$-$(\pnum-1)$-restricted BPRF with $\epsilon_1$-correctness and $\ncone$-$\epsilon_2$-security.
+\end{theorem}
+\begin{proof}
+%<<<<<<< HEAD
+%\heading{  Complexity.}
+%First we note that $\{\bprfsetup, \bprfeval, \bprfdel, \bprfceval\}$ are computable in $\aczerotwo$ since they only involve operations including running a constant number of $\gen$ and $\share$.
+%
+%\heading{  Coorectness.} 
+%=======
+\heading{Complexity.} 
+%First we note that $\{\bprfsetup, \bprfeval, \bprfdel, \bprfceval\}$ are computable in $\aczerotwo$ since they run $\gen$ and $\share$ for a constant number of times.
+First we note that the constructions are computable in $\aczerotwo$ since they only run $\gen$ and $\share$ for a constant number of times.
+%>>>>>>> 7750d8dd10766015700ac4d661e6422563cbacea
+%which means when $\cc_1$ represent classes of circuit families in the bounded-parallel-time model, $\{\bprfsetup, \bprfeval, \bprfdel, \bprfceval\}$ are computable in $\ncone$. When $\cc_1$ represent classes of word-RAM families in the bounded time model, recall that $\{\bprfsetup, \bprfeval, \bprfdel, \bprfceval\}$ are computable in
+%For any $\fixstring \in (\{0,1,\anychar\})^{\pnum-1}$ and any $\preimage \in \csys_{\fixstring}$, we have
+%For any $\fixstring \in \{\bot\}^{\leftindex} \cup \bin^{\pnum-1-\leftindex-\rightindex} \cup \{\bot\}^{\rightindex}$ where $\leftindex, \rightindex \in [0, \pnum-1]$ and $\leftindex + \rightindex \leq \pnum-1$, $\indexset = [\leftindex+1, \pnum - 1 - \rightindex]$. Thus for any $\preimage \in \csys_{\fixstring}$, we have
+%Let $\leftindex, \rightindex \in [0, \pnum-1]$ and $\leftindex + \rightindex \leq \pnum-1$. For any $\fixstring \in \{\bot\}^{\leftindex} \cup \bin^{\pnum-1-\leftindex-\rightindex} \cup \{\bot\}^{\rightindex}$, we have $\indexset = [\leftindex+1, \pnum - 1 - \rightindex]$. Moreover, when $\bprfmsk \getsr \bprfsetup(\urs)$, for any $j \in [\pnum]$, we have 
+
+\heading{Correctness.}
+%Let $\leftindex, \rightindex \in [\pnum-1]$. For any $\fixstring \in \{\bot\}^{\leftindex-1} \cup \bin^{\rightindex-\leftindex+1} \cup \{\bot\}^{\pnum-1-\rightindex}$, we have $\indexset = [\leftindex, \rightindex]$. Moreover, for any $j \in [\pnum-1]$, according to the $(\epsilon_1, \epsilon_1')\text{-restricted extendability of }\mathsf{NCNIKE}$, we have 
+Let $\leftindex, \rightindex \in [\pnum-1]$ and set $\indexset = [\leftindex, \rightindex]$. Fix $\fixstring = (\fixstring_i)_{i \in [\pnum-1]} \in \{\bot\}^{\leftindex-1} \times \bin^{\rightindex-\leftindex+1} \times \{\bot\}^{\pnum-1-\rightindex}$ and $\preimage \in \csys_{\fixstring,\pnum-1}$. Consider the experiment where $\urs \getsr \bin^{n}$, $\bprfmsk \getsr \bprfsetup(\urs)$, and $\bprfsk_{\fixstring} = \bprfdel(\bprfmsk, \fixstring)$. Let $\mathsf{E}$ be the event guaranteed by the $\epsilon_1$-restricted extendability of $\mathsf{NCNIKE}$ for the selected key pairs $((\pk_{i,\preimage_i},\sk_{i,\preimage_i})_{i\in[\pnum-1]},(\pk_{\pnum},\sk_{\pnum}))$. For any $i^{\prime} \in \indexset$, let
+\[
+\localkey = \combine(\sk_{i^{\prime},\preimage_{i^{\prime}}}, \{\pk_{i,\preimage_i}\}_{i\in\indexset\backslash\{i^{\prime}\}})
+\]
+and
+\[
+\localkey^* = \combine(\localkey, \{\{\pk_{i,\preimage_i}\}_{i\in[\pnum-1]\backslash\indexset},\pk_{\pnum}\}).
+\]
+Then $\Pr[\mathsf{E}] \geq 1-\epsilon_1$, and conditioned on $\mathsf{E}$,
+%Feb14\[\begin{split}
+%\localkey^* &= \combine([\pnum], \indexset,\allowbreak \localkey, \{\{\pk_{i, \preimage_i}\}_{i\in[\pnum-1]\slash\indexset},\pk_{\pnum}\})\\
+%&= \combine([\pnum], \{j\}, \sk_{j}, \{\{\pk_{i, \preimage_i}\}_{i \in [\pnum-1]\slash\{j\}}, \pk_{\pnum}\}),
+%\end{split}\]
+%\[\begin{split}
+%\Pr[\localkey^* = \combine(\sk_{1,\preimage_1}, \{\{\pk_{i, \preimage_i}\}_{i \in [\pnum-1]\slash\{j\}}, \pk_{\pnum}\})] \geq 1- \epsilon_1
+%\end{split}\]
+%\[\begin{split}
+%\localkey^* = \combine(\sk_{1,\preimage_1}, \{\{\pk_{i, \preimage_i}\}_{i \in [\pnum-1]\slash\{j\}}, \pk_{\pnum}\})
+%\end{split}\]
+\[\begin{split}
+\localkey^* = \combine(\sk_{1,\preimage_1}, \{\{\pk_{i, \preimage_i}\}_{1<i\leq\pnum-1}, \pk_{\pnum}\})
+\end{split}\]
+%Feb14 where $\urs \getsr \bin^{n}$, $(\pk_i, \sk_i) \getsr \gen(\urs)$ for $i \in [\pnum]$, $(\pk_{i,\beta}, \sk_{i, \beta}) \getsr \gen(\urs)$, and $\localkey = \combine(\indexset, \{i^{\prime}\}, \sk_{i^{\prime}}, \allowbreak \{\pk_i\}_{i \allowbreak \in \indexset\slash\{i^{\prime}\}})$ for any $i^{\prime} \in \indexset$.
+%Thus for any $\preimage \in \csys_{\fixstring, \pnum-1}$,
+%\[\begin{split}
+%	&\Pr[\bprfceval(\bprfsk_{\fixstring}, \preimage) = \bprfeval(\bprfmsk, \preimage)]\\
+%%	=&\Pr[\extract(\localkey^*, \pk_{\pnum}) = \bprfeval(\bprfmsk, \preimage)]\\
+%	=&\Pr[\extract(\localkey^*, \pk_{\pnum}) = \share(1, \sk_{1,\preimage_1}, ((\pk_{i,\preimage_i})_{i \in [\pnum-1]}, \pk_{\pnum}))]\\
+%	\geq & 1-(\epsilon_1'+\epsilon_1-\epsilon_1'\cdot\epsilon_1)\tab  (\because (\epsilon_1,\epsilon_1')\text{-restricted extendability of }\mathsf{NCNIKE}),
+%\end{split}\]
+%	where $\urs \getsr \bin^{n}$, $\bprfmsk \getsr \bprfsetup(\urs)$, and $\bprfsk_{\fixstring} \getsr \bprfdel(\bprfmsk, \fixstring)$.
+Thus,
+\[\begin{split}
+	&\Pr[\bprfceval(\bprfsk_{\fixstring}, \preimage) = \bprfeval(\bprfmsk, \preimage)]\\
+	\geq&\Pr[\bprfceval(\bprfsk_{\fixstring}, \preimage) = \bprfeval(\bprfmsk, \preimage) \mid \mathsf{E}]\Pr[\mathsf{E}]\\
+	=&\Pr[\extract(\localkey^*, \pk_{\pnum}) = \share(1, \sk_{1,\preimage_1}, ((\pk_{i,\preimage_i})_{i \in [\pnum-1]}, \pk_{\pnum})) \mid \mathsf{E}]\Pr[\mathsf{E}]\\
+	=&\Pr[\mathsf{E}] \geq 1-\epsilon_1
+\end{split}\]
+	
+\heading{Security.}
+%Let $\lambda$ be the security parameter, and $\mathcal{A} = \{\adv\} \in \ncone$ be any adversary against the $\ncone$-security of $\mathsf{NCNIKE}$. The proof proceeds via a sequence of hybrid games as in \cref{fig:bprf-security}.
+Let $\lambda$ be the security parameter, and $\mathcal{A} = \{\adv\} \in \ncone$ be any adversary against the $\ncone$-security of $\ncbprf$. For any $\preimage \in \bin^{\pnum-1}$,
+%\heading{  $\gameg_0$.} This is the original security game where $\adv$ decides to be challenged on a preimage $\preimage = (\preimage_i)_{i \in [\pnum-1]}$ after potentially querying $\odel(\cdot)$. Then $\adv$ gets $\image = \bprfeval(\bprfmsk, \preimage)$. After potentially further querying $\odel(\cdot)$ (but only on $\fixstring$ such that $\preimage \notin \csys_{\fixstring}$), $\adv$ finally outputs a guess bit $b$.
+%\heading{  $\gameg_0$.} This is the original security game where $\adv$ gets $\image = \bprfeval(\bprfmsk, \preimage)$ and $(\bprfsk_{\fixstring})_{\preimage \notin \csys_{\fixstring}}$ finally outputs a bit $b$.
+%
+%\heading{  $\gameg_1$.} $\gameg_1$ and $\gameg_0$ differ in the way that $\image$ is generated, namely, $\image \getsr \nikeshkspace$.
+%\begin{lemma}
+%\label{lem:rbprf-g0tog1}
+%\[
+%	|\Pr[\gameg^{\adv}_1 \Rightarrow 1] - \Pr[\gameg^{\adv}_0 \Rightarrow 1]| \leq 2^{\pnum-1}\epsilon_2.
+%\]
+%\end{lemma}
+%\begin{lemma}
+%\label{lem:rbprf-g0tog1}
+%\[
+%	|\Pr[\gameg^{\adv}_1 \Rightarrow 1] - \Pr[\gameg^{\adv}_0 \Rightarrow 1]| \leq \epsilon_2.
+%\]
+%\end{lemma}
+%\begin{figure}[h!]
+%\begin{center}
+%\framebox{
+%\small
+%	\begin{tabular}{l}
+%	\begin{minipage}[t]{0.9\textwidth}
+%	Games $\gameg_0$, \fbox{$\gameg_1$}
+%		\item $(\pk_{\pnum}, \sk_{\pnum}) \getsr \gen(\urs)$
+%		\item For $i \in [\pnum-1]$, $\beta \in \bin$\\
+%		\tab $(\pk_{i, \beta}, \sk_{i, \beta}) \getsr \gen(\urs)$
+%    		\item $\bprfmsk = ((\pk_{i,\beta}, \sk_{i,\beta})_{i \in [\pnum-1], \beta \in \bin}), (\pk_{\pnum}, \sk_{\pnum}))$
+%		
+%		\item On receiving a challenge $\preimage$ from $\adv$\\
+%%		\tab $\image = \bprfeval(\bprfmsk, \preimage)$\fbox{$\image \getsr \nikeshkspace$}\\
+%%		\tab Parse $\bprfmsk = ((\pk_{i,\beta}, \sk_{i,\beta})_{i \in [\pnum-1], \beta \in \bin}), (\pk_{\pnum}, \sk_{\pnum}))$\\
+%		\tab Let $\image = \share(\pnum, \sk_{\pnum}, ((\pk_{i, \preimage_i})_{i \in [\pnum-1]}, \pk_{\pnum}))$\fbox{$\image \getsr \nikeshkspace$}\\
+%		\tab Return $\image$ to $\adv$
+%		
+%		\item Every time on receiving a constrained query $\fixstring$ from $\adv$\\
+%		\tab If $\preimage \notin \csys_{\fixstring}$\\
+%%		\tab Return $\bprfsk_{\fixstring} = \bprfdel(\bprfmsk, \fixstring)$
+%%		\tab Parse $\bprfmsk = ((\pk_{i,\beta}, \sk_{i,\beta})_{i \in [\pnum-1], \beta \in \bin}), (\pk_{\pnum}, \sk_{\pnum}))$
+%		\tab\tab Let $\indexset = \{i \in [\pnum-1] \mid \fixbit_i \neq \anychar \}$, $i^{\prime} \in \indexset$\\
+%		\tab\tab $\localkey = \combine(\indexset, \{i^{\prime}\}, \sk_{i^{\prime}, \fixstring_{i^{\prime}}}, (\pk_{i,\fixstring_{i}})_{i \in \indexset\slash\{i^{\prime}\}})$\\
+%		\tab\tab Return $\bprfsk_{\fixstring} = (\localkey, ((\pk_{i,\beta})_{i \in [\pnum-1]\slash\indexset, \beta \in \bin}, \pk_{\pnum}))$\\
+%		\tab Else return $\bprfsk_{\fixstring} = \bot$
+%		
+%		\item On receiving $b$ from $\adv$, output $b$
+%	\end{minipage}
+%	\end{tabular}
+%}
+%\end{center}
+%\caption{The challengers in $\gameg_0$, $\gameg_1$.}
+%\label{fig:bprf-security}
+%\end{figure}
+%\begin{figure}[h!]
+%\begin{center}
+%\framebox{
+%\small
+%	\begin{tabular}{l}
+%	\begin{minipage}[t]{0.9\textwidth}
+%	Games $\gameg_0$, \fbox{$\gameg_1$}
+%		\item $(\pk_{\pnum}, \sk_{\pnum}) \getsr \gen(\urs)$
+%		\item For $i \in [\pnum-1]$, $\beta \in \bin$\\
+%		\tab $(\pk_{i, \beta}, \sk_{i, \beta}) \getsr \gen(\urs)$
+%    		\item $\bprfmsk = ((\pk_{i,\beta}, \sk_{i,\beta})_{i \in [\pnum-1], \beta \in \bin}), (\pk_{\pnum}, \sk_{\pnum}))$
+%		
+%%		\item On receiving a challenge $\preimage$ from $\adv$\\
+%%		\tab $\image = \bprfeval(\bprfmsk, \preimage)$\fbox{$\image \getsr \nikeshkspace$}\\
+%%		\tab Parse $\bprfmsk = ((\pk_{i,\beta}, \sk_{i,\beta})_{i \in [\pnum-1], \beta \in \bin}), (\pk_{\pnum}, \sk_{\pnum}))$\\
+%		\item Let $\preimage \in \bin^{\pnum-1}$\\
+%		\tab $\image = \share(\pnum, \sk_{\pnum}, ((\pk_{i, \preimage_i})_{i \in [\pnum-1]}, \pk_{\pnum}))$\fbox{$\image \getsr \nikeshkspace$} 
+%		 
+%%		\tab Return $\bprfsk_{\fixstring} = \bprfdel(\bprfmsk, \fixstring)$
+%%		\tab Parse $\bprfmsk = ((\pk_{i,\beta}, \sk_{i,\beta})_{i \in [\pnum-1], \beta \in \bin}), (\pk_{\pnum}, \sk_{\pnum}))$
+%		\item For each $\fixstring$ such that $\preimage \notin \csys_{\fixstring}$\\
+%		\tab $\indexset = \{i \in [\pnum-1] \mid \fixbit_i \neq \anychar \}$, $i^{\prime} \in \indexset$\\
+%		\tab $\localkey = \combine(\indexset, \{i^{\prime}\}, \sk_{i^{\prime}, \fixstring_{i^{\prime}}}, (\pk_{i,\fixstring_{i}})_{i \in \indexset\slash\{i^{\prime}\}})$\\
+%		\tab $\bprfsk_{\fixstring} = (\localkey, ((\pk_{i,\beta})_{i \in [\pnum-1]\slash\indexset, \beta \in \bin}, \pk_{\pnum}))$
+%		
+%		\item Return $\image$ and $(\bprfsk_{\fixstring})_{\preimage \notin \csys_{\fixstring}}$ to $\adv$
+%		
+%		\item On receiving $b$ from $\adv$, output $b$
+%	\end{minipage}
+%	\end{tabular}
+%}
+%\end{center}
+%\caption{The challengers in $\gameg_0$, $\gameg_1$.}
+%\label{fig:bprf-security}
+%\end{figure}
+%\begin{proof}
+	we construct an adversary $\advB = \{\advb\} \in \ncone$ against the security of $\mathsf{NCNIKE}$ as follows.
+	
+%	On receiving $((\pk_i)_{i \in [\pnum]}, \key)$, $\advb$ firstly samples $(\pk^{\prime}_i, \sk^{\prime}_i) \getsr \gen(\urs)$ for every $i \in [\pnum-1]$ and $\preimage^*=(x^*_i)_{i \in [\pnum-1]} \getsr \bin^{\pnum-1}$. Then $\advb$ sets
+%	$
+%		\pk_{i, \beta} = \begin{cases}
+%			\pk_{i}\text{ if }x^{*}_{i} = \beta\\
+%			\pk^{\prime}_{i}\text{ if }x^{*}_{i} \neq \beta
+%		\end{cases}.
+%	$ When $\adv$ returns a challenge $\preimage$, if $\preimage = \preimage^*$, $\advb$ sends $\key$ to $\adv$, and aborts otherwise. 
+%	
+%	Every time when $\adv$ sends a constrained query $\odel(\fixstring)$, $\advb$ checks if the challenge $\preimage \in \csys_{\fixstring}$. If $\preimage \notin \csys_{\fixstring}$ and $\preimage = \preimage^*$, there exists $i^{\prime} \in \indexset$, such that $\sk_{i^{\prime}, \fixstring_{i^{\prime}}}$ is sampled by $\advb$. Then $\advb$  returns $\bprfsk_{\fixstring} = (\localkey, \indexset, \allowbreak ((\pk_{i,\beta})_{i \in [\pnum-1]\slash\indexset, \beta \in \bin}, \pk_{\pnum}))$ where $\localkey = \combine(\indexset, \{i^{\prime}\}, \allowbreak \sk_{i^{\prime},\fixstring_{i^{\prime}}}, \allowbreak (\pk_{i,\fixstring_i})_{i \in \indexset\slash\{i^{\prime}\}})$. When $\adv$ finally returns $b \in \bin$, $\advb$ returns $b$.
+%Feb14	On receiving $((\pk_i)_{i \in [\pnum]}, \key)$ where $\urs \getsr \bin^{n}$, $(\pk_i, \sk_i) \getsr \gen(\urs)$ for $i \in [\pnum]$, and $\key = \share(\pnum, \sk_{\pnum}, \pk_{[\pnum]})$ or $\key \getsr \bin^{\nikeshksize}$, $\advb$ firstly samples $(\pk^{\prime}_i, \sk^{\prime}_i) \getsr \gen(\urs)$ for every $i \in [\pnum-1]$. Then $\advb$ sets $
+%		\pk_{i, \beta} = \begin{cases}
+%			\pk_{i}\text{ if }\preimage_{i} = \beta\\
+%			\pk^{\prime}_{i}\text{ if }\preimage_{i} \neq \beta
+%		\end{cases}
+%	$
+%	On receiving $((\pk_i)_{i \in [\pnum]}, \key)$ where $\urs \getsr \bin^{n}$, $(\pk_i, \sk_i) \getsr \gen(\urs)$ for $i \in [\pnum]$, and $\key = \share(1, \sk_{1}, (\pk_i)_{i \in [\pnum]})$ or $\key \getsr \bin^{\nikeshksize}$, $\advb$ firstly samples $(\pk^{\prime}_i, \sk^{\prime}_i) \getsr \gen(\urs)$ for every $i \in [\pnum-1]$. Then $\advb$ sets $
+%		\pk_{i, \beta} = \begin{cases}
+%			\pk_{i}\text{ if }\preimage_{i} = \beta\\
+%			\pk^{\prime}_{i}\text{ if }\preimage_{i} \neq \beta
+%		\end{cases}
+%	$
+	On receiving $((\pk_i)_{i \in [\pnum]}, \key)$ where $\urs \getsr \bin^{n}$, $(\pk_i, \sk_i) \getsr \gen(\urs)$ for $i \in [\pnum]$, and $\key = \share(1, \sk_{1}, (\pk_i)_{i \in [\pnum]})$ or $\key \getsr \nikeshkspace$, $\advb$ firstly samples $(\pk^{\prime}_i, \sk^{\prime}_i) \getsr \gen(\urs)$ for every $i \in [\pnum-1]$. Then $\advb$ sets $
+		\pk_{i, \beta} = \begin{cases}
+			\pk_{i}\text{ if }\preimage_{i} = \beta\\
+			\pk^{\prime}_{i}\text{ if }\preimage_{i} \neq \beta
+		\end{cases}
+	$
+%	For any $\fixstring$ such that $\preimage \notin \csys_{\fixstring}$, $\advb$ sets $\bprfsk_{\fixstring} = (\localkey, \indexset, \allowbreak ((\pk_{i,\beta})_{i \in [\pnum-1]\slash\indexset, \beta \in \bin}, \pk_{\pnum}))$ where $\localkey = \combine(\indexset, \{i^{\prime}\}, \allowbreak \sk_{i^{\prime},\allowbreak \fixstring_{i^{\prime}}}, \allowbreak (\pk_{i,\fixstring_i})_{i \in \indexset\slash\{i^{\prime}\}})$ for some $i^{\prime} \in \indexset$ such that $\sk_{i^{\prime}, \fixstring_{i^{\prime}}}$ is sampled by $\advb$. Then $\advb$ returns $\image = \key$ and $(\bprfsk_{\fixstring})_{x \notin \csys_{\fixstring}}$ to $\adv$. When $\adv$ finally returns $b \in \bin$, $\advb$ forwards $b$ to its challenger.
+%	and $\bprfsk_{\fixstring} = (\localkey, \indexset, \allowbreak ((\pk_{i,\beta})_{i \in [\pnum-1]\slash\indexset, \beta \in \bin},\allowbreak \pk_{\pnum}))$ for any $\fixstring \in \mathcal{T}_{\preimage, \pnum-1}$ where $\localkey = \combine(\indexset, \{i^{\prime}\}, \allowbreak \sk_{i^{\prime},\allowbreak \fixstring_{i^{\prime}}}, \allowbreak \{\pk_{i,\fixstring_i}\}_{i \in \indexset\slash\{i^{\prime}\}})$ for some $i^{\prime} \in \indexset$ such that $\sk_{i^{\prime}, \fixstring_{i^{\prime}}}$ is sampled by $\advb$. Then $\advb$ returns $\image = \key$ and $\{\bprfsk_{\fixstring}\}_{\fixstring\in\mathcal{T}_{\preimage, \pnum-1}}$ to $\adv$. When $\adv$ finally returns $b \in \bin$, $\advb$ forwards $b$ to its challenger.
+	and $\bprfsk_{\fixstring} = (\localkey, \indexset, \allowbreak ((\pk_{i,\beta})_{i \in [\pnum-1]\backslash\indexset, \beta \in \bin},\allowbreak \pk_{\pnum}))$ for any $\fixstring \in \mathcal{T}_{\preimage, \pnum-1}$ where $\localkey = \combine(\allowbreak \sk_{i^{\prime},\allowbreak \fixstring_{i^{\prime}}}, \allowbreak \{\pk_{i,\fixstring_i}\}_{i \in \indexset\backslash\{i^{\prime}\}})$ for some $i^{\prime} \in \indexset$ such that $\sk_{i^{\prime}, \fixstring_{i^{\prime}}}$ is sampled by $\advb$. Then $\advb$ returns $\image = \key$ and $\{\bprfsk_{\fixstring}\}_{\fixstring\in\mathcal{T}_{\preimage, \pnum-1}}$ to $\adv$. When $\adv$ finally returns $b \in \bin$, $\advb$ forwards $b$ to its challenger.
+	
+	First we note that all operations in $\advb$ are in $\ncone$, since $\advb$ runs $\gen$ for a constant number of times.
+%	Moreover, if $\preimage^* = \preimage$, when $\image \getsr \bprfeval(\bprfmsk, \preimage)$ (respectively, $\image \getsr \nikeshkspace$), the view of $\adv$ is identical to its view in $\gameg_0$ (respectively, $\gameg_1$). Hence, the advantage of $\advb$ in breaking the security of $\mathsf{NCNIKE}$ is
+%	\[\begin{split} 
+%	&|\Pr[1\getsr \advb((\pk_i)_{i\in\cs},\key)]-\Pr[1\getsr \advb((\pk_i)_{i\in\cs},\key')]|\\
+%	 =&|\Pr[\gameg_0^{\adv} \Rightarrow 1, \preimage = \preimage^*] - \Pr[\gameg_1^{\adv} \Rightarrow 1, \preimage = \preimage^*]|\\
+%	 =&|\Pr[\gameg_0^{\adv} \Rightarrow 1] - \Pr[\gameg_1^{\adv} \Rightarrow 1]| \Pr[\preimage=\preimage^*]\\
+%	 =&|\Pr[\gameg_0^{\adv} \Rightarrow 1] - \Pr[\gameg_1^{\adv} \Rightarrow 1]| /2^{\pnum-1}.\\
+%%	=& |\Pr[\gameg_0 \Rightarrow 1, \preimage = \preimage^*] - \Pr[\gameg_1 \Rightarrow 1, \preimage = \preimage^*] + \Pr[\gameg_0 \Rightarrow 1, \preimage \neq \preimage^*] - \Pr[\gameg_1 \Rightarrow 1, \preimage \neq \preimage^*]|\\
+%%	 \leq&\epsilon_2 2^{\pnum-1}
+%	\end{split}\]
+%	Thus we have
+%	$$ |\Pr[\gameg_0^{\adv} \Rightarrow 1] - \Pr[\gameg_1^{\adv} \Rightarrow 1]| \leq 2^{\pnum-1}\epsilon_2,$$
+	Moreover, when $\image = \share(1, \sk_{1}, (\pk_i)_{i \in [\pnum]})$ (respectively, $\image\getsr \nikeshkspace$)  where $(\pk_i, \sk_i) \getsr \gen(\urs)$ for $i \in [\pnum]$ and $\urs \getsr \bin^{n}$, the view of $\adv$ is identical to its view in the security game for $\ncbprf$ when $\image$ is honestly generated (respectively, generated at random). Hence, the advantage of $\advb$ in breaking the security of $\mathsf{NCNIKE}$ is the same as the advantage of $\adv$ in breaking the security of $\bprf$,
+%	completing this part of proof.
+	completing the proof of \cref{thm:rbprf-security}.
+%\end{proof}
+%	Putting all of these together, \cref{thm:rbprf-security} immediately follows.
+%	Note that $\Pr[\gameg_0^{\adv} \Rightarrow 1]$ is exactly the same as 
+%\[
+%	\Pr \left[ b = 1 : \begin{split} &\bprfmsk \getsr \bprfsetup(\urs);\\ &\preimage \getsr \adv^{\odel(\cdot)};\\ &\image \getsr \bprfeval(\bprfmsk, \preimage);\\ &b \getsr \adv^{\odel(\cdot)}(\image);  \end{split} \right]
+%\]
+%	and $\Pr[\gameg_1^{\adv} \Rightarrow 1]$ is exactly the same as
+%\[
+%	\Pr \left[ b = 1 : \begin{split} &\bprfmsk \getsr \bprfsetup(\urs);\\ &\preimage \getsr \adv^{\odel(\cdot)};\\ &\image^{\prime} \getsr \bin^{\outputlen};\\ &b \getsr \adv^{\odel(\cdot)}(\image^{\prime});  \end{split} \right].
+%\]
+%	Thus we have,
+%\[
+%	\Pr \left[ b = 1 : \begin{split} &\bprfmsk \getsr \bprfsetup(\urs);\\ &\preimage \getsr \adv^{\odel(\cdot)};\\ &\image \getsr \bprfeval(\bprfmsk, \preimage);\\ &b \getsr \adv^{\odel(\cdot)}(\image);  \end{split} \right]
+%	- \Pr \left[ b = 1 : \begin{split} &\bprfmsk \getsr \bprfsetup(\urs);\\ &\preimage \getsr \adv^{\odel(\cdot)};\\ &\image^{\prime} \getsr \bin^{\outputlen};\\ &b \getsr \adv^{\odel(\cdot)}(\image^{\prime});  \end{split} \right] \leq 2^{\pnum-1}\epsilon_2
+%\]
+\end{proof}
+
+%BPRF from TNIKE
+\heading{BPRF in the bounded-time model and BSM.}
+%The construction is the same as restricted BPRF in the bounded-parallel-time model. The proof is also the same as the proof of \cref{thm:rbprf-security} with the following distinctions. For correctness, $\{\bprfsetup, \bprfeval, \bprfdel, \bprfceval \}$ runs in time $\tilde{O}(\lambda^{\pnum+k})$ since they only involve operations including running a constant number $\gen$ and $\share$. Moreover, correctness is satisfied for any $\fixstring \in \{0,1,\bot\}^{\pnum-1}$ according to extendability of multi-party NIKE. For security, the adversary $\advB = \{\advb\}$ runs in time $\tilde{O}(\lambda^{\pnum+k})$ since they involve operations including running $\gen$ $\pnum-1$ times.
+%Let $\cc_1$ (respectively, $\cc_2$) represent the set of all word-RAM families such that for each $\mathcal{F} = \{f_{\lambda}\} \in \cc_1$ (respectively, $\mathcal{F} = \{f_{\lambda}\} \in \cc_2$) and each $\lambda \in \mathbb{N}$, $f_{\lambda}$ runs in time $\tilde{O}(\lambda^{\pnum+k-1})$ (respectively, $\tilde{O}(\lambda^{\pnum+k})$) for any constant $\pnum \geq 2, k \geq 3$.
+%Let $\cc_1$ (respectively, $\cc_2$) represent the set of all word-RAM families such that for each $\mathcal{F} = \{f_{\lambda}\} \in \cc_1$ (respectively, $\mathcal{F} = \{f_{\lambda}\} \in \cc_2$) and each $\lambda \in \mathbb{N}$, $f_{\lambda}$ runs in time $\tilde{O}(T_1(\lambda))$ (respectively, $\tilde{O}(T_2(\lambda))$).
+%Let $\cc_1$ and $\cc_2$ represent the set of all word-RAM families such that for each $\mathcal{F}_1 = \{f_{\lambda}^1\} \in \cc_1$ and $\mathcal{F}_2 = \{f_{\lambda}^2\} \in \cc_2$ and each $\lambda \in \mathbb{N}$, $f_{\lambda}^1$ runs in time $\tilde{O}(T_1(\lambda))$ and $f_{\lambda}^2$ runs in time $\tilde{O}(T_2(\lambda))$.
+%Our construction in the bounded time model $\tbprf$ is defined in exactly the same way as in \cref{fig:con-bprf} except that the underlying $\mathsf{NCNIKE}$ is replaced by $\mathsf{TNIKE}$, which is a $\cc_1$-$\pnum$-NIKE with shared key space $\bin^{\nikeshksize}$ and URS length $n$ satisfying $(\epsilon_3,\epsilon_1)$-extendability, $\epsilon_1$-correctness, and $\cc_2$-$\epsilon_2$-security for some constant $\pnum$, some $\nikeshksize$, and some $n = n(\lambda)$.
+%Let $\cc_1$ and $\cc_2$ represent the set of all word-RAM families such that for each $\mathcal{F}_1 = \{f_{\lambda}^1\} \in \cc_1$ and $\mathcal{F}_2 = \{f_{\lambda}^2\} \in \cc_2$ and each $\lambda \in \mathbb{N}$, $f_{\lambda}^1$ runs in time $\tilde{O}(T_1(\lambda))$ and $f_{\lambda}^2$ runs in time $\tilde{O}(T_2(\lambda))$.
+%Our construction in the bounded time model $\tbprf$ is defined in exactly the same way as in \cref{fig:con-bprf} except that the underlying $\mathsf{NCNIKE}$ is replaced by $\mathsf{TNIKE}$, which is a $\cc_1$-$\pnum$-NIKE with shared key space $\bin^{\nikeshksize}$ and URS length $n$ satisfying $\epsilon_1$-extendability and $\cc_2$-$\epsilon_2$-security for some constant $\pnum$, some $\nikeshksize$, and some $n = n(\lambda)$. When the underlying $\tbprf$ is instantiated by our NIKE $\tnike$ (see \cref{fig:con-search-nike}), we have $n=0$.
+Let $\cc_1$ and $\cc_2$ represent the set of all word-RAM families such that for each $\mathcal{F}_1 = \{f_{\lambda}^1\} \in \cc_1$ and $\mathcal{F}_2 = \{f_{\lambda}^2\} \in \cc_2$ and each $\lambda \in \mathbb{N}$, $f_{\lambda}^1$ runs in time $\tilde{O}(T_1(\lambda))$ and $f_{\lambda}^2$ runs in time $\tilde{O}(T_2(\lambda))$.
+Our construction in the bounded-time model $\tbprf$ is defined in exactly the same way as in \cref{fig:con-bprf} except that the underlying $\mathsf{NCNIKE}$ is replaced by $\tnike^*$, which is a $\cc_1$-$\pnum$-NIKE with shared key space $\nikeshkspace$ and URS length $n$ satisfying $\epsilon_1$-extendability and $\cc_2$-$\epsilon_2$-security for some constant $\pnum$, and some $n = n(\lambda)$. When the underlying $\tbprf$ is instantiated by our NIKE $\tnike^*$ (see \cref{fig:con-search-nike}), we have $n=0$.
+
+%Moreover, let $\cc_1^{\prime}$ and $\cc_2^{\prime}$ represent the set of streaming word-RAM families with memory bounds $O(\storagefunction_1(\lambda))$ and $O(\storagefunction_2(\lambda))$.
+%Our construction in the BSM $\bsbprf$ is defined in exactly the same way as in \cref{fig:con-bprf} except that the underlying $\mathsf{NCNIKE}$ is replaced by $\mathsf{BSMKE}$, which is a $\cc_1^{\prime}$-$\pnum$-NIKE with shared key space $\bin^{\nikeshksize'}$ and URS length $n'$ satisfying $(\epsilon_3',\epsilon_1')$-extendability, $\epsilon_1'$-correctness, and $(\cc_2^{\prime}, \epsilon^{\prime}, \epsilon_2)$-security in the BSM for some constant $\pnum$, some $\nikeshksize'$, and some $n' = n'(\lambda)$.
+%Moreover, let $\cc_1^{\prime}$ and $\cc_2^{\prime}$ represent the set of streaming word-RAM families with memory bounds $O(\storagefunction_1(\lambda))$ and $O(\storagefunction_2(\lambda))$.
+%Our construction in the BSM $\bsbprf$ is defined in exactly the same way as in \cref{fig:con-bprf} except that the underlying $\mathsf{NCNIKE}$ is replaced by $\mathsf{BSMKE}$, which is a $\cc_1^{\prime}$-$\pnum$-NIKE with shared key space $\bin^{\nikeshksize'}$ and URS length $n'$ satisfying $\epsilon_1'$-extendability and $(\cc_2^{\prime}, \epsilon^{\prime}, \epsilon_2')$-security in the BSM for some constant $\pnum$, some $\nikeshksize'$, and some $n' = n'(\lambda)$.
+%Moreover, let $\cc_1^{\prime}$ and $\cc_2^{\prime}$ represent the set of streaming word-RAM families with memory bounds $\umem$ and $\amem$.
+%Our construction in the BSM $\bsbprf$ is defined in exactly the same way as in \cref{fig:con-bprf} except that the underlying $\mathsf{NCNIKE}$ is replaced by $\mathsf{BSMKE}$, which is a $\cc_1^{\prime}$-$\pnum$-NIKE with shared key space $\bin^{\nikeshksize'}$ and URS length $n'$ satisfying $\epsilon_1'$-extendability and $(\cc_2^{\prime}, \epsilon^{\prime}, \epsilon_2')$-security in the BSM for some constant $\pnum$, some $\nikeshksize'$, and some $n' = n'(\lambda)$.
+%Moreover, let $\cc_1^{\prime}$ represent the set of streaming word-RAM families with memory bounds $\umem$.
+%Our construction in the BSM $\bsbprf$ is defined in exactly the same way as in \cref{fig:con-bprf} except that the underlying $\mathsf{NCNIKE}$ is replaced by $\mathsf{BSMKE}$, which is a $\cc_1^{\prime}$-$\pnum$-NIKE with shared key space $\bin^{\nikeshksize'}$ and URS length $n'$ satisfying $\epsilon_1'$-extendability and $(\amem, \epsilon^{\prime}, \epsilon_2')$-security in the BSM for some constant $\pnum$, some $\nikeshksize'$, and some $n' = n'(\lambda)$.
+Moreover, let $\cc_1^{\prime}$ represent the set of streaming word-RAM families with memory bounds $\umem$.
+Our construction in the BSM $\bsbprf$ is defined in exactly the same way as in \cref{fig:con-bprf} except that the underlying $\mathsf{NCNIKE}$ is replaced by $\bsmke$, which is a $\cc_1^{\prime}$-$\pnum$-NIKE with shared key space $\nikeshkspace'$ and URS length $n'$ satisfying $0$-extendability, $\epsilon_1'$-correctness with $\epsilon_1'=2/\lambda$, and $(\amem, \epsilon^{\prime}, \epsilon_2')$-security in the BSM for some constant $\pnum$, some $\nikeshksize'$, and some $n' = n'(\lambda)$.
+In the full BPRF case, the all-$\anychar$ constraint is handled by returning the master secret key and evaluating directly; all nontrivial constraints are handled by the combining and extracting procedures in \cref{fig:con-bprf}.
+%%Let $\epsilon_1 = \negl$, $\epsilon_2 = \frac{1}{\lambda^{o(1)}}$, and 
+%%Let $\nikeshksize = |\nikeshkspace|$ be the size of the shared key space. 
+%Let $\mathsf{TNIKE} = \{\gen,\share\}$ be a $\cc_1$-$\pnum$-NIKE with $\epsilon_1$-correctness, $\epsilon_1$-extendability, and $\cc_2$-$\epsilon_2$-security. Let $\nikeshkspace$ be the shared key space and $\nikeshksize = |\nikeshkspace|$.
+%%We construct $\tbprf$ satisfying $\epsilon_1$-correctness and $\cc_2$-$2^{\pnum-1}\cdot\epsilon_2$-security as in \cref{fig:con-bprf}.
+%Our $\tbprf$ is defined the same as in \cref{fig:con-bprf} except that the underlying $\mathsf{NCNIKE} = \{\gen,\share\}$ is replaced by a $\cc_1$-$\pnum$-NIKE with shared key space $\bin^{\nikeshksize}$ satisfying $\epsilon_1$-extendability with associated algorithm families $\{\combine,\extract\}$ for some constant $\pnum$ and $\nikeshksize$.
+%Our construction $\tbprf$ (respectively, $\bsbprf$) is defined in exactly the same way as in \cref{fig:con-bprf} except that the underlying $\mathsf{NCNIKE}$ is replaced by $\mathsf{TNIKE}$ (respectively, $\mathsf{BSMKE}$), which is a $\cc_1$-$\pnum$-NIKE (respectively, $\cc_1^{\prime}$-$\pnum$-NIKE) with shared key space $\bin^{\nikeshksize}$ and URS length $n$ satisfying $(\epsilon_1,\epsilon_1')$-extendability, $\epsilon_1$-correctness, and $\cc_2$-$\epsilon_2$-security  (respectively, $(\epsilon_1, \epsilon_1^{\prime})$-extendability, $\epsilon_1^{\prime}$-correctness, and $(\cc_2^{\prime}, \epsilon^{\prime}, \epsilon_2^{\prime})$-security in the BSM) for some constant $\pnum$, some $\nikeshksize$, and some $n = n(\lambda)$.
+%Our construction $\tbprf$ (respectively, $\bsbprf$) is defined in exactly the same way as in \cref{fig:con-bprf} except that the underlying $\mathsf{NCNIKE}$ is replaced by $\mathsf{TNIKE}$ (respectively, $\mathsf{BSMKE}$), which is a $\cc_1$-$\pnum$-NIKE (respectively, $\cc_1^{\prime}$-$\pnum$-NIKE) with shared key space $\bin^{\nikeshksize}$ and URS length $n$ satisfying $(\epsilon_1,\epsilon_1')$-extendability, $\epsilon_1'$-correctness, and $\cc_2$-$\epsilon_2$-security  (respectively, $(\epsilon_1,\epsilon_1')$-extendability, $\epsilon_1'$-correctness, and $(\cc_2^{\prime}, \epsilon^{\prime}, \epsilon_2)$-security in the BSM) for some constant $\pnum$, some $\nikeshksize$, and some $n = n(\lambda)$.
+%%Let $\mathsf{TNIKE}$ be a $\cc_1$-$\pnum$-NIKE with $\epsilon_1$-correctness, $\cc_2$-$\epsilon_2$-security, and $\epsilon_1$-extendability, and let $\nikeshksize = |\nikeshkspace|$ be the size of the shared key space. We construct $\bprf$ satisfying $\epsilon_1$-correctness and $\cc_2$-$2^{\pnum-1}\cdot\epsilon_2$-security as in \cref{fig:con-bprf}.
+\begin{theorem}
+\label{thm:tnike-bprf-security}
+%	If $\mathsf{TNIKE} = \{\gen, \share\}$ is a $\cc_1$-$\pnum$-NIKE with $\epsilon_1$-correctness, $\cc_2$-$\epsilon_2$-security, and $\epsilon_1$-extendability with associated algorithm families$\{\combine,\allowbreak \extract\}$, then $\tbprf$ is a $\cc_1$-$(\pnum-1,\nikeshksize)$-BPRF with $\epsilon_1$-correctness and $\cc_2$-$2^{\pnum-1}\cdot\epsilon_2$-security.
+%	$\tbprf$ is a $\cc_1$-$(\pnum-1,\nikeshksize)$-BPRF with $(\epsilon_1+\epsilon_3-\epsilon_1\cdot\epsilon_3)$-correctness and $\cc_2$-$\epsilon_2$-security.
+%	$\tbprf$ is a $\cc_1$-$(\pnum-1,\nikeshksize)$-BPRF with $\epsilon_1$-correctness and $\cc_2$-$\epsilon_2$-security.
+	$\tbprf$ is a $\cc_1$-$(\pnum-1)$-BPRF with $\epsilon_1$-correctness and $\cc_2$-$\epsilon_2$-security.
+\end{theorem}
+%\begin{theorem}
+%\label{thm:bsnike-bprf-security}
+%%	$\bsbprf$ is a $\cc_1^{\prime}$-$(\pnum-1,\nikeshksize')$-BPRF with $(\epsilon_1'+\epsilon_3'-\epsilon_1'\cdot\epsilon_3')$-correctness and $(\cc_2^{\prime}, \epsilon^{\prime}, \epsilon_2')$-security.
+%	$\bsbprf$ is a $\cc_1^{\prime}$-$(\pnum-1,\nikeshksize')$-BPRF with $\epsilon_1'$-correctness and $(\cc_2^{\prime}, \epsilon^{\prime}, \epsilon_2')$-security.
+%\end{theorem}
+\begin{theorem}
+\label{thm:bsnike-bprf-security}
+%	$\bsbprf$ is a $\cc_1^{\prime}$-$(\pnum-1,\nikeshksize')$-BPRF with $(\epsilon_1'+\epsilon_3'-\epsilon_1'\cdot\epsilon_3')$-correctness and $(\cc_2^{\prime}, \epsilon^{\prime}, \epsilon_2')$-security.
+%	$\bsbprf$ is a $\cc_1^{\prime}$-$(\pnum-1,\nikeshksize')$-BPRF with $\epsilon_1'$-correctness and $(\amem, \epsilon^{\prime}, \epsilon_2')$-security.
+	$\bsbprf$ is a $\cc_1^{\prime}$-$(\pnum-1)$-BPRF with $\epsilon_1'$-correctness and $(\amem,\allowbreak \epsilon^{\prime}, \epsilon_2')$-security.
+\end{theorem}
+%\begin{theorem}
+%\label{thm:bsnike-bprf-security}
+%	$\bsbprf$ is a $\cc_1$-$(\pnum-1,\nikeshksize)$-BPRF with $\epsilon_1$-correctness and $(\cc_2, \epsilon^{\prime}, \epsilon_2)$-security in the BSM.
+%\end{theorem}
+%	The proof of \cref{thm:tnike-bprf-security} is the same as the proof of \cref{thm:rbprf-security} except that the correctness is satisfied for all $\fixstring \in \{0,1,\bot\}^{\pnum-1}$ rather than $\fixstring \in \{\bot\}^{\leftindex-1} \cup \bin^{\rightindex-\leftindex+1} \cup \{\bot\}^{\pnum-1-\rightindex}$ since the underlying NIKE satisfies $\epsilon$-extendability for all $\indexset \subseteq [\pnum-1]$ rather than restricted-$\epsilon$-extendability for $\indexset = [t_1,t_2] \subseteq [\pnum-1]$ in \cref{thm:rbprf-security}.
+	The proofs of \cref{thm:tnike-bprf-security} and \cref{thm:bsnike-bprf-security} are very similar to the proof of \cref{thm:rbprf-security} and thus we omit the details. %except that $\fixstring$ can be any string in $\{0,1,\bot\}^{\pnum-1}$ now.  % rather than $\fixstring \in \{\bot\}^{\leftindex-1} \cup \bin^{\rightindex-\leftindex+1} \cup \{\bot\}^{\pnum-1-\rightindex}$.
+%Feb13	\heading{Complexity.}
+%	First we note that the constructions run in time $\tilde{O}(T_1(\lambda))$ since they run $\gen$ and $\share$ for a constant number of times. 
+%	
+%	\heading{Correctness.}
+%	Let $(\pk_i,\sk_i) \getsr \gen$ for every $i \in [\pnum]$. For any $\fixstring \in \{0,1,\bot\}^{\pnum-1}$, $\indexset \subseteq [\pnum-1]$, and $\preimage \in \csys_{\fixstring}$, according to the $\epsilon_1\text{-extendability of }\mathsf{TNIKE}$, we have 
+%\[\begin{split}
+%\localkey^* &= \combine([\pnum], \indexset,\allowbreak \localkey, \{\{\pk_{i, \preimage_i}\}_{i\in[\pnum-1]\slash\indexset},\pk_{\pnum}\})\\
+%&= \combine([\pnum], \{j\}, \sk_{j}, \{\{\pk_{i, \preimage_i}\}_{i \in [\pnum-1]\slash\{j\}}, \pk_{\pnum}\}),
+%\end{split}\]
+%%where $\bprfmsk \getsr \bprfsetup(\urs)$ 
+%where $(\pk_i, \sk_i) \getsr \gen(\urs)$ for $i \in [\pnum]$, $(\pk_{i,\beta}, \sk_{i, \beta}) \getsr \gen(\urs)$, and $\localkey = \combine(\indexset, \{i^{\prime}\}, \sk_{i^{\prime}}, \allowbreak \{\pk_i\}_{i \allowbreak \in \indexset\slash\{i^{\prime}\}})$ for any $i^{\prime} \in \indexset$.
+%Thus for any $\preimage \in \csys_{\fixstring}$, we have
+%\[\begin{split}
+%	&\Pr[\bprfceval(\bprfsk_{\fixstring}, \preimage) = \bprfeval(\bprfmsk, \preimage)]\\
+%%	=&\Pr[\extract(\localkey^*, \pk_{\pnum}) = \bprfeval(\bprfmsk, \preimage)]\\
+%	=&\Pr[\extract(\localkey^*, \pk_{\pnum}) = \share(\pnum, \sk_{\pnum}, ((\pk_{i,\preimage_i})_{i \in [\pnum-1]}, \pk_{\pnum}))]\\
+%	\geq & 1-\epsilon_1 (\because \epsilon_1\text{-extendability of }\mathsf{TNIKE}),
+%\end{split}\]
+%	where $\bprfmsk \getsr \bprfsetup(\urs)$, $\bprfsk_{\fixstring} \getsr \bprfdel(\bprfmsk, \fixstring)$.
+%%\[\begin{split}
+%%	&\Pr[\bprfceval(\bprfsk_{\fixstring}, \preimage) = \bprfeval(\bprfmsk, \preimage)]\\
+%%	=&\Pr[\combine^2(\indexset, \localkey, (\pk_{i, x_i})_{i\in[\pnum]\slash\indexset})) = \share(\pnum, \sk_{\pnum}, ((\pk_{i,x_i})_{i \in [\pnum-1]}, \pk_{\pnum}))]\\
+%%	\geq & 1-\epsilon_1 (\because \epsilon_1\text{-extendable of }\mathsf{TNIKE}),
+%%\end{split}\]
+%%	where $\bprfmsk \getsr \setup(\urs)$ and $\bprfsk_{\fixstring} \getsr \bprfdel(\bprfmsk, \fixstring)$.
+%	
+%	\heading{Security.} The security proof of \cref{thm:tnike-bprf-security} is the same as the security proof of \cref{thm:rbprf-security} except that the reduction runs in time $\tilde{O}(\lambda^{\pnum+k})$ instead of $\ncone$ as in \cref{thm:rbprf-security}. The reduction runs in time $\tilde{O}(\lambda^{\pnum+k})$ since it runs $\gen$ for a constant number of times.
+%%	This theorem is the same as \cref{thm:rbprfsecurity} except that we require $\mathsf{TNIKE}$ satisfying $\epsilon_1$-extendability.
+%%	
+%%	More specifically, the correctness is satisfied for any $\fixstring \in \{0,1,\bot\}^{\pnum-1}$, since $\epsilon_1$-extendability is satisfied for any $\indexset \subseteq [\pnum-1]$.
+%%	
+%%	We note that $\bprf=\{\bprfsetup, \bprfeval, \bprfdel, \bprfceval \}$ runs in time $\tilde{O}(\pnum+k)$ since they only involve operations including running a constant number $\gen$ and running $\share$ once. Moreover, the adversary $\advB = \{\advb\}$ also runs in time $\tilde{O}(\pnum+k)$ since they involve operations including running a $\gen$ $\pnum-1$ times.
+
+%BPRF from BSMKE
+%\heading{BPRF in the bounded storage model.}
+%The construction is the same as restricted BPRF in the bounded-parallel-time model. The proof is also the same as the proof of \cref{thm:rbprf-security} with the following distinctions. For correctness, $\{\bprfsetup, \bprfeval, \bprfdel, \bprfceval \}$ runs in time $\tilde{O}(\lambda^{\pnum+k})$ since they only involve operations including running a constant number $\gen$ and $\share$. Moreover, correctness is satisfied for any $\fixstring \in \{0,1,\bot\}^{\pnum-1}$ according to extendability of multi-party NIKE. For security, the adversary $\advB = \{\advb\}$ runs in time $\tilde{O}(\lambda^{\pnum+k})$ since they involve operations including running $\gen$ $\pnum-1$ times.
+%Let $\cc_1$ (respectively, $\cc_2$) be the class of streaming word-RAM families with memory bound $O(\lambda^{\pnum})$
+%(respectively, $O(\lambda^{\pnum+1})$).
+%Let $\cc_1$ (respectively, $\cc_2$) be the class of streaming word-RAM families with memory bound $O(\storagefunction_1(\lambda))$
+%(respectively, $O(\storagefunction_2(\lambda))$).
+%%%Let $\epsilon_1 = \negl$, $\epsilon_2 = \frac{1}{\lambda^{o(1)}}$, and 
+%%%Let $\nikeshksize = |\nikeshkspace|$ be the size of the shared key space. 
+%%Let $\mathsf{TNIKE} = \{\gen,\share\}$ be a $\cc_1$-$\pnum$-NIKE with $\epsilon_1$-correctness, $\epsilon_1$-extendability, and $\cc_2$-$\epsilon_2$-security. Let $\nikeshkspace$ be the shared key space and $\nikeshksize = |\nikeshkspace|$.
+%%%We construct $\tbprf$ satisfying $\epsilon_1$-correctness and $\cc_2$-$2^{\pnum-1}\cdot\epsilon_2$-security as in \cref{fig:con-bprf}.
+%%Our $\bsbprf$ is defined the same as in \cref{fig:con-bprf} except that the underlying $\mathsf{NCNIKE} = \{\gen,\share\}$ is replaced by a $\cc_1$-$\pnum$-NIKE (with shared key space $\bin^{\nikeshksize}$ and URS length $n$) and satisfying $\epsilon_1$-correctness, $(\cc_2, \epsilon^{\prime}, \epsilon_2)$-security in the BSM, and $\epsilon_1$-extendability with associated algorithm families $\{\combine,\extract\}$.
+%Our $\bsbprf$ is defined the same as in \cref{fig:con-bprf} except that the underlying $\mathsf{NCNIKE} = \{\gen,\share\}$ is replaced by $\mathsf{BSMKE} = \{\gen, \share\}$, which is a $\cc_1$-$\pnum$-NIKE (with shared key space $\bin^{\nikeshksize}$ and URS length $n$) satisfying $\epsilon_1$-extendability with associated algorithm families $\{\combine,\extract\}$, $\epsilon_1$-correctness, and $(\cc_2, \epsilon^{\prime}, \epsilon_2)$-security in the BSM.
+%%Let $\mathsf{TNIKE}$ be a $\cc_1$-$\pnum$-NIKE with $\epsilon_1$-correctness, $\cc_2$-$\epsilon_2$-security, and $\epsilon_1$-extendability, and let $\nikeshksize = |\nikeshkspace|$ be the size of the shared key space. We construct $\bprf$ satisfying $\epsilon_1$-correctness and $\cc_2$-$2^{\pnum-1}\cdot\epsilon_2$-security as in \cref{fig:con-bprf}.
+%\begin{theorem}
+%\label{thm:bsnike-bprf-security}
+%	$\bsbprf$ is a $\cc_1$-$(\pnum-1,\nikeshksize)$-BPRF with $\epsilon_1$-correctness and $(\cc_2, \epsilon^{\prime}, \epsilon_2)$-security in the BSM.
+%\end{theorem}
+%\begin{proof}
+%	\heading{  Correctness.} The proof of correctness in \cref{thm:bsnike-bprf-security} is the same as the proof of correctness in \cref{thm:rbprf-security} except that $\bsbprf=\{\bprfsetup, \bprfeval,\allowbreak \bprfdel,\allowbreak \bprfceval \}$ consume $O(T_1(\lambda))$ bits of memory instead of running in time $\tilde{O}(T_1(\lambda))$. The algorithm $\bsbprf=\{\bprfsetup, \bprfeval, \bprfdel, \bprfceval \}$ consume $O(\lambda^{\pnum})$ bits of memory since they only involve operations including running a constant number $\gen$ and $\share$. 
+%	\heading{Complexity.} The construction consumes $O(\storagefunction_1(\lambda))$ bits of memory since they run $\gen$ and $\share$ for a constant number of times. 
+%	
+%%	\heading{ Correctness.} The proof of correctness in \cref{thm:bsnike-bprf-security} is the same as the proof of correctness in \cref{thm:rbprf-security} except that the construction consumes $O(\storagefunction_1(\lambda))$ bits of memory instead of running in time $\tilde{O}(T_1(\lambda))$. The construction consumes $O(\storagefunction_1(\lambda))$ bits of memory since they run $\gen$ and $\share$ for a constant number of times. 
+%	\heading{ Correctness.} The proof of correctness in \cref{thm:bsnike-bprf-security} is the same as the proof of correctness in \cref{thm:rbprf-security}.
+%	 except that the construction consumes $O(\storagefunction_1(\lambda))$ bits of memory instead of running in time $\tilde{O}(T_1(\lambda))$.
+
+%	\heading{  Security.} The security proof of \cref{thm:bsnike-bprf-security} follows directly since $I(\key;(f(\urs),\allowbreak(\pk_i)_{i\in[\pnum]})|\event) = I(\image;(f(\urs), (\bprfsk_{\fixstring})_{\preimage \notin \csys_{\fixstring}})|\event)$ for some $\event$ such that $\Pr[\event] \geq \epsilon^{\prime}$. Moreover, the reduction consumes $O(\lambda^{\pnum+1})$ bits of memory since it involves operations including running a constant number of $\gen$.
+%	\heading{  Security.}
+%	The proof of \cref{thm:bsnike-bprf-security} is the same as the proof of \cref{thm:tnike-bprf-security} with the following two distinctions.
+%	The construction consumes $O(\storagefunction_1(\lambda))$ bits of memory since they run $\gen$ and $\share$ for a constant number of times. Moreover,
+%	the proof of security follows immediately from the fact that for any function $f : \bin^{n} \rightarrow \bin^{\amem}$ where $\amem = O(\storagefunction_2(\lambda))$, any $\preimage \in \bin^{\pnum-1}$, and some $\event$ such that $\Pr[\event] \geq 1-\epsilon^{\prime}$, we have
+%%$$I(\image;(f(\urs), (\bprfsk_{\fixstring})_{\preimage \notin \csys_{\fixstring}})|\event) = I(\key;(f(\urs),\allowbreak(\pk_i)_{i\in[\pnum]})|\event),$$
+%%	where $\urs \getsr \bin^{n}$ for some $n \in \mathbb{N}$, $\bprfmsk \getsr \bprfsetup(\urs)$, $\bprfsk_{\fixstring} = \bprfdel(\bprfmsk, \fixstring)$ for all $\fixstring$ such that $\preimage \notin \csys_{\fixstring}$, $\image = \bprfeval(\bprfmsk, \preimage)$, $(\pk_i,\sk_i)\getsr\Gen(\urs)$ for all $i\in\cs$, and $\key=\share(j,\sk_j,(\pk_i)_{i\in\cs})$ for some $j\in[\pnum]$. Moreover, the reduction consumes $O(\lambda^{\pnum+1})$ bits of memory since it involves operations including running a constant number of $\gen$.
+%$$I(\image;(f(\urs), \{\bprfsk_{\fixstring}\}_{\fixstring\in\mathcal{T}_{\preimage, \pnum-1}}|\event) = I(\key;(f(\urs),\allowbreak(\pk_i)_{i\in[\pnum]})|\event),$$
+%	where $\urs \getsr \bin^{n}$ for some $n \in \mathbb{N}$, $\bprfmsk \getsr \bprfsetup(\urs)$, $\bprfsk_{\fixstring} = \bprfdel(\bprfmsk, \fixstring)$ for all $\fixstring \in \mathcal{T}_{\preimage, \pnum-1}$, $\image = \bprfeval(\bprfmsk, \preimage)$, $(\pk_i,\sk_i)\getsr\Gen(\urs)$ for all $i\in\cs$, and $\key=\share(j,\sk_j,(\pk_i)_{i\in\cs})$ for some $j\in[\pnum]$. 
+%	Moreover, the reduction consumes $O(\lambda^{\pnum+1})$ bits of memory since it involves operations including running a constant number of $\gen$.
+%	This theorem is the same as \cref{thm:rbprfsecurity} except that we require $\mathsf{TNIKE}$ satisfying $\epsilon_1$-extendability.
+%	
+%	More specifically, the correctness is satisfied for any $\fixstring \in \{0,1,\bot\}^{\pnum-1}$, since $\epsilon_1$-extendability is satisfied for any $\indexset \subseteq [\pnum-1]$.
+%	
+%	We note that $\bprf=\{\bprfsetup, \bprfeval, \bprfdel, \bprfceval \}$ runs in time $\tilde{O}(\pnum+k)$ since they only involve operations including running a constant number $\gen$ and running $\share$ once. Moreover, the adversary $\advB = \{\advb\}$ also runs in time $\tilde{O}(\pnum+k)$ since they involve operations including running a $\gen$ $\pnum-1$ times.
+%\end{proof}
+
+%%change BPRF to restricted version
+%The following corollary immediately follows since the restricted $\epsilon_1$-extendability is a special case of $\epsilon_1$-extendability when the set $\indexset = $  and $\cc_1$-$(\pnum-1, \nikeshksize)$-restricted BPRF is the special case of $\cc_1$-$(\pnum-1, \nikeshksize)$-BPRF.
+%\begin{corollary}
+%\label{col:rbprfsecurity}
+%If $\mathsf{NIKE} = \{\gen, \share\}$ is a $\cc_1$-$\pnum$-NIKE with $\epsilon_1$-correctness, $\cc_2$-$\epsilon_2$-security, and restricted $\epsilon_1$-extendability for any constant $\pnum \geq 2$, then $\bprf$ in \cref{fig:con-bprf} is a $\cc_1$-$(\pnum-1,\nikeshksize)$-restricted BPRF with $\epsilon_1$-correctness and $\cc_2$-$2^{\pnum-1}\cdot\epsilon_2$-security.
+%\end{corollary}
+
+\subsection{Extendability of Our Multi-Party NIKEs} 
+\label{sec:extendable}
+We now argue that our multi-party NIKE in the bounded-parallel-time model satisfies restricted extendability, and our multi-party NIKEs in the bounded-time model and bounded-storage model satisfy extendability.
+%NC1-NIKE satisfies restricted extendability
+%
+%We now recall the parameters in \cref{sec:bsm-nike}. 
+%We now recall the parameters used in \cref{thm:time-nike}. Let $\cc_1$ (respectively, $\cc_2$) be the set of all word-RAM families such that for each $\mathcal{F} = \{f_{\lambda}\}\in\cc_1$ and each $\lambda\in\N$, $f_{\lambda}$ runs in time $\tilde{O}(\listlength\lambda^2 + \solutionlength\lambda^{k})$ (respectively, $\tilde{O}(\listlength\lambda^k)$), where $\listlength = \lambda^{\Omega(1)}$ and $\solutionlength < \listlength$. We also recall the parameters used in \cref{thm:bsmke}.
+%Next we follow \cite{C:CacMau97} to define several parameters.
+%Let $\lambda\in\N$ be the security parameter and $\pnum$ be the number of parties.
+%Let $\amem,n$ be integers such that $\amem<n$. We define $q$, $\epsilon_1$, $\epsilon_2$, and $\theta$ satisfying the following equations:
+%\begin{compactitem}
+%%\item $\gamma=(1-\frac{1}{n})^\pnum$,
+%\item $\delta=\min\{0.9453,\frac{1}{n}(n-\amem-\log\frac{1}{\epsilon_1})\}$,
+%\item $\rho$ such that $H_b(\rho)+\rho\log\frac{1}{\delta}+\frac{1}{n}=\delta$,
+%\item $\lambda=\frac{q}{2}\cdot (\frac{q}{n})^{\pnum-1}=\lfloor(\rho\epsilon_2^2-\rho2^{-\rho n\log \frac{1}{\delta}-2})^{-1}\rfloor$,
+%\item $r=\lfloor\log\theta+\rho\lambda/2-1\rfloor$,
+%\end{compactitem}
+%As noted in \cite{C:CacMau97}, when $n>>\amem$, we have $\delta=0.9453$, $\rho=1/3$,  $\lambda\approx3/\epsilon_2$, and $r\approx \lambda/6$.
+
+%Let $\nike$ (see \cref{fig:con-nike}) satisfy $0$-correctness, $\tnike^*=\{\gen,\share\}$ (see \cref{fig:con-search-nike}) satisfy $\epsilon$-correctness, and $\bsmke$ (see \cref{fig:con-bsmke}) satisfy $\epsilon'$-correctness. We have the following theorem.
+We first recall that $\nike$ (see \cref{fig:con-nike}) satisfies $0$-correctness, $\tnike^*=\{\gen^*,\share^*\}$ (see \cref{fig:con-search-nike}) satisfies $((1- (\solutionlength/\listlength)^{\pnum-1})^{\solutionlength} + 2\ell\pnum\lambda^k/R)$-correctness, and $\bsmke$ (see \cref{fig:con-bsmke}) satisfies $2/\lambda$-correctness. Then we have the following theorem.
+\begin{theorem}
+\label{thm:extend-ncnike}
+%	$\nike$ (see \cref{fig:con-nike}) satisfies $(0,0)$-restricted extendability, $\tnike^*=\{\gen,\share\}$ (see \cref{fig:con-search-nike}) satisfies $(2\ell\pnum\lambda^k/R, (1- (\frac{\solutionlength}{\listlength})^{\pnum-1})^{\solutionlength}\cdot 2\ell\pnum\lambda^k/R)$-extendability, and $\bsmke$ (see \cref{fig:con-bsmke}) satisfies $(0, \frac{2}{\lambda})$-extendability.
+	$\nike$ (see \cref{fig:con-nike}) satisfies $0$-restricted extendability, $\tnike^*=\{\gen^*,\share^*\}$ (see \cref{fig:con-search-nike}) satisfies $2\ell\pnum\lambda^k/R$-extendability, and $\bsmke$ (see \cref{fig:con-bsmke}) satisfies $0$-extendability.
+%	$\nike$ (see \cref{fig:con-nike}) satisfies $0$-restricted extendability, $\tnike^*=\{\gen,\share\}$ (see \cref{fig:con-search-nike}) satisfies $(2\ell\pnum\lambda^k/R + (1- (\frac{\solutionlength}{\listlength})^{\pnum-1})^{\solutionlength})$-extendability, and $\bsmke$ (see \cref{fig:con-bsmke}) satisfies $0$-extendability.
+%	$\nike$ (see \cref{fig:con-nike}) satisfies $0$-restricted extendability, $\tnike^*=\{\gen,\share\}$ (see \cref{fig:con-search-nike}) satisfies $2\ell\pnum\lambda^k/R$-extendability, and $\bsmke$ (see \cref{fig:con-bsmke}) satisfies $0$-extendability. 
+\end{theorem}
+The abort probabilities are accounted for in the correctness guarantees: $\tnike^*$ has correctness error
+\[
+\left(1-\left(\solutionlength/\listlength\right)^{\pnum-1}\right)^{\solutionlength}+2\ell\pnum\lambda^k/R,
+\]
+and $\bsmke$ has correctness error $2/\lambda$.
+%\begin{theorem}
+%\label{thm:extend-ncnike}
+%%	If $\nike=\{\gen, \share\} \in \aczerotwo$ is a $\aczerotwo$-$\pnum$-NIKE with $0$-correctness (i.e., perfect correctness), then  $\nike$ satisfies $0$-restricted extendability for any $\indexset = [\leftindex, \rightindex] \subseteq [\pnum-1]$ for some $\leftindex, \rightindex \in [0, \pnum-1]$ such that $\leftindex + \rightindex \leq \pnum-1$.
+%	%If $\nike=\{\gen, \share\} \in \aczerotwo$ is a $\aczerotwo$-$\pnum$-NIKE with $0$-correctness (i.e., perfect correctness) for any constant $\pnum\geq2$, then  
+%%	$\nike$ (see \cref{fig:con-nike}) satisfies $0$-restricted extendability, $\tnike^*=\{\gen,\share\}$ (see \cref{fig:con-search-nike}) satisfies $\epsilon$-extendability, and $\bsmke$ (see \cref{fig:con-bsmke}) satisfies $\epsilon$-extendability.
+%	$\nike$ (see \cref{fig:con-nike}) satisfies $0$-restricted extendability, $\tnike^*=\{\gen,\share\}$ (see \cref{fig:con-search-nike}) satisfies $\epsilon$-extendability, and $\bsmke$ (see \cref{fig:con-bsmke}) satisfies $\epsilon'$-extendability.
+%\end{theorem}
+%\begin{proof}
+We define the combining and extracting algorithm families $\{\nccombine,\allowbreak\ncextract\}$, $\{\tcombine,\allowbreak\textract\}$, $\{\bsmcombine,\bsmextract\}$ for $\nike$, $\tnike^*$, and $\bsmke$ respectively as in \cref{fig:con-extendable-bsmke}.
+%Both are computable in $\aczerotwo$ since operations including multiplication of a constant number of matrices are involved. 
+Then \cref{thm:extend-ncnike} follows immediately from the analysis of complexity and the definitions of the combining and extracting algorithms for $\nike$, $\tnike^*$, and $\bsmke$. Indeed, one can easily see that for each scheme, the combining and extracting algorithms are exactly the intermediate steps of the sharing algorithm. The abort probabilities are exactly those established by the correctness analyses in \cref{thm:nc-nike,thm:time-nike,thm:bsmke}. %We refer the reader to \cref{sec:ncnike-con,sec:tnike-con,sec:bsmke-con} for details.
+
+%\cref{thm:extend-ncnike, thm:bsm-ibnike-security, thm:time-ibnike-security, thm:nc-ibnike-security, thm:rbprf-security, thm:tnike-bprf-security, thm:bsnike-bprf-security} 
+%Combining the above theorem with \cref{thm:extend-ncnike,thm:nc-ibnike-security,thm:rbprf-security}, we immediately obtain instantiations of IB-NIKE in the bounded-parallel-time model, by putting \cref{thm:extend-ncnike}, \cref{thm:time-ibnike-security}, and \cref{thm:tnike-bprf-security} together, we have an instantiation of IB-NIKE in the bounded time model, by putting \cref{thm:extend-ncnike}, \cref{thm:bsm-ibnike-security}, and \cref{thm:bsnike-bprf-security} together, we have an instantiation of IB-NIKE in the BSM.
+%Let $\nike$ (see \cref{fig:con-nike}) be an $\aczerotow$-$\pnum$-NIKE satisfies $0$-correctness and $\ncone$-$\epsilon_2$-security, $\tnike^*$ (see \cref{fig:con-search-nike}) be an 
+%\begin{corollary}
+%	Given $\nike$ (see \cref{fig:con-nike}), there exists an $\aczerotwo$-$\ibparty$-IB-NIKE with 0-correctness and $\ncone$-$\epsilon_2$-security.
+%	
+%	Given $\tnike^*$ (see \cref{fig:con-search-nike}), there exists a $\tilde{O}(T_1(\lambda))$-$\ibparty$-IB-NIKE with $\epsilon_1$-correctness and $\tilde{O}(T_2(\lambda))$-$\epsilon_2$-security.
+%	
+%	Given $\bsmke$ (see \cref{fig:con-bsmke}), there exists a $O(M_1(\lambda))$-$\ibparty$-IB-NIKE with $\epsilon_1$-correctness and $(O(M_2(\lambda),\epsilon,\epsilon_2)$-security.
+%\end{corollary}
+%\begin{figure}[h!]
+%\begin{center}
+%\framebox{
+%\small
+%  \begin{tabular}{ll}
+%    \begin{minipage}[t]{0.9\textwidth}
+%    	\underline{$\nccombine(\indexset, \indexset_1, \localkey, \{\pk_i\}_{i \in \indexset\slash\indexset_{1}})$:}
+%	\item Parse $\localkey = \sR$, $\indexset = [\leftindex, \rightindex]$, $\indexset_1 = [\subleftindex, \subrightindex]$, and $(\pk_j = \matr P_j)_{j \in \indexset\slash\indexset_1}$
+%	\item Return $\localkey' = (\prod_{j=\leftindex}^{\subleftindex-1}\matr P_j^{\top}) \sR (\matr \prod_{j=\subrightindex+1}^{\rightindex} \matr P_j)$\\
+%%	\item Parse $(\pk_j = \matr P_j)_{j \in \indexset}$ and $\sk_{i} = \sR_{i}$
+%%	\item Return $\localkey = (\prod_{j<i}\matr P_j^{\top}) \sR_{i} (\matr \prod_{j>i} \matr P_j)$\\
+%%    \end{minipage}&  \begin{minipage}[t]{0.48\textwidth}
+%
+%%    	\underline{$\extract(\indexset, \localkey, (\pk_i)_{i\in[\pnum]\slash\indexset})$:}
+%%    	\item Parse $(\pk_i = \matr P_i)_{i\in[\pnum]\slash\indexset}$ and $\indexset=[\leftindex+1, \pnum-1-\rightindex]$
+%%	\item $\matr K= (\prod_{i \in [\leftindex]}\matr P_i^{\top}) \localkey (\prod_{i \in [\rightindex, \pnum-1]} \matr P_i$)
+%%	\item Let $\key$ be the bottom-right bit of $\matr K$
+%%	\item Return $\key$
+%    	\underline{$\ncextract(\localkey, \pk_{\pnum})$:}
+%%    	\item Parse $(\pk_i = \matr P_i)_{i\in[\pnum]\slash\indexset}$ and $\indexset=[\leftindex+1, \pnum-1-\rightindex]$
+%%	\item $\matr K= (\prod_{i \in [\leftindex]}\matr P_i^{\top}) \localkey (\prod_{i \in [\rightindex, \pnum-1]} \matr P_i$)
+%	\item Let $\key$ be the bottom-right bit of $\localkey$
+%	\item Return $\key$\\ \\ \\
+%
+%    	\underline{$\tcombine(\indexset, \indexset_1, \localkey, \{\pk_j\}_{j \in \indexset\slash\indexset_1})$:}
+%	\item Parse $\localkey = \mathcal{S}$ and $\{\pk_j = ((\instance_j^t)_{t \in [\listlength]}, \vec{v}_j)\}_{j \in \indexset\slash\indexset_1}$
+%%	\item Let $\mathcal{S} = \sk_{i}$
+%	\item For $j \in \indexset\slash\indexset_1$, $\mathcal{T} = \emptyset$\\
+%    	\tab For every $s \in \mathcal{S}$, check by brute forcing whether $\instance^{s}_{j}$ has one solution\\
+%	\tab\tab If the check passes, $\mathcal{T} = \mathcal{T} \cup \{s\}$\\
+%	\tab $\mathcal{S} = \mathcal{S} \cap \mathcal{T}$
+%	\item Return $\localkey = \mathcal{S}$\\
+%%    \end{minipage}&  \begin{minipage}[t]{0.48\textwidth}
+%
+%    	\underline{$\textract(\localkey, \pk_{\pnum})$:}
+%    	\item Parse $\localkey = \mathcal{S}$ and $\pk_{\pnum} = ((\instance_{\pnum}^j)_{j \in [\listlength]}, \vec{v}_{\pnum})$
+%	\item If $|\mathcal{S}| < 1$ abort
+%	\item Else return $\key = (\bigoplus_{j=1}^{|\mathcal{S}|}s_{j}) \cdot \vec{v}_\pnum$ for all $s_j \in \mathcal{S}$\\ \\ \\
+%
+%    	\underline{$\bsmcombine(\indexset, \indexset_1, \localkey, \{\pk_j\}_{j \in \indexset\slash\indexset_1})$:}
+%	\item Parse $\localkey = \urs_{\set}$ and $\{\pk_j = (h_j, g_j)\}_{j \in \indexset\slash\indexset_1}$
+%	\item Let $\set_i$ be the set of all bits in $\urs$ with indices in $(h_i(j))_{j \in [q]}$
+%	\item Remove bits in $|\urs_{\set}|$ with indices not in $\bigcap_{j \in \indexset\slash\indexset_1}\set_j$ by computing $(h_i(j))_{i\in[\pnum],j\in[q]}$ for all $i$ in a streaming manner
+%	\item Return $\localkey = \urs_{\set}$\\
+%%    \end{minipage}&  \begin{minipage}[t]{0.48\textwidth}
+%
+%    	\underline{$\bsmextract(\localkey, \pk_{\pnum})$:}
+%    	\item Parse $\localkey = \urs_{\set}$ and $\pk_{\pnum} = (h_{\pnum}, g_{\pnum})$
+%	\item Abort the whole protocol if $|\urs_{\set}|< \lambda$
+%	\item Return $\key=g_\pnum(\urs_{\set})$
+%    \end{minipage} 
+%      \end{tabular}
+%      }
+%\end{center}
+%\caption{Constructions of $\{\nccombine, \ncextract\}$, $\{\tcombine,\textract\}$, and $\{\bsmcombine, \bsmextract\}$. Recall that for any set $\set$, $\urs_\set$ denotes the sequence of all bits in $\urs$ with indices (ordered lexicographically) in $\set$.}
+%\label{fig:con-extendable-bsmke}
+%\end{figure}
+For $\bsmke$, a local key is represented together with the compact public hash descriptors that define its current index set. This adds only $O(\pnum\log n)$ bits, since $\pnum$ is constant, and does not affect the asymptotic parameters.
+\begin{figure}[h!]
+\begin{center}
+\framebox{
+\small
+  \begin{tabular}{ll}
+    \begin{minipage}[t]{0.7\textwidth}
+    	\underline{$\nccombine(\localkey, \{\pk_i\}_{i \in \indexset})$:}
+	\item Parse $\localkey = \sR$, $\{\pk_i\}_{i \in \indexset} = \{\{P_j\}_{j \in [\leftindex, \subleftindex-1]} \cup \{P_j\}_{j \in [\subrightindex+1, \rightindex]}\} $
+%	$\indexset = [\leftindex, \rightindex]$, $\indexset_1 = [\subleftindex, \subrightindex]$, and $(\pk_j = \matr P_j)_{j \in \indexset\slash\indexset_1}$
+	\item Return $\localkey' = (\prod_{j=\leftindex}^{\subleftindex-1}\matr P_j^{\top}) \sR (\matr \prod_{j=\subrightindex+1}^{\rightindex} \matr P_j)$\\
+%	\item Parse $(\pk_j = \matr P_j)_{j \in \indexset}$ and $\sk_{i} = \sR_{i}$
+%	\item Return $\localkey = (\prod_{j<i}\matr P_j^{\top}) \sR_{i} (\matr \prod_{j>i} \matr P_j)$\\
+%    \end{minipage}&  \begin{minipage}[t]{0.48\textwidth}
+
+%    	\underline{$\extract(\indexset, \localkey, (\pk_i)_{i\in[\pnum]\slash\indexset})$:}
+%    	\item Parse $(\pk_i = \matr P_i)_{i\in[\pnum]\slash\indexset}$ and $\indexset=[\leftindex+1, \pnum-1-\rightindex]$
+%	\item $\matr K= (\prod_{i \in [\leftindex]}\matr P_i^{\top}) \localkey (\prod_{i \in [\rightindex, \pnum-1]} \matr P_i$)
+%	\item Let $\key$ be the bottom-right bit of $\matr K$
+%	\item Return $\key$
+    	\underline{$\ncextract(\localkey, \pk_{\pnum})$:}
+%    	\item Parse $(\pk_i = \matr P_i)_{i\in[\pnum]\slash\indexset}$ and $\indexset=[\leftindex+1, \pnum-1-\rightindex]$
+%	\item $\matr K= (\prod_{i \in [\leftindex]}\matr P_i^{\top}) \localkey (\prod_{i \in [\rightindex, \pnum-1]} \matr P_i$)
+	\item Return $\key$, which is the bottom-right bit of $\localkey$\\ \\ \\
+
+    	\underline{$\tcombine(\localkey, \{\pk_j\}_{j \in \indexset})$:}
+	\item Parse $\localkey = \mathcal{S}$ and $\{\pk_j = ((\instance_j^t)_{t \in [\listlength]}, \vec{v}_j)\}_{j \in \indexset}$
+%	\item Let $\mathcal{S} = \sk_{i}$
+	\item For $j \in \indexset$, $\mathcal{T} = \emptyset$\\
+    	\tab For every $s \in \mathcal{S}$, check by brute forcing whether $\instance^{s}_{j}$ has one solution\\
+	\tab\tab If the check passes, $\mathcal{T} = \mathcal{T} \cup \{s\}$\\
+	\tab $\mathcal{S} = \mathcal{S} \cap \mathcal{T}$
+	\item Return $\localkey = \mathcal{S}$\\
+%    \end{minipage}&  \begin{minipage}[t]{0.48\textwidth}
+
+    	\underline{$\textract(\localkey, \pk_{\pnum})$:}
+    	\item Parse $\localkey = \mathcal{S}$ and $\pk_{\pnum} = ((\instance_{\pnum}^j)_{j \in [\listlength]}, \vec{v}_{\pnum})$
+	\item If $|\mathcal{S}| < 1$ abort
+%	\item Else return $\key = (\bigoplus_{j=1}^{|\mathcal{S}|}s_{j}) \cdot \vec{v}_\pnum$ for all $s_j \in \mathcal{S}$
+	\item Else return $\key = (\bigoplus_{s \in \mathcal{S}}s) \cdot \vec{v}_\pnum$\\ \\ \\
+
+    	\underline{$\bsmcombine(\localkey, \{\pk_j\}_{j \in \indexset})$:}
+	\item Parse $\localkey=(D,\urs_{\set})$, where $D$ is a list of hash functions and $\set$ is the intersection of the index sets defined by $D$
+	\item Parse $\{\pk_j=(h_j,g_j)\}_{j\in\indexset}$
+	\item Let $D'=D\cup\{h_j:j\in\indexset\}$
+	\item Let $\set'=\set\cap\bigcap_{j\in\indexset}\set_j$, where $\set_j=\{h_j(a):a\in[q]\}$
+	\item Recompute $\set$ and $\set'$ from $D$ and $(h_j)_{j\in\indexset}$ in a streaming manner, and remove from $\urs_{\set}$ all bits whose indices are not in $\set'$
+	\item Return $\localkey'=(D',\urs_{\set'})$\\
+%    \end{minipage}&  \begin{minipage}[t]{0.48\textwidth}
+
+    	\underline{$\bsmextract(\localkey, \pk_{\pnum})$:}
+	\item Parse $\localkey=(D,\urs_{\set})$, recomputing $\set$ from $D$, and parse $\pk_{\pnum}=(h_{\pnum},g_{\pnum})$
+	\item For each $j\in[q]$, let $u_j=h_\pnum(j)$ if $h_\pnum(j)\in\set$, and let $u_j=\bot$ otherwise
+	\item Let $\vec s$ be obtained from $(u_j)_{j\in[q]}$ by removing all $\bot$'s while preserving the order of $j$
+	\item Abort the whole protocol if $|\vec s|< \lambda$
+	\item Let $\vec{s}_\lambda$ be the first $\lambda$ entries of $\vec s$
+	\item Return $\key=g_\pnum(\urs_{\vec{s}_\lambda})$
+    \end{minipage} 
+      \end{tabular}
+      }
+\end{center}
+\caption{Constructions of $\{\nccombine, \ncextract\}$, $\{\tcombine,\textract\}$, and $\{\bsmcombine, \bsmextract\}$. Recall that for any set $\set$, $\urs_\set$ denotes the sequence of all bits in $\urs$ with indices (ordered lexicographically) in $\set$; for any sequence $\vec s$, $\urs_{\vec s}$ follows the order of $\vec s$.}
+\label{fig:con-extendable-bsmke}
+\end{figure}
+%	Recall that $\sk_i = \urs_{\set_i}$ for every $i \in [\pnum]$. For any $\indexset \subseteq [\pnum]$, $\indexset_1 \subseteq \indexset$, and $i \in \indexset$, the algorithm $\combine(\indexset, \indexset_1,\allowbreak \localkey, (\pk_i)_{i \in \indexset\slash\indexset_1})$ runs part of $\share(i, \sk_{i}, (\pk_j)_{j \in [\pnum]})$ by computing the intersections of the sets $\sk_j$ for all $j \in \indexset$. It does not compute the intersection of the sets $\sk_j$ for $j \notin \indexset$, nor does it sum the elements of the intersection to extract a shared bit. On the other hand, $\extract(\indexset, \localkey, (\pk_j)_{j\in[\pnum]\slash\indexset})$ is exactly the same as $\share(i,\allowbreak \sk_{i}, (\pk_j)_{j \in [\pnum]})$ when $\localkey = \combine([\pnum], \{i\},\allowbreak \sk_{i}, \allowbreak (\pk_j)_{j \in [\pnum]\slash\{i\}})$. This involves summing the elements of the $\localkey$, and then extracting a shared bit from the sum.
+%	Let $\pk_i,\sk_i \getsr \gen(\urs \in \bin^{n})$ for every $i \in [\pnum]$. For any $\indexset \subseteq [\pnum]$, $\indexset_1 \subseteq \indexset$, and $i \in \indexset$, the algorithm $\combine(\indexset, \indexset_1,\allowbreak \localkey, (\pk_i)_{i \in \indexset\slash\indexset_1})$ runs part of $\share$. It does not remove bits with indices not in $\bigcap_{j \notin \indexset}\set_j$, nor does it compute $g_\pnum(\localkey)$ to extract a shared bit. On the other hand, $\extract(\localkey, \pk_{\pnum})$ is exactly the same as $\share(i,\allowbreak \sk_{i}, (\pk_j)_{j \in [\pnum]})$ when $\localkey = \combine([\pnum], \{i\},\allowbreak \sk_{i}, \allowbreak (\pk_j)_{j \in [\pnum]\slash\{i\}})$. This involves checking if the size of $\localkey$ is greater than $\lambda$ and computing $g_\pnum(\localkey)$.
+%	
+%	We note that for any set $\indexset \subseteq [\pnum]$, $\indexset_1 \subseteq \indexset$, and $i^{\prime} \in \indexset_1$, according to the definition of the extendability, we have
+%	\[\begin{split} 
+%	\localkey_1 &= \combine(\indexset_1, \{i^{\prime}\}, \sk_{i^{\prime}}, \allowbreak (\pk_i)_{i \allowbreak \in \indexset_1\slash\{i^{\prime}\}}) = \bigcap_{i \in \indexset_1} \mathcal{S}_{i}.
+%	\end{split}\]
+%	Let $\indexset_2 = \{j\}$ and $\localkey_2 = \sk_{j}$ for any $j \in \indexset$, we have
+%	\[\begin{split}
+%	 &\combine(\indexset, \indexset_1, \localkey_1, (\pk_i)_{i \in \indexset\slash\indexset_1})\\
+%	 =& (\bigcap_{i \in \indexset_1} \mathcal{S}_{i}) \cap (\bigcap_{i \in \indexset\slash\indexset_1} \mathcal{S}_{i}) = \bigcap_{i \in \indexset} \mathcal{S}_{i} = \bigcap_{i \in \indexset\slash\{j\}} \mathcal{S}_{i} \cap \mathcal{S}_{j}\\
+%	 =&\combine(\indexset, \indexset_2, \localkey_2, (\pk_i)_{i \in \indexset\slash\indexset_2}).
+%	\end{split}\]
+%	Moreover, for any $i \in [\pnum]$ and $\localkey = \combine([\pnum], \{i\}, \sk_{i}, (\pk_j)_{j \in [\pnum]\slash\{i\}})$, we have
+%	\[\begin{split}
+%	&\Pr[\extract(\localkey, \pk_{\pnum}) = \share(\shareindex, \sk_{\shareindex}, (\pk_j)_{j \in [\pnum]})]\\
+%	=&\Pr[\share(i, \sk_{i}, (\pk_j)_{j \in [\pnum]}) = \share(\shareindex, \sk_{\shareindex}, (\pk_j)_{j \in [\pnum]})] \geq 1 - \epsilon,
+%	\end{split}\]
+%	according to the $\epsilon$-correctness of $\bsmke$.
+%	Since $\share$ consumes $O(\lambda^{\pnum})$ bits of memory, it follows that $\combine$ and $\extract$ also consume $O(\lambda^{\pnum})$ bits of memory.
+%\end{proof}
+
+%\begin{figure}
+% \adjustbox{scale=0.89,center}{
+% \begin{tikzcd}[row sep = 0.5cm,column sep = 1cm]
+%  \text{Multi-Party NIKE} \arrow[r,"\text{\ref{sec:munike-bprf}}"] & \text{(restricted) BPRF} \arrow[r,"\text{\ref{sec:bprf-ibnike}}"] & \text{IB-NIKE}
+% \end{tikzcd}}
+%\caption{Overview of our approaches in constructing IB-NIKE in the fine-grained setting.}
+%\label{fig:overview-ibnike-concrete}
+%\end{figure}
+
+
+%\begin{figure}
+% \adjustbox{scale=0.89,center}{
+% \begin{tikzcd}[row sep = 0.5cm,column sep = 1cm]
+%  \text{Multi-Party NIKE} \arrow[r,"\text{\ref{sec:munike-bprf}}"] & \text{(restricted) BPRF} \arrow[r,"\text{\ref{sec:bprf-ibnike}}"] & \text{IB-NIKE}
+% \end{tikzcd}}
+%\caption{Overview of our approaches in constructing IB-NIKE in the fine-grained setting.}
+%\label{fig:overview-ibnike}
+%\end{figure}

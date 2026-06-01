@@ -1,0 +1,692 @@
+\section{Fine-Grained Multi-Party NIKE based on $\assump$}
+\label{sec:nc1-nike}
+In this section, we propose a fine-grained multi-party NIKE running in $\aczerotwo$ and secure against $\ncone$ based on $\assump$. 
+All arithmetic computations are over $GF(2)$ in this section. %Namely, all arithmetic computations are performed with a modulus of $2$, and addition and subtraction are equivalent. 
+
+\subsection{Background on the $\ncone$-Fine-Grained Setting}
+\label{sec:samp}
+We recall and define sampling procedures in $\ncone$, along with several lemmata. 
+
+\heading{Function families.} We now recall the definitions of
+$\ncone$ circuits, $\aczerotwo$ circuits, and $\lpoly$ circuits. Note that $\aczerotwo\subsetneq\ncone$ \cite{Razborov1987,STOC:Smolensky87}.
+\begin{definition}[$\ncone$]
+The class of (non-uniform) \emph{$\ncone$ function families} is the set of all function families $\mathcal{F} = \{f_{\lambda}\}$ for which there is a polynomial $p(\cdot)$ and constant $c$ such that for each $\lambda$, $f_{\lambda}$ can be computed by a (randomized) circuit of size $p(\lambda)$, depth $c\log(\lambda)$, and fan-in $2$ using {\sf AND}, {\sf OR}, and {\sf NOT} gates.
+\end{definition}
+%
+%
+\begin{definition}[$\aczerotwo$]
+The class of (non-uniform) \emph{$\aczerotwo$ function families} is the set of all function families $\mathcal{F} = \{f_{\lambda}\}$ for which there is a polynomial $p(\cdot)$ and constant $c$ such that for each $\lambda$, $f_{\lambda}$ can be computed by a (randomized) circuit of size $p(\lambda)$, depth $c$, and unbounded fan-in using {\sf AND}, {\sf OR}, {\sf NOT}, and {\sf PARITY} gates.
+\end{definition}
+%One can see that multiplication of a constant number of matrices can be performed in $\aczerotwo$, since it can be done in constant-depth with {\sf PARITY} gates.
+%
+%
+%Next we recall the definitions of multiplicative depth in \cite{TCC:CamGen18}, which can be thought of as the degree of the lowest-degree polynomial in $GF(2)$ evaluating to a circuit.
+%\begin{definition}
+%[Multiplicative Depth \cite{TCC:CamGen18}]\label{def:muldepth}
+%Let $C$ be a circuit, $\type_C(g)$ be the type of a gate $g$ in $C$, and $\parents_C(g)$ be the list of gates of $C$ whose output is an input to $C$. The \emph{multipicative depth} of $C$ is $\md(g_\out)$,
+%where $g_\out$ is the output gate and the function $\md$ is defined as
+%
+%$\md(g)=\begin{cases} 
+%1 & \text{if}\:\ \type_C(g)={\sf input} \\ 
+%\max\{\md(g'):g'\in\parents_C(g)\} & \text{if}\:\ \type_C(g)={\sf XOR} \\
+%\sum_{g'\in\parents_C(g)}\md(g') & \text{if}\:\ \type_C(g)\in\{{\sf AND},{\sf OR}\}
+%\end{cases},\\$
+%where the sum in the last case is over the integers.
+%\end{definition}
+%
+%\begin{definition}[$\aczerocm$ \cite{TCC:CamGen18}]
+%$\aczerocm$ is the class of circuits in $\aczerotwo$ with constant multiplicative  depth (as defined in \cref{def:muldepth}).
+%\end{definition}
+%Note that an {\sf AND} gate of fan-in $\lambda$ (i.e., the security parameter) cannot be performed in $\aczerocm$.
+%
+%
+\begin{definition}[$\lpoly$]
+$\lpoly$ is the set of all boolean function families $\mathcal{F} = \{f_{\lambda}\}$ for which there is a constant $c$ such that for each $\lambda$, there is a non-deterministic Turing machine $\mathcal M_{\lambda}$ such that for each input $x$ with length $\lambda$, $\mathcal M_{\lambda}(x)$ uses at most $c\log(\lambda)$ space, and $f_{\lambda}(x)$ is equal to the parity of the number of accepting paths of $\mathcal M_{\lambda}(x)$.
+\end{definition}
+
+We now recall the definitions of four sampling procedures $\{\LSamp,\RSamp, \allowbreak\ZeroSamp,\OneSamp\}$ in \cref{fig:lsamp}. Note that the output of $\ZeroSamp$ is always a matrix of rank $\lambda-1$ and the output of $\OneSamp$ is always a matrix of full rank \cite{C:DegVaiVas16}.
+\begin{figure}[h]
+\begin{center}
+\framebox{
+\small
+  \begin{tabular}{l|l|l}
+    \begin{minipage}[t]{0.33\textwidth}
+      \underline{$\LSamp$:}\\
+%      For all $i,j\in [n]$ and $i<j$:\\
+%      	\tab $r_{i,j} \getsr\bin$ \\
+%      	Return% the following $n \times n$ upper triangular matrix:
+%	\begin{equation}
+%	\begin{pmatrix}
+%	1 & r_{1,2} & \cdots & r_{1,n-1} & r_{1,n}\\
+%	0 & 1 & r_{2,3} & \cdots & r_{2,n} \\
+%	0 & 0 & \ddots &  & \vdots \\
+%	\vdots & \vdots & \ddots & 1 & r_{n-1,n} \\
+%	0 & \cdots & 0 & 0 & 1 \nonumber
+%	\end{pmatrix}
+%	\end{equation}
+        For all $i,j\in [\lambda]$ and $i<j$:\\
+      	\tab $r_{i,j} \getsr\bin$ \\
+      	Return% the following $n \times n$ upper triangular matrix:
+	\begin{equation}
+	\begin{pmatrix}
+	1 & r_{1,2} & \cdots & r_{1,\lambda-1} & r_{1,\lambda}\\
+	0 & 1 & \cdots & r_{2,\lambda-1} & r_{2,\lambda} \\
+	\vdots & \vdots & \ddots & \vdots & \vdots \\
+	0 & 0 & \cdots & 1 & r_{\lambda-1,\lambda} \\
+	0 & 0 & \cdots & 0 & 1 \nonumber
+	\end{pmatrix}
+	\end{equation}
+	%where $r_{i,j} \getsr\bin$ for all $i$ and $j$.
+      \end{minipage}&\begin{minipage}[t]{0.27\textwidth}
+        \underline{$\RSamp$:} \\
+        For $i=1,\cdots,\lambda-1$\\
+        \tab $r_i \getsr\bin$\\
+	Return% the following $n \times n$ matrix:
+%	\begin{equation}
+%	\begin{pmatrix}
+%	1 &  & \cdots & 0 & r_1\\
+%	0 & 1 &  &   & r_2 \\
+%	0 & 0 & \ddots &  & \vdots \\
+%	\vdots & \vdots & \ddots & 1 & r_{n-1} \\
+%	0 & \cdots & 0 & 0 & 1 \nonumber
+%	\end{pmatrix}
+%	\end{equation}
+	\begin{equation}
+	\begin{pmatrix}
+	1 & 0 & \cdots & 0 & r_1\\
+	0 & 1 & \cdots & 0 & r_2 \\
+	\vdots & \vdots & \ddots & \vdots & \vdots \\
+	0 & 0 & \cdots & 1 & r_{\lambda-1} \\
+	0 & 0 & \cdots & 0 & 1 \nonumber
+	\end{pmatrix}
+	\end{equation}
+
+	%where $r_i \getsr\bin$ for all $i$ and $j$.\\
+	
+	\end{minipage}&\begin{minipage}[t]{0.3\textwidth}
+	\underline{$\ZeroSamp$:}\\
+	$\mathbf{R}_0 \getsr\LSamp \in\bin^{\lambda\times \lambda}$ 
+	\\$\mathbf{R}_1 \getsr\RSamp\in\bin^{\lambda\times \lambda}$\\
+	Return $\mathbf{R}_0\matr M^\lambda_0\mathbf{R}_1\in\bin^{\lambda\times \lambda}$ \\
+	
+	\underline{$\OneSamp$:}\\
+	$\mathbf{R}_0 \getsr\LSamp$\\
+	$\mathbf{R}_1 \getsr\RSamp$\\
+	Return $\mathbf{R}_0\matr M^\lambda_1\mathbf{R}_1\in\bin^{\lambda\times \lambda}$\\
+    \end{minipage}
+      \end{tabular}}
+\end{center} \caption{Definitions of $\LSamp$, $\RSamp$, $\ZeroSamp$, and $\OneSamp$. By $\matr M^\lambda_0$ and $\matr M^\lambda_1$ we denote the $\lambda \times \lambda$ matrices
+$\matr M^\lambda_0 = \begin{pmatrix}\vec 0 &0\\ \matr I_{\lambda-1} & \vec 0\end{pmatrix}$ and $\matr M^\lambda_1  = \begin{pmatrix}&\vec 0 &1\\ &\matr I_{\lambda-1} & \vec 0\end{pmatrix}$ respectively.} %$n=n(\lambda)$ is a polynomial in the security parameter $\lambda$.} 
+\label{fig:lsamp}
+\end{figure}
+ %Additionally, in \cref{fig:tdsamp}, we define $\zs^*$ which runs in exactly the same way as $\ZeroSamp$ except that it additionally outputs a vector $\widetilde{\vec r}=(r_i)_{i=1}^{n-1}$ consisting of the random bits used in generating $\matr R_1$.
+%\begin{figure}[htpb]
+%\begin{center}
+%\framebox{
+%\small
+%  \begin{tabular}{l}	
+%	\begin{minipage}[t]{0.9\textwidth}
+%	\underline{$\zs^*$:}\\
+%	$\matr{R}_0 \getsr\LSamp \in\bin^{n\times n}$,
+%	$\matr{R}_1=\begin{pmatrix}\matr I_{\lambda-1} & \widetilde{\vec r}\\\vec 0 & 1\end{pmatrix} \getsr\RSamp\in\bin^{n\times n}$\\
+%	Return $(\matr{R}_0\matr M^n_0\matr{R}_1\in\bin^{n\times n},\widetilde{\vec r})$
+%    \end{minipage}
+%      \end{tabular}}
+%\end{center} 
+%\caption{The definition of $\zs^*$.} 
+%\label{fig:tdsamp}
+%\end{figure}
+%We have $\begin{pmatrix}\widetilde{\vec r}\\ 1\end{pmatrix}\in\Ker(\matr{R}_0\matr M^n_0\matr{R}_1)$, since 
+%$\matr{R}_0\matr M^n_0\matr{R}_1 \begin{pmatrix}\widetilde{\vec r}\\ 1\end{pmatrix}=\matr R_0\begin{pmatrix}\vec 0 & 0\\ \matr I_{\lambda-1} & \vec 0\end{pmatrix}\begin{pmatrix} \matr I_{\lambda-1}& \widetilde{\vec r} \\ \vec 0& 1 \end{pmatrix}\begin{pmatrix}\widetilde{\vec r}\\ 1\end{pmatrix}=\matr 0$.
+%This implies the following lemma.
+\begin{lem}[Lemma 3 in  \cite{JC:EgaWanTan21}]
+\label{lem:ker2}
+For all $\lambda\in\N$ and all $\matr M \in \ZeroSamp$, it holds that $\Ker(\matr M) = \{\mathbf{0}, \vec k \}$ where $\vec k$ is a vector such that $\vec k \in  \bin^{\lambda-1}\times \one$.
+\end{lem}
+%We now recall an assumption and a lemma on $\{\ZeroSamp,\OneSamp\}$ given in~\cite{C:DegVaiVas16}.
+%\begin{definition}[$(\lang,\epsilon)$-fine-grained matrix linear assumption]
+%\label{def:ind_samp}
+%There exists a polynomial $n=n(\lambda)$ in the security parameter $\lambda$ such that for any $\ell\in\lang$ and any $\lambda\in\N$, we have
+%$\Delta(\ell(\matr M),\ell(\matr M'))\leq\epsilon$ where $\matr M \getsr\ZeroSamp(n)$ and $\matr M' \getsr\OneSamp(n)$.
+%%\[\begin{split}
+%%|\Pr[\ell&(\matr M)=1 \: | \: \matr M \getsr\ZeroSamp(n)] -\\
+%% &\Pr[\ell(\matr M')=1 \: | \: \matr M' \getsr\OneSamp(n)] | \le \negl(\lambda).
+%%\end{split}\]
+%\end{definition}
+
+\begin{lem}[Lemma 4.3 in \cite{C:DegVaiVas16}]
+\label{lem:ind-samp}
+If $\assump$, for any $\{\adv\}\in\ncone$ and all sufficiently large $\lambda$, we have
+\[\begin{split}
+|\Pr[\adv(\matr M)=1 &\mid \matr M\getsr\ZeroSamp]\\
+-&\Pr[\adv(\matr M)=1\mid\matr M\getsr\OneSamp]|\leq\negl(\lambda).
+\end{split}\]
+%If $\assump$, then the $(\lang,\epsilon)$-fine-grained matrix linear assumption holds for some $\epsilon\leq\negl(\lambda)$, where $\lang=\ncone$.
+\end{lem}
+Here, we follow \cite{JC:EgaWanTan21,C:WanPanChe21,EC:WanPan22} to adhere to the stronger notion of $\assump$ mentioned in the second paragraph of Remark 3.1 in \cite{C:DegVaiVas16} for the sake of simplicity. One can easily see that if we only assume the infinitely-often version of $\assump$, which holds only for an infinitely large number of values of $\lambda$, then our scheme, given later, satisfies infinitely-often security.
+
+
+Next, we recall a sampling algorithm $\rs$ that is implicitly defined in \cite{EC:WanPan22} and presented in \cref{fig:rs}. Additionally, an inverse algorithm $\rs^{-1}$ is introduced. Roughly, as proven in \cite{EC:WanPan22}, the distribution of $(\matr F||\vec s)\in\bin^{\lambda(\lambda-1)}\times\bin^\lambda$ generated by $\rs(\vec u)$ for $\vec u\getsr\bin^{\lambda(\lambda+1)/2}$ is the same as $\zs$ (respectively, $\os$) if $\vec s$ is in (respectively, outside) the span of $\matr F$, which happens with half probability. Hence, $\rs$ is indistinguishable from $\zs$ against $\ncone$ adversaries. One advantage of using $\rs$ is that it solely relies on public coins for matrix generation, and these public coins can be easily reconstructed from the matrices using $\rs^{-1}$. This will help us generate the public parameter of our construction given later by making use of a URS (i.e., $\vec u$), rather than generating it by using $\os$ or $\zs$ with secret randomness.
+
+%\heading{Matrices represented by random coins.}
+\begin{figure}[htpb]
+\begin{center}
+\framebox{
+\small
+  \begin{tabular}{l|l}	
+	\begin{minipage}[t]{0.47\textwidth}
+	\underline{$\rs(\vec u\in\bin^{\lambda(\lambda+1)/2})$:}\\
+	Parse $\vec u=(\vec r,\vec s)\in\bin^{\lambda(\lambda-1)/2}\times\bin^\lambda$\\
+	Parse $\vec r=(r_{i,j})_{1\leq i<j\leq \lambda}$ and set
+%	$$
+%	\matr F=\begin{pmatrix}
+%	 r_{1,2} & \cdots & r_{1,\lambda-1} & r_{1,\lambda}\\
+%	 1 & r_{2,3} & \cdots & r_{2,\lambda} \\
+%	 0 & \ddots &  & \vdots \\
+%	 \vdots & \ddots & 1 & r_{\lambda-1,\lambda} \\
+%	 0 &\cdots & 0 & 1 \nonumber
+%	\end{pmatrix}
+%	$$
+	$$
+	\matr F=\begin{pmatrix}
+	 r_{1,2} & r_{1,3} & \cdots & r_{1,\lambda-1} & r_{1,\lambda}\\
+	 1 & r_{2,3} & \cdots & r_{2,\lambda-1} & r_{2,\lambda} \\
+	 0 & 1 & \cdots & r_{3,\lambda-1} & r_{3,\lambda} \\
+	 \vdots & \vdots & \ddots & \vdots & \vdots \\
+	 0 & 0 & \cdots & 1 & r_{\lambda-1,\lambda} \\
+	 0 & 0 & \cdots & 0 & 1 \nonumber
+	\end{pmatrix}
+$$
+	Return $\matr F||\vec s\in\bin^{\lambda\times\lambda}$
+    \end{minipage}&\begin{minipage}[t]{0.48\textwidth}
+	\underline{$\rs^{-1}(\matr M\in\bin^{\lambda\times\lambda})$:}\\
+	Parse $\matr M=\matr F||\vec s$ where
+%	$$\matr F=\begin{pmatrix}
+%	 r_{1,2} & \cdots & r_{1,\lambda-1} & r_{1,\lambda}\\
+%	 1 & r_{2,3} & \cdots & r_{2,\lambda} \\
+%	 0 & \ddots &  & \vdots \\
+%	 \vdots & \ddots & 1 & r_{\lambda-1,\lambda} \\
+%	 0 &\cdots & 0 & 1 \nonumber
+%	\end{pmatrix}
+%$$
+	$$
+	\matr F=\begin{pmatrix}
+	 r_{1,2} & r_{1,3} & \cdots & r_{1,\lambda-1} & r_{1,\lambda}\\
+	 1 & r_{2,3} & \cdots & r_{2,\lambda-1} & r_{2,\lambda} \\
+	 0 & 1 & \cdots & r_{3,\lambda-1} & r_{3,\lambda} \\
+	 \vdots & \vdots & \ddots & \vdots & \vdots \\
+	 0 & 0 & \cdots & 1 & r_{\lambda-1,\lambda} \\
+	 0 & 0 & \cdots & 0 & 1 \nonumber
+	\end{pmatrix}
+$$
+	Abort if $\matr M$ does not conform to the form\\
+	Set $\vec r=(r_{i,j})_{1\leq i<j\leq \lambda}$\\
+		Return $\vec u=(\vec r,\vec s)\in\bin^{\lambda(\lambda+1)/2}$
+    \end{minipage}
+      \end{tabular}}
+\end{center} 
+\caption{The definition of $\rs$ and $\rs^{-1}$.} 
+\label{fig:rs}
+\end{figure}
+
+\begin{lemma}[Lemma 6 in \cite{EC:WanPan22}]
+\label{lem:u}
+%For $\vec r\getsr\bin^{\lambda(\lambda-1)/2}$ and $\vec s\getsr\bin^\lambda$, and
+If $\assump$, for any $\{\adv\}\in\ncone$, we have
+\[\begin{split}
+|\Pr[\adv\big(\rs(\vec u)\big)=1 &\mid \vec u\getsr\bin^{\lambda(\lambda+1)/2}]\\
+-&\Pr[\adv(\matr M)=1\mid\matr M\getsr\ZeroSamp]|\leq\negl(\lambda)
+\end{split}\]
+for all sufficiently large $\lambda\in\N$.
+\end{lemma}
+
+
+
+%Let 
+%$\vec r=(r_{1,2}, \cdots, r_{1,\lambda}, r_{2,3}, \allowbreak  \cdots, r_{2,\lambda},\allowbreak \cdots, r_{\lambda-1,\lambda})\in\bin^{\lambda(\lambda-1)/2}.$
+%We define the a function family $\{\F\}_{\lambda\in\N}$ such that
+%One can see that for uniform random $\vec r\getsr\bin^{\lambda(\lambda-1)/2}$, the distribution of $\vec e^\lambd\adv||\F(\vec r)$ is exactly the output distribution of $\LSamp(\lambda)$ in \cref{fig:lsamp}. %We now give a lemma showing that it is possible to represent matrices.
+
+
+
+
+
+%\heading{Remark.} Notice that for any polynomial $n=n(\lambda)$, we have $\{f_{n}\}_{\lambda\in N} \in \ncone$ iff $\{f_\lambda\}_{\lambda\in N} \in\ncone$ since $O(\log(n(\lambda)))=O(\log(\lambda))$. Hence, in the above lemma, we can also set $n(\cdot)$ as an identity function, i.e., $n=\lambda$. For simplicity, in the rest of the paper, we always let $\ZeroSamp(\cdot)$ and $\OneSamp(\cdot)$ take as input $\lambda$.
+
+
+%The following lemma indicates a simple relation between the distributions of the outputs of $\ZeroSamp$ and $\OneSamp$.
+
+%\begin{lem}[Lemma 7 in \cite{JOC:EWT19}]
+%\label{lem:ind_m+n}
+%For all $\lambda\in\N$, the distributions of $\matr M + \matr N_\lambda$ and $\matr M'$ are identical, where $\matr M^\top \getsr\ZeroSamp$ and $\matr M'^\top \getsr\OneSamp$.
+%\end{lem}
+
+
+
+
+
+
+%\subsection{Construction}
+%In this section, we propose two constructions of fine-grained NIZK for circuit SAT. Both constructions run in $\aczerotwo$ and are secure against adversaries in $\aczero$.
+
+
+%The first construction combines a fine-grained OR-proof (instantiated as in \cref{sec:ornizk}) and the DVV encryption \cite{C:DegVaiVas16} (in a non black-box way). It supports statement circuits in $\aczerotwo$ and can also support statement circuits in $\aczero$ if we allow the prover run in $\aczero$, i.e., its functionality is fully-fledged. The proof size is $l\cdot O(\lambda^2)$, where $l$ denotes the number of all wires in the statement circuit.
+
+%In this section, we propose a fine-grained NIZK for $\aczero$ circuit SAT running in $\aczero$ and secure against adversaries in $\aczero$.
+
+
+%It supports statement circuits in $\aczerotwo$ and can also support statement circuits in $\aczero$ if we allow the prover run in $\aczero$, i.e., its functionality is fully-fledged. The proof size is $l\cdot O(\lambda^2)$, where $l$ denotes the number of all wires in the statement circuit.
+
+%The second construction is generically constructed from a new fine-grained sFHE scheme that we give later and fine-grained NIZKs (instantiated as in \cref{sec:lnizk,sec:ornizk}). While it only support statements in $\aczerocm$ (even if we allow the prover run in $\aczero$), the proof size is independent with the witness size and only depend on the input size. Specifically, the size is $n\cdot O(\lambda^2)$ when the witness size is $n$.
+
+ 
+%\subsection{Fully-Fledged Construction}
+%\subsection{The DVV Encryption} \label{sec:dvv}
+%In this section, we give the definition of generalized affine MAC, which generalizes the notion of standard affine MAC \cite{C:BlaKilPan14} by using predicate encodings, and show how to construct it in the fine-grained setting under the assumption $\assump$.
+
+
+%\begin{lemma}
+%For $b_0,b_1,b_2\in\bin$, $b_2=\lnot(b_0\land b_1)$ iff 
+%$$0=1+b_0b_1-b_2$$
+%or
+%$$0=1+b_1+(b_0+1)b_1-b_2.$$
+%\end{lemma}
+
+%Before giving our construction, we prove the following theorem, which is necessary to show that our NIZK can be executed in $\aczero$.
+
+%By slightly changing the construction of $\{\fz\}$, we immediately achieve another family of circuits $\{\fo\}$ outputting the index of the first $1$-bits of its input.
+%\begin{figure}[h!]
+%\begin{center}
+%\framebox{
+%\small
+%  \begin{tabular}{l}
+%    \begin{minipage}[t]{0.95\textwidth}
+%    \underline{$\fo(b_1,…,b_n)$:}\\
+% For each $i\in[n]$, we compute $\vec x_i =  \vec i \cdot b_i$ in parallel. 
+% 
+% For each $i\in[n]$, we compute $\vec y_i = \vec x_i \cdot (1-\OR_{1\leq k \leq (1-i), 1\leq j \leq \adv}  (x_{k,j})) $.
+% 
+%Compute $\vec y_{i^*}=\OR_{1\leq i \leq n} (y_{i,1}) || … || \OR_{1\leq i \leq n} (y_{i,\adv})$.
+%
+%    \end{minipage} 
+%      \end{tabular}
+%      }
+%\end{center}
+%\caption{Definition of $\fo$. By $\vec i\in\bin^\adv$ we denote the bit-string representing the index $i$, where we assume the bit-representation of $n$ has $\adv$ bits. By $y_{i,j}$ we denote the $j$-th bit of $\vec y_i$.}
+%\label{fig:fz}
+%\end{figure}
+
+%\heading{Construction of Our NIZK.}
+%We now define the following languages
+%\[\lang=\{ \vec x:\exists \vec w \in \bin^{\lambda-1}, \text{ s.t. } \vec x= \matE \vec w \}\]
+%%where $\matr M=\begin{pmatrix}\matE & \matr 0\\ \matr 0& \matE\end{pmatrix}$ for $\matE\in\ZeroSamp$.
+%and
+%\[\begin{split}\Lor_\lambda=\{ (\vec x_i)_{i\in[\adv]}:&\exists \vec w \in \bin^{2\lambda}\ \text{ s.t. }\ \bigvee_{i\in[\adv]}\vec x_i= \matr M' \vec w \
+%\\  \mbox{or}\ & \exists \vec w \in \bin^{(\adv+1)\cdot\lambda}\ \text{ s.t. }\ \vec x_{(\adv+1)}=\matr M_2\vec w \}\end{split}\]
+%where 
+%$$\matr M'=\begin{pmatrix}\matE &  \matr 0\\ \matr 0& \matE\end{pmatrix}\in\bin^{2\lambda\times2(\lambda-1)}$$
+% and 
+% $$\matr M_2=\begin{pmatrix}\matE & \matr 0 & \cdots& \matr 0\\
+% \matr 0 & \ddots & \ddots& \vdots \\
+% \vdots& \ddots& \ddots &\matr 0\\
+%  \matr 0& \cdots & \matr 0 & \matE\end{pmatrix}\in\bin^{(\adv+1)\cdot\lambda\times(\adv+1)\cdot(\lambda-1)},$$
+%i.e., $\matr M'$ and $\matr M_2$ contain $\matE$'s in the main diagonal and $\matr 0$ in the other positions. One can see that $\{\lang\}$ and $\{\Lor_\lambda\}$ are supported by our NIZK for linear languages in \cref{sec:lnizk} and our OR-proof given in \cref{sec:ornizk} respectively.
+
+
+
+%Let $\{\lang^\aczero\}$ be any family of languages such that for all $\x\in\lang^\aczero$, we can run $\relation_\lambda^\aczero(\x,\cdot)$ in $\aczero$, where $\relation_\lambda^\aczero(\x,\cdot)$ is the associated relation. 
+%\footnote{We can assume that each $\relation^\aczero_\lambda(\x,\cdot)$ consists only of ${\AND}$ and $\OR$ gates, since by De Morgan Rules, we can move all $\NOT$ gates to just the inputs and the resulting circuit is still in $\aczero$. However, this may cause loss on efficiency.}
+%Without loss of generality, we assume that all the $\AND$ and $\OR$ gates have fan-in of some polynomial $\adv=\adv(\lambda)$.
+%Let $\LNIZK=\{\NIZKGen,\NIZKProve,\NIZKVer\}$ and $\ORNIZK=\{\ORGen,\ORProve,\allowbreak\ORVer\}$ be NIZKs with simulators $\{\NIZKTGen,\NIZKSim\}$ and $\{\ORTGen,\allowbreak\ORSim\}$ for $\{\lang\}$ and $\{\Lor_\lambda\}$ respectively.
+%%\[\Lor_{\matE}=\{ \vec x_0,\vec x_1:\exists \vec w \in \bin^{2t}, \text{ s.t. } \vec x_0= \matr M \vec w \lor \vec x_1=\matr M \vec w\}\]
+%%where $\matr M=\begin{pmatrix}\matE & \matr 0\\ \matr 0& \matE\end{pmatrix}$ for $\matE\in\ZeroSamp$.
+%We give our NIZK for $\{\lang^\aczero_\lambda\}$ and its simulator in \cref{fig:con-acnizk,fig:con-acnizk-sim} respectively.
+\subsection{Our Construction}
+\label{sec:ncnike-con}
+In this subsection, we give our construction of multi-party NIKE.
+
+\heading{Core lemma.} Before giving our construction, we define an algorithm $\sr$ outputting uniformly random symmetric matrices, and then propose a core lemma upon which we will heavily rely later. %Roughly, this lemma establish the indistinguishability between two distribution generating matrices encoding $0$ and $1$ respectively.
+%\subsection{Distributions of Symmetric Matrices with Privacy}
+\begin{figure}[htpb]
+\begin{center}
+\framebox{
+\small
+  \begin{tabular}{l}	
+   \begin{minipage}[t]{0.7\textwidth}
+	\underline{$\sr$:}\\
+	Output a matrix $\sR\in\bins$ given by
+	 %For all $i,j\in [\lambda]$ and $i\leq j$: $r_{i,j} \getsr\bin$ \\
+      % the following $n \times n$ upper triangular matrix:
+      $\sR_{ij}=
+	\begin{cases}
+	\mbox{a random bit}, \mbox{if}\ i\leq j\\
+	\sR_{ji}, \mbox{if}\ i>j
+	\end{cases}$
+%	Run $\sR'\getsr\bins$\\
+%	Return $\sR=\sR'\sR'^\top$
+		\end{minipage}
+	%\underline{$\matr M_0$:}\\
+%	\end{minipage}&
+%    	\begin{minipage}[t]{0.4\textwidth}
+%	\underline{$\szs$:}\\
+%	$\matr M\getsr\zs$\\
+%	Return $\sM=\matr M^\top\matr M$\\
+%		\underline{$\hOneSamp(n)$:}\\
+%	$\matr M\getsr\hOneSamp(n) \in\bin^{n\times n}$\\
+%	Return $\matr M\matr M^\top$
+  % \end{minipage}
+	\end{tabular}}
+\end{center} 
+\caption{The definition of $\sr$.} 
+\label{fig:hatsamp}
+\end{figure}
+
+
+
+%\begin{corollary}
+%\label{cor:ker2}
+%For all $\lambda\in\N$ and all $\matr M \in \ZeroSamp$, it holds that $\Ker(\matr M) = \{\mathbf{0}, \vec k \}$ where $\vec k$ is a vector such that $\vec k \in  \bin^{\lambda-1}\times \one$.
+%\end{corollary}
+
+%\heading{\bf Indistinguishability between encodings to $0$ and $1$ against $\ncone$.}
+\begin{lemma}
+\label{lem:core}
+If $\assump$ holds, then for any $\{\adv\}\in\ncone$, any sufficiently large $\lambda\in\N$, and any polynomial $n=n(\lambda)$ in $\lambda$, we have:
+$$|\Pr[\adv\big(\matr M,(\sM\sR_i)_{i\in[n]})\big)=1]-\Pr[\adv\big(\matr M,(\sM\sR_i+\matI)_{i\in[n]}\big)=1]|\leq\negl(\lambda)$$ where
+$\matr M\getsr\zs$, $\sM=\matr M^\top\matr M$ and $\sR_1,\cdots,\sR_n\getsr\sr$.
+\end{lemma}
+
+\begin{proof}
+Let $\lambda\in\N$ be any sufficiently large security parameter. Let $\matr M\getsr\zs$, $\matr M'\getsr\os$, $\sM=\matr M^\top\matr M$, and $\sM'=\matr M'^\top\matr M'$.
+Since the multiplication of two matrices can be performed in $\ncone$, according to \cref{lem:ind-samp}, we immediately have
+$|\Pr[\adv(\matr M,\sM)=1]-\Pr[\adv(\matr M',\sM')=1]|\leq\negl(\lambda),$ i.e.,
+\begin{equation}
+\label{eq:core-1}
+|\Pr[\adv\big(\matr M,(\sM\sR_i)_{i\in[n]}\big)=1]-\Pr[\adv\big(\matr M',(\sM'\sR_i)_{i\in[n]}\big)=1] |\leq\negl(\lambda),
+\end{equation}
+\begin{equation}
+\label{eq:core-2}
+|\Pr[\adv\big(\matr M',(\sM'\sR_i+\matI)_{i\in[n]}\big)=1]-\Pr[\adv\big(\matr M,(\sM\sR_i+\matI)_{i\in[n]}\big)=1]\leq\negl(\lambda),
+\end{equation}
+where $\sR_1,\cdots,\sR_n\getsr\sr$.
+
+%Next we show that the distributions of $(\matr M',(\sM'\sR_i)_{i\in[n]})$ and $(\matr M',(\sM'\sR_i+\matI)_{i\in[n]})$ are identical.
+
+%\begin{proof}
+%Noting that all the operations in $\adv(\cdot,\encodeh(0,\cdot))$ can be performed in $\ncone$, \cref{lem:ind-core-1} follows immediately from \cref{lem:ind-samp}.
+%\end{proof}
+
+%\begin{lemma}
+%\label{lem:ind-dist-2}
+%$\Delta(\adv(\matr M',\sM'\sR),\adv(\matr M',\sM'\sR+\matI)=0$.
+%\end{lemma}
+
+Recall that any $\matr M'\in\os$ is of full rank and has an inverse matrix $\matr M'^{-1}$. Hence,
+$\sM'=\matr M'^\top\matr M'$ also has an inverse matrix $\sM'^{-1}=\matr M'^{-1}{\matr M'^{-1}}^\top$ and is of full rank. Furthermore, since $\sM'^{-1}$ is a symmetric matrix, for all $i\in[n]$, the following distributions are identical:
+$$(\sR_i+\sM'^{-1})_{i\in[n]}\ \mbox{and}\ (\sR_i)_{i\in[n]},$$
+where $\sR_1,\cdots,\sR_n\getsr\sr$. Hence, the following two distributions are also identical:
+$$\Big(\matr M',(\sM'\sR_i)_{i\in[n]}\Big) \ \mbox{and}\ \Big(\matr M',(\sM'(\sR_i+(\sM')^{-1}))_{i\in[n]})=(\sM'\sR_i+\matr I)_{i\in[n]}\Big).$$
+Combining this with \cref{eq:core-1,eq:core-2}, \cref{lem:core} immediately follows.
+\end{proof}
+
+\heading{Construction.} We now give our construction of multi-party NIKE $\nike$ in the bounded-parallel-time model in \cref{fig:con-nike}.
+\begin{figure}[h!]
+\begin{center}
+\framebox{
+\small
+  \begin{tabular}{l|l}
+    \begin{minipage}[t]{0.4\textwidth}
+    \underline{$\gen(\urs\in\bin^{\lambda(\lambda+1)/2})$:}
+    %\begin{compactitem}
+    \item $\matr M=\rs(\urs)$
+    \item $\sM=\matr M^\top\matr M$ 
+    \item $\sk=\sR\getsr\sr$, $\pk=\sM\sR$
+    \item Return $(\pk,\sk)$
+        
+      \end{minipage}&  \begin{minipage}[t]{0.4\textwidth}
+        
+    \underline{$\share(i,\sk_i,(\pk_j)_{j\in[\pnum]})$:}
+    \item Parse $(\pk_j)_{j\in[\pnum]}=(\matr P_j)_{j\in\cs}$ and $\sk_i=\sR_i$
+    \item $\matr K=(\prod_{j<i}\matr P_j^\top) \sR_i (\prod_{j>i}\matr P_j)$
+    \item Let $\key$ be the bottom-right bit of $\matr K$
+    \item return $\key$
+    \end{minipage} 
+      \end{tabular}
+      }
+\end{center}
+\caption{Definition of $\nike=\{\gen,\share\}$.}
+\label{fig:con-nike}
+\end{figure}
+
+\begin{theorem}
+\label{thm:nc-nike}
+%Let $\lambda$ be the security parameter and $\lang$ be any class of functions closed under restriction and negation of inputs. 
+If $\assump$ holds, then for any constant $\pnum$, $\nike$ is an $\aczerotwo$-$\pnum$-NIKE with $0$-correctness (i.e., perfect correctness) and $\ncone$-$\negl(\lambda)$-security.
+ %with input length $k$ and output length $m$, where $k=k(\lambda)$ and $m=m(\lambda)$ are any polynomials in $\lambda$.
+\end{theorem}
+\begin{proof}
+
+\heading{Complexity.}
+First we note that $\{\gen,\share\}$ are computable in $\aczerotwo$ since they only involve operations including multiplication of a constant number of matrices and sampling random bits.
+\heading{Correctness.}
+Let $(\matr P_i=\matr M\matr  R_i,\matr R_i)_{i\in\cs}$ be $\pnum$ public/secret key pairs generated by $\gen$. For all $i\in\cs$, we have 
+$\matr P_i^\top=(\sM\sR_i)^\top=\sR_i^\top\sM^\top=\sR_i\sM.$
+%Let $i_\mini$ be the index with the lexicographically smallest value. 
+Moreover, for any $i\in\cs$, we have 
+\[\begin{split}
+&\prod_{j<i}\matr P_j^\top\matr R_i\prod_{j>i}\matr P_j
+=\prod_{j<i}(\sR_j\sM)\matr R_i\prod_{j>i}\matr P_j
+=\matr R_1\prod_{1<j\leq i}(\sM\sR_j)\prod_{j>i}\matr P_j
+=\matr R_1\prod_{j>1}\matr P_j.
+\end{split}\]
+Therefore, for all $i,i'\in\cs$, we have 
+$$\share(i,\sk_i,(\pk_j)_{j\in[\pnum]})=\share(j,\sk_j,(\pk_j)_{j\in[\pnum]})=\key,$$ where $\key$ is the bottom-right bit of $\matr R_1\prod_{j>1}\matr P_j$, completing the proof of correctness.
+
+
+\heading{Security.}
+Let $\lambda$ be the security parameter and $\A=\{\adv\}\in\ncone$ be any adversary against the security of $\nike$.
+We prove the security of $\nike$ via a sequence of hybrid games as in \cref{fig:ncnike-hyb}.  %Without loss of generality, we let the set of indices of the parties be $[\pnum]$.
+
+\begin{figure}[h!]
+\begin{center}
+\framebox{
+\small
+  \begin{tabular}{l}
+    \begin{minipage}[t]{0.9\textwidth}
+    %\begin{compactitem}
+    \underline{Games $\gameg_0$, \fbox{$\gameg_1$}, \dbox{$\gameg_2$}, \gbox{$\gameg_3$}, \ddbox{$\gameg_4$}}
+    \item $\matr M=\rs(\urs)$ where $\urs\getsr\bin^{\lambda(\lambda+1)/2}$ \fbox{$\matr M\getsr\zs$}, $\sM=\matr M^\top\matr M$
+    \item $\sR_i\getsr\sr$ for $i=1,\cdots,\pnum$
+    \item $\matr P_i=\sM\sR_i$ for $i=1,\cdots,\pnum$
+     \dbox{$\matr P_1=\sM\sR_1$, $\matr P_i=\sM\sR_i+\matI$ for $i=2,\cdots,\pnum$}
+    \item $\matr K=\sR_1\matr P_2\cdots\matr P_\pnum$
+     \gbox{$\matr K=(\sR_1+\vec m \cdot \mu \cdot \vec m^\top)\matr P_2\cdots\matr P_\pnum$}
+    \item Set $\key$ as the bottom-right bit of $\matr K$
+     \ddbox{$\key\getsr \bin$}
+    \item Return $(\urs,(\pk_i=\matr P_i)_{i\in[\pnum]},\key)$ to $\adv$
+    \item Output whatever $\adv$ outputs
+%      \end{minipage}
+%      &  \begin{minipage}[t]{0.5\textwidth}
+        
+%    \underline{$\share'(i,\sk_\cs,(\pk_j)_{j\in[\pnum]})$:}
+%    \item Parse $(\pk_j)_{j\in[\pnum]}=(\matr P_j)_{j\in\cs}$ and $\sk_i=\sR_i$
+%    \item $\matr K=(\prod_{j<i}\matr P_j^\top) \sR_i (\prod_{j>i}\matr P_j)$
+%    \item Let $\vec k$ be the rightmost column vector of $\matr K$
+%    \item return $\vec k$
+    \end{minipage} 
+      \end{tabular}
+      }
+\end{center}
+\caption{The challengers in $\gameg_0$, $\gameg_1$, $\gameg_2$, $\gameg_3$, and $\gameg_4$ for the proof of \cref{thm:nc-nike}. $\vec m$ is the non-zero vector in $\Ker(\matr M)$ guaranteed by \cref{lem:ker2}.}
+\label{fig:ncnike-hyb}
+\end{figure}
+
+\heading{$\gameg_0$.} This is the original security game where $\adv$ receives $\urs\getsr\bin^{\lambda(\lambda+1)/2}$, $(\pk_i)_{i\in[\pnum]}$ where $(\pk_i,\sk_i)\getsr\Gen(\urs)$ for all $i\in\cs$, and $\key=\share(1,\sk_1,\allowbreak(\pk_i)_{i\in\cs})$, and outputs a bit $\beta$.
+
+\heading{$\gameg_1$.} $\gameg_1$ and $\gameg_0$ only differ in the way that $\matr M$ is generated, namely, $\matr M$ is generated by $\zs$ rather than $\rs$ in $\gameg_1$.
+
+\begin{lemma}
+\label{lem:ncnike-0}
+%For any sufficiently large $\lambda$, we have
+$
+|\Pr[\gameg_1^{\adv}\Rightarrow 1]-\Pr[\gameg_0^{\adv}\Rightarrow 1]|\leq\negl(\lambda).
+$
+\end{lemma}
+\begin{proof}
+%Assuming that $\adv$ breaks \cref{lem:ncnike-0}.
+We construct an adversary $\B^0=\{\advb^0\}\in\ncone$ in the game described in \cref{lem:u} as follows. % against \cref{lem:u} as follows.
+
+On receiving $\matr M$ sampled as $\matr M=\rs(\urs)$ where $\urs\getsr\bin^{\lambda(\lambda+1)/2}$ or $\matr M\getsr\zs$, $\advb^0$ sets $\urs=\rs^{-1}(\matr M)$, runs $\sR_i\getsr\sr$ and $\matr P_i=\sM\sR_i$ for all $i=1,\cdots,\pnum$, computes $\matr K=\sR_1\prod_{i>1}\matr P_i$, and sets $\key$ as the bottom-right bit of $\matr K$. Next it sends $(\urs,(\matr P_i)_{i\in[\pnum]},\key)$ to $\adv$. When $\adv$ returns $\beta\in\bin$, $\advb^0$ returns $\beta$ as well.
+
+First we note that all operations in $\advb^0$ are $\ncone$, since $\advb^0$ only samples random bits, computes multiplication of a constant number of matrices, and runs $\adv$.
+Moreover, when $\matr M$ is generated as $\matr M=\rs(\urs)$ where $\urs\getsr\bin^{\lambda(\lambda+1)/2}$ (respectively, $\matr M\getsr\zs$), the view of $\adv$ is identical to its view in $\gameg_0$ (respectively, $\gameg_1$). Hence, the advantage of $\advb^0$ is 
+ $$
+ |\Pr[\gameg_1^{\adv}\Rightarrow 1]-\Pr[\gameg_0^{\adv}\Rightarrow 1]|
+ ,$$
+which is negligible according to \cref{lem:u}, completing this part of the proof.
+ \end{proof}
+
+
+\heading{$\gameg_2$.} $\gameg_2$ and $\gameg_1$ only differ in the way that $\matr P_2,\cdots,\matr P_\pnum$ are generated, namely, $\matr P_i$ is generated as $\matr P_i=\sM\sR_i+\matI$ where $\sR_i\getsr\sr$ for $i=2,\cdots,\pnum$ in $\gameg_2$.
+%$\gameg_1$ is the same as $\gameg_0$ except that $(\pk_i,\sk_i)$ are generated as $(\pk_i,\sk_i)\getsr\gen'$ for all $i\neq 1$, where $\gen'$ is defined as in \cref{fig:gen'}.
+
+\begin{lemma}
+\label{lem:ncnike-1}
+%For any sufficiently large $\lambda$, we have
+$
+|\Pr[\gameg_2^{\adv}\Rightarrow 1]-\Pr[\gameg_1^{\adv}\Rightarrow 1]|\leq\negl(\lambda).
+$
+\end{lemma}
+\begin{proof}
+We construct an adversary $\B^1=\{\advb^1\}\in\ncone$ in the game described in \cref{lem:core} as follows.
+
+On receiving $\matr M\getsr\zs$ and $\matr P_i=\sM\sR_i$ or $\matr P_i=\sM\sR_i+\matI$, where $\sM=\matr M^\top\matr M$ and $\sR_i\getsr\sr$, for $i=2,\cdots,\pnum$, $\advb^1$ sets $\urs=\rs^{-1}(\matr M)$, samples $\sR_1\getsr\sr$, sets $\matr P_1=\sM\sR_1$, computes $\matr K=\sR_1\prod_{i=2}^\pnum\matr P_i$, and sets $\key$ as the bottom-right bit of $\matr K$. Next it sends $(\urs,\allowbreak(\matr P_i)_{i\in[\pnum]},\allowbreak\key)$ to $\adv$. When $\adv$ returns $\beta\in\bin$, $\advb^1$ returns $\beta$ as well.
+
+First we note that all operations in $\advb^1$ are $\ncone$, since $\advb^1$ only samples random bits, computes multiplication of a constant number of matrices, and runs $\adv$.
+Moreover, when $\matr P_i$ is generated as $\matr P_i=\sM\sR_i$ (respectively, $\matr P_i=\sM\sR_i+\matI$) for all $i\in[\pnum]\backslash\{1\}$, the view of $\adv$ is identical to its view in $\gameg_1$ (respectively, $\gameg_2$). Hence, the advantage of $\advb^1$ is 
+ $$
+ |\Pr[\gameg_2^{\adv}\Rightarrow 1]-\Pr[\gameg_1^{\adv}\Rightarrow 1]|
+ ,$$
+ which is negligible according to \cref{lem:core},
+ %Since the advantage of $\advb^1$ is negligible for any sufficiently large $\lambda$, the advantage of $\adv$ is negligible as well, for any sufficiently large $\lambda$, 
+completing this part of the proof.
+ \end{proof}
+ 
+ \heading{$\gameg_3$.} $\gameg_3$ is exactly the same as $\gameg_2$ except that when generating $\matr K$, we replace $\sR_1$ by $(\sR_1+\vec m\cdot \mu \cdot \vec m^\top)$. Here, $\mu\getsr\bin$ and $\vec m\in\bin^{\lambda-1}\times\{1\}$ is the non-zero vector in $\Ker(\matr M)$, which must exist according to \cref{lem:ker2}.
+\begin{lemma}
+\label{lem:ncnike-2}
+%For all $\lambda\in\N$, we have
+$
+\Pr[\gameg_3^{\adv}\Rightarrow 1]=\Pr[\gameg_2^{\adv}\Rightarrow 1].
+$
+\end{lemma}
+\begin{proof}
+First we note that the distribution of $\sR_1+\vec m\cdot\mu\cdot\vec m^\top$ is uniform in $\sr$ for $\sR_1\getsr\sr$, since $\vec m\cdot\mu\cdot\vec m^\top$ is a symmetric matrix. Moreover, we have $\matr P_1=\sM(\sR_1+\vec m\cdot\mu\cdot\vec m^\top)=\sM\sR_1$. Then \cref{lem:ncnike-2} immediately follows from the fact that the view of $\adv$ in $\gameg_3$ is identical to its view in $\gameg_2$.
+\end{proof}
+
+\heading{$\gameg_4$.} $\gameg_4$ is exactly the same as $\gameg_3$ except that the challenger sets the session key $\key$ as a random bit. 
+%Specifically, the challenger samples $\vec k\getsr\bin^\lambda$, $\sM\getsr\szs$, $\sR_i\getsr\sr$ for $i=1,\cdots,K$, and sets $\matr P_1=\sM\sR_1$ and $\matr P_i=\sM\sR_i+\matI$ for $i=2,\cdots,K$. Then it sends $(\pk_i=\matr P_i)_{i\in [K]}$ and $\key=\vec k$ to $\adv$.
+%Then it computes $\matr K=\sR_1(\sM\sR_2+\matI)\cdots(\sM\sR_n+\matI)$ and sends $\vec k$, which is the rightmost column vector of $\matr K$, to $\adv$.
+\begin{lemma}
+\label{lem:ncnike-3}
+%For all $\lambda\in\N$, we have
+$
+\Pr[\gameg_4^{\adv}\Rightarrow 1]=\Pr[\gameg_3^{\adv}\Rightarrow 1].
+$
+\end{lemma}
+%\begin{proof}
+%First we note that $\matr P_2=\sM\sR_2+\matI$ in $\gameg_3$ and $\gameg_4$. Assuming that $\prod_{j=2}^i\matr P_j=\sM\matr S_i+\matI$ for some $2\leq i<\pnum$ and some $\matr S_i\in\bins$, we have 
+%\[\begin{split}
+%\prod_{j=2}^{i+1}\matr P_j&=(\sM\matr S_i+\matI)\matr P_{j+1}=\sM\matr S_i\matr P_{j+1}+\matr P_{j+1}\\
+%&=\sM\matr S_i\matr P_{j+1}+\sM\sR_{j+1}+\matI=\sM(\matr S_i\matr P_{j+1}+\sR_{j+1})+\matI,
+%\end{split}\]
+%namely, we have $\prod_{j=2}^{i+1}\matr P_j=\sM\matr S_{i+1}+\matI$ for $\matr S_{i+1}=\matr S_i\matr P_{j+1}+\sR_{j+1}$. 
+%
+%Then by mathematical induction, we have $\prod_{j=2}^\pnum\matr P_j=\sM\matr S_\pnum+\matI$ for some $\matr S_\pnum\in\bins$, i.e., the rightmost column vector in $\prod_{j=2}^\pnum\matr P_j$ is in the form of $\sM\vec s_k+\vece$ for some $\vec s_k\in\bin^\lambda$ and $\vece=(0,\cdots,0,1)^\top$.
+%Moreover, since the last bit in $\vec m$ is $1$ according to \cref{lem:ker2}, the bottom vector of $\sR_1+\vec m\cdot\mu\cdot\vec m^\top$ must be in the form of $\vec r_1^\top+\mu\cdot\vec m^\top$, where $\vec r_1^\top$ denotes the bottom vector in $\sR_1$.
+%Let $\key$ be the bottom-right bit of $\matr K$ in $\gameg_2$. 
+%We have 
+%\[\begin{split}
+%\key=(\vec r_1^\top+\mu\cdot\vec m^\top)(\sM\vec s_k+\vece)
+%=\vec r_1^\top(\sM\vec s_k+\vece)+\mu\cdot\underbrace{\vec m^\top\sM\vec s_k}_{=0}+\mu\cdot\underbrace{\vec m^\top\vece}_{=1}.
+%%&=\vec r_1^\top(\sM\vec s_k+\vece)+0+\mu.
+%\end{split}\]
+%Since $\mu$ is a random bit and $\adv$ obtains no information on $\mu$ except for $\key$, $\key$ is a random bit in the view of $\adv$ as well, completing this part of proof.
+%\end{proof}
+\begin{proof}
+First we note that $\matr P_2=\sM\sR_2+\matI$ in $\gameg_3$ and $\gameg_4$. Assuming that $\prod_{j=2}^i\matr P_j=\sM\matr S_i+\matI$ for some $2\leq i<\pnum$ and some $\matr S_i\in\bins$, we have 
+\[\begin{split}
+\prod_{j=2}^{i+1}\matr P_j&=(\sM\matr S_i+\matI)\matr P_{i+1}=\sM\matr S_i\matr P_{i+1}+\matr P_{i+1}\\
+&=\sM\matr S_i\matr P_{i+1}+\sM\sR_{i+1}+\matI=\sM(\matr S_i\matr P_{i+1}+\sR_{i+1})+\matI,
+\end{split}\]
+namely, we have $\prod_{j=2}^{i+1}\matr P_j=\sM\matr S_{i+1}+\matI$ for $\matr S_{i+1}=\matr S_i\matr P_{i+1}+\sR_{i+1}$. 
+
+Then by mathematical induction, we have $\prod_{j=2}^\pnum\matr P_j=\sM\matr S_\pnum+\matI$ for some $\matr S_\pnum\in\bins$, i.e., the rightmost column vector in $\prod_{j=2}^\pnum\matr P_j$ is in the form of $\sM\vec s_k+\vece$ for some $\vec s_k\in\bin^\lambda$ and $\vece=(0,\cdots,0,1)^\top$.
+Moreover, since the last bit in $\vec m$ is $1$ according to \cref{lem:ker2}, the bottom vector of $\sR_1+\vec m\cdot\mu\cdot\vec m^\top$ must be in the form of $\vec r_1^\top+\mu\cdot\vec m^\top$, where $\vec r_1^\top$ denotes the bottom vector in $\sR_1$.
+Let $\key$ be the bottom-right bit of $\matr K$ in $\gameg_2$. 
+Since $\vec m\in\Ker(\matr M)$, we have $\vec m^\top\sM=(\matr M\vec m)^\top\matr M=\vec 0^\top$.
+We have 
+\[\begin{split}
+\key=(\vec r_1^\top+\mu\cdot\vec m^\top)(\sM\vec s_k+\vece)
+=\vec r_1^\top(\sM\vec s_k+\vece)+\mu\cdot\underbrace{\vec m^\top\sM\vec s_k}_{=0}+\mu\cdot\underbrace{\vec m^\top\vece}_{=1}.
+%&=\vec r_1^\top(\sM\vec s_k+\vece)+0+\mu.
+\end{split}\]
+Since $\mu$ is a random bit and $\adv$ obtains no information on $\mu$ except for $\key$, $\key$ is a random bit in the view of $\adv$ as well, completing this part of the proof.
+\end{proof}
+
+\begin{figure}[h]
+\begin{center}
+\framebox{
+\small
+  \begin{tabular}{l}
+    \begin{minipage}[htbp]{0.8\textwidth}
+    %\begin{compactitem}
+    \underline{Games $\gameh_0$, \gbox{$\gameh_1$}, \dbox{$\gameh_2$}, \fbox{$\gameh_3$}} %\ddbox{$\gameh_4$} %\fbox{\gbox{$\gameg_5$}}
+    \item {$\matr M\getsr\zs$} \fbox{$\matr M=\rs(\urs)$ where $\urs\getsr\bin^{\lambda(\lambda+1)/2}$}, $\sM=\matr M^\top\matr M$
+    %\item \fbox{$\sM\getsr\zs$}
+    \item $\sR_i\getsr\sr$ for $i=1,\cdots,\pnum$
+    \item {$\matr P_1=\sM\sR_1$, $\matr P_i=\sM\sR_i+\matI$ for $i=2,\cdots,\pnum$}
+     \dbox{$\matr P_i=\sM\sR_i$ for $i=2,\cdots,\pnum$}
+    \item {$\matr K=(\sR_1+\vec m \cdot \mu\cdot \vec m^\top)\matr P_2\cdots\matr P_\pnum$}
+    \gbox{$\matr K=\sR_1\matr P_2\cdots\matr P_\pnum$}
+    \item Set $\key\getsr \bin$
+     %\ddbox{$\key$ as the bottom-right bit of $\matr K$}
+    \item Return $(\urs,(\pk_i=\matr P_i)_{i\in[\pnum]},\key)$ to $\adv$
+    \item Output whatever $\adv$ outputs
+%      \end{minipage}
+%      &  \begin{minipage}[t]{0.5\textwidth}
+        
+%    \underline{$\share'(i,\sk_\cs,(\pk_j)_{j\in[\pnum]})$:}
+%    \item Parse $(\pk_j)_{j\in[\pnum]}=(\matr P_j)_{j\in\cs}$ and $\sk_i=\sR_i$
+%    \item $\matr K=(\prod_{j<i}\matr P_j^\top) \sR_i (\prod_{j>i}\matr P_j)$
+%    \item Let $\vec k$ be the rightmost column vector of $\matr K$
+%    \item return $\vec k$
+    \end{minipage} 
+      \end{tabular}
+      }
+\end{center}
+\caption{The challengers in $\gameh_0$, $\gameh_1$, $\gameh_2$, and $\gameh_3$ for the proof of \cref{thm:nc-nike}. $\vec m$ is the non-zero vector in $\Ker(\matr M)$ guaranteed by \cref{lem:ker2}.
+}
+\label{fig:ncnike-reverse}
+\end{figure}
+
+We now do all the previous steps in the reverse order as in \cref{fig:ncnike-reverse}. Note that the view of the adversary in $\gameh_0$ (respectively, $\gameh_3$) is identical to its view in $\gameg_4$ (respectively, the honest game where $\key$ is a random bit). By using the above arguments in a reverse order, we have the following lemma.
+
+\begin{lemma}
+\label{lem:ncnike-h}
+%For any sufficiently large $\lambda$, we have
+$
+|\Pr[\gameh_3^{\adv}\Rightarrow 1]-\Pr[\gameh_0^{\adv}\Rightarrow 1]|\leq\negl(\lambda).
+$
+\end{lemma}
+
+Putting all the above together, \cref{thm:nc-nike} immediately follows.
+\end{proof}
+
+%remark on applications
+%\heading{Extension to IB-NIKE.} We can also show that our construction satisfies $(0,0)$-restricted extendability (see \cref{def:resext}), and thus can be converted into a restricted BPRF, which in turn implies a multi-party IB-NIKE in the bounded-parallel-time model. Similar argument can also be made for our constructions in the bounded time model and the BSM, while those constructions further satisfy (full) extendability (see \cref{def:ext}) and can be converted into full-fledged BPRFs. We refer the reader to \cref{sec:ibnike} for the full details.
+\heading{Extension to IB-NIKE.} We can also show that our construction satisfies $0$-restricted extendability (see \cref{def:resext}), and thus can be converted into a restricted BPRF, which in turn implies a multi-party IB-NIKE in the bounded-parallel-time model. A similar argument can also be made for our constructions in the bounded-time model and the BSM, while those constructions further satisfy (full) extendability (see \cref{def:ext}) and can be converted into full-fledged BPRFs. We refer the reader to \cref{sec:ibnike} for the full details.
+%We refer the reader to the full paper for the details. 
+
+%. These constructions can be used to establish full-fledged BPRF, thereby expanding their potential applications, such as broadcast encryption.
+%Specifically, we present a generic transformation from multi-party NIKE to a BPRF with (restricted) extendability. By showing that our multi-party NIKE schemes possess this property, we can instantiate BPRF based on multi-party NIKE. Furthermore, we show that our (restricted) BPRF can be transformed into a multi-party IB-NIKE in the fine-grained setting. 

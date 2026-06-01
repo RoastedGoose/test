@@ -1,0 +1,1012 @@
+\section{Fine-Grained Multi-Party NIKE based on Zero-$k$-Clique}
+\label{sec:time-nike}
+	In this section, we propose a fine-grained multi-party NIKE based on Zero-$k$-Clique. All algorithms and adversaries in this section are modeled as word-RAMs with $O(\log\lambda)$-bit words. %All basic operations (e.g., addition ($+$), subtraction ($-$), multiplication ($·$), bit-shifting, and memory access) in the word-RAM model take a single time-step.
+	%We can extend the fine-grained two-party NIKE based on Zero-$k$-Clique in [cref:LLV19] to the multi-party settings, which are
+%The resulting scheme is computable in $\tilde{O}(\listlength\lambda^2 + \solutionlength\lambda^{k})$ and secure against $\tilde{\Omega}(\listlength\lambda^k)$  for any constant number of parties in the word-RAM model.
+The resulting scheme is computable in $\tilde{O}(\lambda^{\pnum+k-1})$ and secure against adversaries running in time $\tilde{O}(\lambda^{\pnum+k-\Omega(1)})$ for any constant number $\pnum$ of parties.
+%\begin{definition}[Total variation distance]
+%	For two random variable $X$, $Y$ with support $\mathsf{supp}(X)$ and $\mathsf{supp}(Y)$ respectively, we define their total variation distance $\mathsf{TVD}(X,Y)$ as
+%	$$ \mathsf{TVD}(X,Y) = \frac{1}{2}\sum_{u \in \mathsf{supp}(X) \cup v \in \mathsf{supp}(Y)}|\Pr[X = u]-\Pr[Y=v]| .$$
+%\end{definition}
+%=======
+%\begin{definition}[Total variation distance]
+%	For two random variable $X$, $Y$ with support $\mathsf{supp}(X)$ and $\mathsf{supp}(Y)$ respectively, we define their total variation distance $\mathsf{TVD}(X,Y)$ as
+%	$$ \mathsf{TVD}(X,Y) = \frac{1}{2}\sum_{u \in \mathsf{supp}(X) \cup v \in \mathsf{supp}(Y)}|\Pr[X = u]-\Pr[Y=v]| .$$
+%\end{definition}
+%>>>>>>> 460f90c11079c66ad36db4d2223f8b5c29dee719
+%=======
+%	In this section, we propose a fine-grained multi-party NIKE based on Zero-$k$-Clique. We can extend the fine-grained two party NIKE based on Zero-$k$-Clique in [cref:LLV19] to the multi-party settings, which are computable in $\tilde{O}(\listlength\lambda^2 + \solutionlength\lambda^{k})$ and secure against $\tilde{\Omega}(\listlength\lambda^k)$  for some constant parties in the word-RAM model. We also give the indistinguishability security of our fine-grained multi-party NIKE in [cref:appendix].
+%>>>>>>> refs/remotes/origin/main
+
+%\subsection{model of computation} 
+%	The running times of all algorithms are analyzed in the word-RAM model of computation with $O(\log\lambda)$-bit words, where basic operations (e.g., addition ($+$), subtraction ($-$), multiplication ($\cdot$), bit-shifting, and memory access) all take a single time-step.
+	
+%extra definition
+%\begin{definition}[Word-RAM family]
+%	The class of word-RAM families is the set of all word-RAM families $\mathcal{F} = \{f_{\lambda}\}_{\lambda\in\N}$ for which there is a function $T$, $f_{\lambda}$ can be computed by a word-RAM running in time $T(\lambda)$.
+%\end{definition}
+
+%\subsection{Fine grained average case hard problem and general properties}
+%\begin{definition}[$T(\lambda)$-Fine grained average case hard problem]
+%	A \emph{$T(\lambda)$-Fine grained average case hard problem} $P_{\lambda}()$ consists of a set and two algorithms defined as follows:
+%	\begin{compactitem}
+%		\item 
+%	\end{compactitem}
+%\end{definition}
+\subsection{Zero-$k$-Clique Problem and Its Properties}
+We now introduce the Zero-$k$-Clique problem, which is the set of $k$-partite graphs with weighted edges. Each graph is said to have a solution if there is a $k$-clique (i.e., a complete subgraph) where the sum of edge weights within the clique is $0$. Below, for any two nodes $v$ and $u$, $\weight(v,u)$ denotes the weight of the edge $(v,u)$.
+%\heading{Zero-$k$-Clique problem.}
+%	For any $\lambda \in \mathbb{N}$, some constant $k > 2$, and some $R$ which is polynomial in $\lambda$, a \emph{Zero-$k$-Clique-$R$ problem} $\zkcp$ consists of a graph set $\mathsf{G}_{k, \lambda, R}$ defined as a set of all $k$-partite graphs with $k$ partitions $P_1, \cdots, P_k$, $\lambda$ nodes in every partition, and edges with explicit weights in the range $R$.
+%	The $k$-partite graph is complete: there is an edge between a node $v \in P_i$ and a node $u \in P_j$ if and only if $i \neq j$. Thus, every instance has $\binom{k}{2}\lambda^2$ edges.
+%	Let $\weight(u, v)$ be the weight of edge from the node $u$ to $v$. We denote $\vec{v} = (v_{1} \in P_{1}, \cdots, v_{k} \in P_{k})$ as a solution of $I$ if for every $v_i, v_j \in \vec{v} \land i \neq j$, $\Sigma_{i \in [k]}\Sigma_{j\in[k] \land i \neq j}\weight(v_{i}, v_{j}) \equiv 0 \mod R$.
+%=======
+
+\begin{definition}[Zero-$k$-Clique-$R$ problem]
+Let $\lambda\in \N$ be the security parameter.
+For $k>2$, a \emph{Zero-$k$-Clique-$R$ problem} $\zkcp$ is the set of all $k$-partite graphs with $\lambda$ nodes in each partition and the weight of each edge being in $\Z_{R}$. Each graph with $k$ partitions $\partition_1, \cdots, \partition_k$ is required to be complete, namely, there is an edge between two nodes $v \in \partition_i$ and $u \in \partition_j$ if and only if $i \neq j$. %Thus, every instance has $\binom{k}{2}\lambda^2$ edges.
+$(v_{1}, \cdots, v_{k}) \in \partition_{1}\times\cdots\times\partition_{k}$ is said to be a solution of $I$ if for each $v_i, v_j \land i \neq j$, we have
+$\sum_{i \in [k]}\sum_{j\in[k] \land i \neq j}\weight(v_{i}, v_{j}) \equiv 0 \mod R.$
+
+	For any $\zkcp$, we define two distributions $\zkcdistzero{R}$ and $\zkcdistone{R}$. $\zkcdistzero{R}$ (respectively, $\zkcdistone{R}$) is the uniform distribution over the instances in $\zkcp$ having no solutions (respectively, having a single solution).
+%	\item $\zkcdistzero{R}$ is the uniform distribution over the instances in $\zkcp$ with no solutions. 
+%	\item $\zkcdistone{R}$ is the uniform distribution over the instances in $\zkcp$ having a single solution.
+	 %\end{compactitem}
+	 \end{definition}
+
+The Zero-$k$-Clique-$R$ hypothesis says that it is easy to verify a solution of a random instance in the Zero-$k$-Clique problem and difficult to find a solution given a random instance. 
+%The strong Zero-$k$-Clique hypothesis says that it is hard to to find a $k$-clique (i.e., complete subgraph) of $k$ vertices, where the sum of edge weights within the clique is $0$. 
+%Notice that the most efficient known algorithms to find the solution run in $\lambda^{k-o(1)}$ time complexity. This is believed to be optimal in the worst case.
+
+\begin{definition}[Strong Zero-$k$-Clique-$R$ hypothesis and range $R = \lambda^{ck}$]
+	For any constant $c > 1$, $\lambda \in \mathbb{N}$, and $R=\lambda^{ck}$, the \emph{strong Zero-$k$-Clique-$R$ hypothesis} holds if
+	\begin{compactitem}
+		\item there exists an algorithm $\verify$ with running time $O(\lambda^{k(1-\delta)})$ for some constant $\delta > 0$ such that $\verify(I, \witness) = 1$ if $I$ has a solution for an arbitrary witness $\witness$ of an instance $I$ with one solution,
+		\item for any algorithm $\advA$ with running time $O(\lambda^{k(1-\delta)})$ for some constant $\delta > 0$,
+			$ \Pr[\adv(I) = \witness] \leq 1/100$
+			where $I \getsr \zkcdistone{R}$ and $\witness$ is an arbitrary witness of the instance $I$ with one solution.
+	\end{compactitem}
+\end{definition}
+
+\heading{Remark.} Below when mentioning the strong Zero-$k$-Clique hypothesis, we are always referring to the strong Zero-$k$-Clique hypothesis with $k>2$ and $R = \lambda^{ck}$.
+
+%The problem $\zkcp$ with instance distribution $\zkcdistzero{R}$ and $\zkcdistone{R}$ is said to .
+%\begin{theorem}
+%\label{thm:aclh}
+%For any $k>2$, $\lambda\in\N$, any polynomial $R=R(\lambda)$ in $\lambda$, and any Zero-$k$-Clique-$R$ problem $\zkcp$ with instance distributions $\dist_0[R,\lambda]$ and $\dist_1[R,\lambda]$, if the strong Zero-$k$-Clique-$R$ hypothesis holds for $\zkcp$, then for every probabilistic algorithm $\advA$ with running time $O((l(\lambda)T(\lambda))^{1-\delta})$ for some constant $\delta>0$, we have
+%	$$\Pr[\advA(I_1, \cdots, I_{l(\lambda)}) = i] \leq \epsilon,$$
+%	where $I_i \getsr \zkcdistone{R}$ for $i \getsr [l(\lambda)]$ and $I_j \getsr \zkcdistzero{R}$ for all $j \in [l(\lambda)]/\{i\}$, $l(\lambda) = \lambda^{\Omega(1)}$, $\epsilon \leq 1/200$, and $T(\lambda) = \lambda^k$
+%\end{theorem}
+
+\begin{theorem}[Theorem 15 in \cite{C:LaVLinWil19}]
+\label{thm:aclh}
+If the strong Zero-$k$-Clique-$R$ hypothesis holds, then for every probabilistic word-RAM family $\{\adv\}$ with running time $O((\ell(\lambda)T(\lambda))^{1-\delta})$ for some constant $\delta>0$, we have
+	$$\Pr[\adv((I_j)_{j=1}^{\ell(\lambda)}) = i] \leq \epsilon,$$
+	where $I_i \getsr \zkcdistone{R}$ for $i \getsr [\ell(\lambda)]$, $I_j \getsr \zkcdistzero{R}$ for all $j \in [\ell(\lambda)]\backslash\{i\}$, $\ell(\lambda) = \lambda^{\Omega(1)}$, $\epsilon \leq 1/200$, and $T(\lambda) = \lambda^k$.
+\end{theorem}
+
+
+%\begin{theorem}
+%\label{thm:plantable}
+%For any $k>2$, $\lambda\in\N$, any polynomial $R=R(\lambda)$ in $\lambda$, and any Zero-$k$-Clique-$R$ problem $\zkcp$, if strong Zero-$k$-Clique-$R$ hypothesis holds for $\zkcp$ with instance distributions $\dist_0[R,\lambda]$ and $\dist_1[R,\lambda]$, then there exists a randomized word-RAM family $\{\Generate\}_{\lambda}$ with running time $O(\lambda^2)$ such that
+%	$$ \tvd(\Generate(R, k, b), \dist_{b}[R, \lambda]) \leq \epsilon,$$
+%	where $b \in \{0,1\}$ and $\epsilon \leq 2\lambda^{k}/R$.
+%\end{theorem}
+%\begin{theorem}
+%\label{lem:plantable}
+%	If strong Zero-$k$-Clique hypothesis holds, the problem $\zkcp$ with instance distribution $\zkcdistzero{R}$ and $\zkcdistone{R}$ is said to be \emph{$(G(\lambda),\epsilon_{plant})$-Plantable} where $\epsilon \leq 2\lambda^{k}/R$ and $G(\lambda)=O(\lambda^2)$, if there exists a randomized algorithm $\Generate$ with running time $G(\lambda)$ on input $b \in \{0,1\}$ and $R$, then output an instance $I \in \mathsf{G}_{k, \lambda, R}$ such that
+%	$$ \Delta(\Generate(R, b), \dist_{b}[R, \lambda]) \leq \epsilon. $$
+%\end{theorem}
+Next we recall a word-RAM family $\{\Generate\}$ such that $\Generate(R, k, b)$ produces an instance of the Zero-$k$-Clique-$R$ problem drawn from a distribution within total variation distance at most $2\lambda^{k}/R$ of $\dist_{b}[R]$ defined in \cite{C:LaVLinWil19} as in \cref{fig:con-generate}.
+\begin{figure}[h!]
+	\begin{center}
+        	\framebox{
+        	\small
+		\begin{tabular}{l}
+   			\begin{minipage}[t]{0.9\textwidth}
+%			\underline{$\Generate(R, k, 0)$:}
+%        			\item Sample a complete $k$-partite graph $I$ with $\lambda$ nodes in each partition
+%    			\item Set $\weight(v_i, v_j) \getsr \mathbb{Z}_{R}$ for every $i,j \getsr [k] \land i \neq j$, $v_i \in \partition_i$, and $v_j \in \partition_j$
+%			\item Output $I$
+%			
+%			\underline{$\Generate(R, k, 1)$:}
+%			\item Sample a complete $k$-partite graph $I$ with $\lambda$ nodes in each partition
+%			\item Randomly choose two partition $i,j \getsr [k] \land i \neq j$
+%			\item Randomly choose $k$ indices of the nodes $v_1 \getsr \partition_1, \cdots, v_k \getsr \partition_k$ in each partition
+%			\item Set $\weight(v_i, v_j) = -\Sigma_{(i^\prime, j^\prime) \neq (i, j)}\weight(v_{i^\prime}, v_{j^\prime})$ where $i^\prime, j^\prime \in [k] \land i^\prime \neq j^\prime$
+%=======
+			\underline{$\Generate(R,k,b)$:}
+        			\item Generate $I\in \zkcp$ with partitions $\partition_1,\cdots,\partition_k$ such that $\weight(v_i, v_j) \getsr \mathbb{Z}_{R}$ for all $i \neq j$, all $v_i \in \partition_i$, and all $v_j \in \partition_j$
+			\item If $b=0$, return $I$ 
+			\item Otherwise, sample $i,j \getsr [k] \land i \neq j$, $v_1 \getsr \partition_1, \cdots, v_k \getsr \partition_k$ and set $\weight(v_i, v_j) = -\Sigma_{(i^\prime, j^\prime) \neq (i, j)}\weight(v_{i^\prime}, v_{j^\prime})$ %where $i^\prime, j^\prime \in [k] \land $
+%>>>>>>> 460f90c11079c66ad36db4d2223f8b5c29dee719
+			\item Return $I$
+			\end{minipage} 
+		\end{tabular}
+	}
+	\end{center}
+\caption{Definition of $\Generate$ \cite{C:LaVLinWil19}.} %Let a $k$-partite graph with partitions $\{\partition_1, \cdots, \partition_k\}$ and edges between every two nodes from different sets. We also denote $\weight(v_i, v_j)$ as the weight of the edge between $v_i$ and $v_j$.}
+\label{fig:con-generate}
+\end{figure}
+
+\begin{theorem}[Theorem 14 in \cite{C:LaVLinWil19}]
+\label{thm:plantable}
+If the strong Zero-$k$-Clique-$R$ hypothesis holds, then we have
+	$ \tvd(\Generate(R, k, b), \zkcdistb{R}) \leq 2\lambda^{k}/R,$
+	for all $b \in \{0,1\}$, where $\Generate$ runs in time $O(\lambda^2)$.
+\end{theorem}
+The following corollary follows immediately from \cref{thm:plantable}.
+\begin{corollary}
+\label{cor:plantable}
+If the strong Zero-$k$-Clique-$R$ hypothesis holds, we have
+	$$ \tvd((\instance^j_i)_{j \in [\listlength], i \in [\pnum]}, (\dist_{b^j_i}[R])_{j \in [\listlength], i \in [\pnum]}) \leq \sum_{j \in [\listlength], i \in [\pnum]}\tvd(\instance^j_i, \dist_{b^j_i}[R]) =2\listlength\pnum\lambda^{k}/R,$$
+%	$$ \tvd(\Generate(R, k, b)^{\listlength\pnum}, \zkcdistb{R}^{\listlength\pnum}) \leq 2\listlength\pnum\lambda^{k}/R,$$
+	where $\instance^j_i \getsr \Generate(R, k, b^j_i)$, $b^j_i \in \{0,1\}$ for all $i \in [\pnum]$ and $j \in [\listlength]$, $\listlength = \lambda^{\Omega(1)}$, and any constant $\pnum$.  
+\end{corollary}
+
+We now recall a theorem given in \cite{C:LaVLinWil19}. Roughly, it says that there exists a word-RAM family $\{\Split\}$ such that for an instance $\instance$ of the Zero-$k$-Clique-$R$ problem with one solution, $\Split(\instance)$ outputs two slightly smaller instances that both have solutions in $O(\lambda^{k(1-\delta)})$ time for some constant $\delta > 0$.
+
+\begin{theorem}[Theorem 16 in \cite{C:LaVLinWil19}]
+\label{thm:split}
+If the strong Zero-$k$-Clique-$R$ hypothesis holds, then there exists a word-RAM family $\{\Split\}$ with running time $O(\lambda^{k(1-\delta)})$ for some constant $\delta > 0$ such that
+	\begin{compactitem}
+	\item $\tvd((\hat{\instance}_1^i, \hat{\instance}_2^i),(\zkcdistzero{\sqrt{R}} \times \zkcdistzero{\sqrt{R}}))\leq \binom{k}{2}\cdot 4^{\binom{k}{2}}\cdot3\lambda^k/\sqrt{R}$ for all $i \in [\binom{k}{2}]$ where
+		$I \getsr \zkcdistzero{R}$, $(\hat{\instance}_1^j, \hat{\instance}_2^j)_{j \in [\binom{k}{2}]}\getsr\Split(I)$.
+	\item $\tvd((\hat{\instance}_1^i, \hat{\instance}_2^i),(\zkcdistone{\sqrt{R}} \times \zkcdistone{\sqrt{R}}))\leq \binom{k}{2}\cdot 4^{\binom{k}{2}}\cdot3\lambda^k/\sqrt{R}$ for some $i\in[\binom{k}{2}]$ where
+		$I \getsr \zkcdistone{R}$, $(\hat{\instance}_1^j, \hat{\instance}_2^j)_{j \in [\binom{k}{2}]}\getsr\Split(I)$.
+%=======
+%	\item $\tvd((I_1^i, I_2^i),(\zkcdistzero{\sqrt{R}} \times \zkcdistzero{\sqrt{R}}))\leq \epsilon$ for all $i\in[m]$ where
+%		$I \getsr \zkcdistzero{R}$, $(I_1^1, I_2^1, \cdots, I_1^m, I_2^m)\getsr\Split(I)$.
+%			\item $\tvd((I_1^i, I_2^i),(\zkcdistone{\sqrt{R}} \times \zkcdistone{\sqrt{R}}))\leq \epsilon$ for some $i\in[m]$ where
+%		$I \getsr \zkcdistone{R}$, $(I_1^1, I_2^1, \cdots, I_1^m, I_2^m)\getsr\Split(I)$,
+%>>>>>>> 20800725f1c8041a9a50efb87ac2da82976b7b0a
+		%\item given $I \getsr \zkcdistone{R}$, $\Split(I)$ produces a list of length $m$ of pairs of instances $\{(I_1^1, I_2^1), \cdots, (I_1^m, I_2^m)\}$ where $\exists i \in [m]$ such that $I_1^i, I_2^i$ are drawn from a distribution with total variation distance at most $\epsilon$ from $\zkcdistone{\sqrt{R}} \times \zkcdistone{\sqrt{R}}$.
+	\end{compactitem}
+\end{theorem}
+
+%\begin{proof}
+%	By \cref{thm:plantable}, we have
+%	$$ \tvd((\instance^j_i)_{j \in [\listlength], i \in [\pnum]}, (\dist_{b^j_i}[R])_{j \in [\listlength], i \in [\pnum]}) \leq \sum_{j \in [\listlength], i \in [\pnum]}\tvd(\instance^j_i, \dist_{b^j_i}[R]) = 2\listlength\pnum\lambda^{k}/R.$$
+%\end{proof}
+
+%\begin{theorem}
+%\label{thm:split}
+%For any $k>2$, $\lambda\in\N$, any polynomial $R=R(\lambda)$ in $\lambda$, and any Zero-$k$-Clique-$R$ problem $\zkcp$ with instance distribution $\zkcdistzero{R}$ and $\zkcdistone{R}$, if strong Zero-$k$-Clique-$R$ hypothesis holds for $\zkcp$, then there exists a word-RAM family $\{\Split\}$ running in time $O(T(\lambda)^{1-\delta})$ for some constant $\delta > 0$ and a constant $m$ such that
+%	\begin{compactitem}
+%		\item when given an instance $I \getsr \zkcdistzero{R}$, $\Split(I)$ produces a list of length $m$ of pairs of instances $\{(I_1^1, I_2^1), \cdots, (I_1^m, I_2^m)\}$ where $\forall i \in [m]$, $I_1^i, I_2^i$ are drawn from a distribution with total variation distance at most $\epsilon$ from $\zkcdistzero{\sqrt{R}} \times \zkcdistzero{\sqrt{R}}$.
+%		\item when given an instance $I \getsr \zkcdistone{R}$, $\Split(I)$ produces a list of length $m$ of pairs of instances $\{(I_1^1, I_2^1), \cdots, (I_1^m, I_2^m)\}$ where $\exists i \in [m]$ such that $I_1^i, I_2^i$ are drawn from a distribution with total variation distance at most $\epsilon$ from $\zkcdistone{\sqrt{R}} \times \zkcdistone{\sqrt{R}}$.
+%	\end{compactitem}
+%	where $\epsilon \leq \binom{k}{2}4^{\binom{k}{2}}3\lambda^k/{\sqrt{R}}$, and $T(\lambda) = \lambda^k$.
+%\end{theorem}
+
+%\begin{lem}
+%\label{lem:npsplit}
+%For any $k>2$, $\lambda\in\N$, any polynomial $R=R(\lambda)$ in $\lambda$, and any Zero-$k$-Clique problem $\zkcp$ with instance distribution $\zkcdistzero{R}$ and $\zkcdistone{R}$, if strong Zero-$k$-Clique-$R$ hypothesis holds for $\zkcp$, then there exists a word-RAM family $\{\npsplit\}$ running in time $O(T(\lambda)^{1-\delta})$ for some constant $\delta > 0$ and a constant $m$ such that
+%	\begin{compactitem}
+%		\item when given an instance $I \getsr \zkcdistzero{R}$, $\npsplit(I)$ produces a list of length $m$ of tuples of instances $\{(I_1^1, \cdots, I_\pnum^1), \cdots, (I_1^m, \cdots, I_\pnum^m)\}$ where $\forall i \in [m]$, $I_1^i, \cdots, I_\pnum^i$ are drawn from a distribution with total variation distance at most $\epsilon$ from $\zkcdistzero{\sqrt[2^{  \log\pnum  }]{R}}^{\pnum}$.
+%		\item when given an instance $I \getsr \zkcdistone{R}$, $\npsplit(I)$ produces a list of length $m$ of pairs of instances $\{(I_1^1, \cdots, I_\pnum^1), \cdots, (I_1^m, \cdots, I_\pnum^m)\}$ where $\exists i \in [m]$ such that $I_1^i, \cdots, I_m^i$ are drawn from a distribution with total variation distance at most $\epsilon$ from $\zkcdistone{\sqrt[2^{  \log\pnum  }]{R}}^{\pnum}$.
+%	\end{compactitem}
+%	where $\epsilon \leq \binom{k}{2}^{  \log\pnum  }(\pnum+1)\binom{k}{2}4^{\binom{k}{2}}3\lambda^k/{\sqrt[\pnum]{R}}$, and $T(\lambda) = \lambda^k$.\\
+%	Let $\Split$ be the word-RAM family from \cref{thm:split}. We define a RAM family $\{\pnum$-$\Split\}$ as in \cref{fig:con-np-split}, which takes an instance $I$ and an integer $L =   \log\pnum  $ as input and produces $\binom{k}{2}^{\pnum}$ lists of instances.
+%\end{lem}
+
+
+
+
+%\begin{proof}
+%%	 Let the output of $\npsplit$ be the tuple $(\instancelist^1,\cdots,\instancelist^m)$, where $\instancelist^i = (\instance_1^i, \cdots, \instance_{\pnum}^i)$ for each $i \in [m]$. 
+%%	 We show that by $\npsplit$ we will get the desired distributions in our list of instances depending on whether $\instance \getsr \zkcdistzero{R}$ or $\instance \getsr \zkcdistone{R}$. 
+%%	 To prove this, we change the output of $\{\Split\}$ into the instances sampled from $\zkcdistzero$ and $\zkcdistone$ from the layer $L = 1$ to the layer $L =   \log\pnum  $.
+%%	\begin{compactitem}
+%%		\item 
+%		Let $\instance \getsr \zkcdistzero{R}$.
+%%		We need to show that every tuple in $(\instancelist^1,\cdots,\instancelist^m)$ is sampled from a distribution with total variation distance $\leq (\pnum+1)\binom{k}{2}4^{\binom{k}{2}}3\lambda^k/{\sqrt[\pnum]{R}}$ from $\zkcdistzero{R}^{\pnum}$. 
+%%		the output of $\Split(\instance)$. We change $(\hat{\instance}_1^j, \hat{\instance}_2^j)_{j \in [\binom{k}{2}]} \getsr \Split(\instance)$ into $(\hat{\instance}_1^j, \hat{\instance}_2^j)_{j \in [\binom{k}{2}]} \getsr (\zkcdistzero{\sqrt{R}} \times \zkcdistzero{\sqrt{R}})$. 
+%	 	For all $j \in [\binom{k}{2}]$, we have 
+%		$$\tvd((\hat{\instance}_1^j, \hat{\instance}_2^j), (\zkcdistzero{\sqrt{R}} \times \zkcdistzero{\sqrt{R}}))\leq\binom{k}{2}4^{\binom{k}{2}}3\lambda^k/\sqrt{R},$$
+%		where $(\hat{\instance}_1^j, \hat{\instance}_2^j)_{j \in [\binom{k}{2}]}\getsr\npsplit(\instance, 1)$, 	according to \cref{thm:split}.
+%%		instance lists where $\instancelist^j$ is sampled from $\zkcdistzero{\sqrt{R}}^{2}$ for every $n \in \binom{k}{2}$. The total variance difference between $\instancelist^j$ and $\instancelist \getsr \zkcdistzero{\sqrt{R}}^{2}$ is less than $\binom{k}{2}4^{\binom{k}{2}}3\lambda^k/{\sqrt{R}}$ according to \cref{thm:split}. 
+%%		For every $\binom{k}{2}$ instance lists, we have
+%%		$$\tvd(\{\Split(\instance)\},\{ \instancelist \getsr \zkcdistzero{\sqrt{R}}^{2}\}) \leq \binom{k}{2}4^{\binom{k}{2}}3\lambda^k/{\sqrt{R}}.$$
+%		 For $\depth>1$, let $\instance_i^t \getsr \zkcdistzero{\sqrt[2^{L-1}]{R}}$ for each $t \in [m]$ and $i \in [2^{L}]$. By \cref{thm:split}, we have 
+%		 $$\tvd((\hat{\instance}_{2i-1}^{j \times t}, \hat{\instance}_{2i}^{j \times t}), (\zkcdistzero{\sqrt[2^L]{R}} \times \zkcdistzero{\sqrt[2^L]{R}}))\leq\binom{k}{2}4^{\binom{k}{2}}3\lambda^k/{\sqrt[2^L]{R}},$$
+%		 where $(\hat{\instance}_{2i-1}^{j \times t}, \hat{\instance}_{2i}^{j \times t})_{j \in [\binom{k}{2}]} \getsr \Split(\instance_i^t)$ for all $j \in [\binom{k}{2}]$. Since the sequence $\instance_1^t, \cdots, \instance_{2^{L}}^t$ are independent for each $t \in [m]$, and $\npsplit$ runs $\Split$ for $2^{L-1}$ times, by a union bound, we have 
+%		 $$\tvd((\hat{\instance}_{1}^{j}, \cdots, \hat{\instance}_{2^{L+1}}^{j}), \zkcdistzero{\sqrt[2^L]{R}}^{2^{L+1}}) \leq 2^{L-1}\binom{k}{2}4^{\binom{k}{2}}3\lambda^k/{\sqrt[2^L]{R}}$$
+%		 for each $j \in [m\binom{k}{2}]$.
+%%		 $\npsplit$ returns the output of $\Split(\instance)$
+%%		 since every first input of $\npsplit$ (i.e., instance $\instance$) is sampled from $\zkcdistzero{\sqrt[2^{i-1}]{R}}$, we change the output of $\Split(\instance)$ into $\binom{k}{2}$ instance lists where $\instancelist^j$ is sampled from $\zkcdistzero{\sqrt[2^i]{R}}^{2^i}$ for every $n \in \binom{k}{2}^{i}$. According to \cref{thm:split}, we have for every $n \in \binom{k}{2}^{i}$,
+%%		 $$\tvd(\instancelist^j, \instancelist \getsr \zkcdistzero{\sqrt[2^i]{R}}^{2^i}) \leq (2^{i-1})\binom{k}{2}4^{\binom{k}{2}}3\lambda^k/{\sqrt[2^i]{R}}.$$
+%%		When $\depth =   \log\pnum  $, since $2^L = 2^{  \log\pnum  } > 2^{\pnum}$, by the same argument as $\depth > 1$, assuming $\instance_i^t \getsr \zkcdistzero{\sqrt[2^{L-1}]{R}}$ for each $t \in [m]$ and each $i \in [2^{L}]$, we have
+%%		$$\tvd((\hat{\instance}_{1}^{j}, \cdots, \hat{\instance}_{2^{L+1}}^{j}), \zkcdistzero{\sqrt[2^L]{R}}^{2^{L+1}})\leq(2^{L-1})\binom{k}{2}4^{\binom{k}{2}}3\lambda^k/{\sqrt[2^L]{R}}$$
+%%		for each $j \in [m\binom{k}{2}]$.  
+%%		we will get $\instancelist \getsr \zkcdistzero{\sqrt[2^{  \log\pnum  }]{R}}^{2^{  \log\pnum  }}$. 
+%		Therefore, for each $i \in \binom{k}{2}^{\pnum}$, we have
+%%		for every instance list from $\binom{k}{2}^{  \log\pnum  }$ lists, the total variance difference is
+%	\[\begin{split}
+%		\tvd((\hat{\instance}_1^i, \cdots, \hat{\instance}_\pnum^i), \zkcdistzero{\sqrt[\pnum]{R}}^{\pnum})
+%		 \leq &\tvd((\hat{\instance}_1^i, \cdots, \hat{\instance}_{2^{\log\pnum}}^i), \zkcdistzero{\sqrt[2^{\log\pnum}]{R}}^{2^{\log\pnum}})\\
+%		\leq &\sum_{i=0}^{2^{\log\pnum-1}} 2^i\binom{k}{2}4^{\binom{k}{2}}3\lambda^k/{\sqrt[2^{i+1}]{R}} \\
+%%		2^0\binom{k}{2}4^{\binom{k}{2}}3\lambda^k/{\sqrt{R}} + 2^1\binom{k}{2}4^{\binom{k}{2}}3\lambda^k/{\sqrt[4]{R}} + \cdots + 2^{\log\pnum-1}\binom{k}{2}4^{\binom{k}{2}}3\lambda^k/{\sqrt[2^{\log\pnum}]{R}}\\
+%		%&\leq (1+\cdots+2^{  \log \pnum  })\binom{k}{2}4^{\binom{k}{2}}3\lambda^k/{\sqrt[\pnum]{R}}\\
+%		\leq &(2\pnum-1)\binom{k}{2}4^{\binom{k}{2}}3\lambda^k/{\sqrt[\pnum]{R}}.
+%	\end{split}\]
+%%		We change the output of $\npsplit$ by sequences of games. 
+%%		\item 
+%		Let $\instance \getsr \zkcdistone{R}$.
+%%		we need to show that there exists one tuple in $(\instancelist^1,\cdots,\instancelist^m)$ that is sampled from a distribution with total variation distance $\leq (\pnum+1)\binom{k}{2}4^{\binom{k}{2}}3\lambda^k/{\sqrt[\pnum]{R}}$ from the distribution $\zkcdistone{R}^{\pnum}$. 
+%		For some $j \in [\binom{k}{2}]$, we have
+%		$$\tvd((\hat{\instance}_1^j, \hat{\instance}_2^j), (\zkcdistzero{\sqrt{R}} \times \zkcdistzero{\sqrt{R}}))\leq\binom{k}{2}4^{\binom{k}{2}}3\lambda^k/{\sqrt{R}},$$
+%		where $(\hat{\instance}_1^j, \hat{\instance}_2^j)_{j \in [\binom{k}{2}]}\getsr\npsplit(\instance, 1)$, according to \cref{thm:split}. 
+%		For $\depth>1$, let $\instance_i^t \getsr \zkcdistzero{\sqrt[2^{L-1}]{R}}$ for all $t \in [m]$ and all $i \in [2^{L}]$. By \cref{thm:split}, for some $j \in [\binom{k}{2}]$, we have
+%		 $$\tvd((\hat{\instance}_{2i-1}^{j \times t}, \hat{\instance}_{2i}^{j \times t}), (\zkcdistzero{\sqrt[2^L]{R}} \times \zkcdistzero{\sqrt[2^L]{R}}))\leq\binom{k}{2}4^{\binom{k}{2}}3\lambda^k/{\sqrt[2^L]{R}},$$
+%		 where $(\hat{\instance}_{2i-1}^{j \times t}, \hat{\instance}_{2i}^{j \times t})_{j \in [\binom{k}{2}]} \getsr \Split(\instance_i^t)$. Since all $\instance_1^t, \cdots, \instance_{2^{L}}^t$ are independent for all $t \in [m]$, and $\npsplit$ runs $\Split$ $2^{L-1}$ times, by a union bound, we have 
+%		 $$\tvd((\hat{\instance}_{1}^{j}, \cdots, \hat{\instance}_{2^{L+1}}^{j}), \zkcdistzero{\sqrt[2^L]{R}}^{2^{L+1}})\leq 2^{L-1}\binom{k}{2}4^{\binom{k}{2}}3\lambda^k/{\sqrt[2^L]{R}}$$
+%		 for some $j \in [m\binom{k}{2}]$. Therefore, for some $i \in \binom{k}{2}^{\pnum}$, we have
+%%		for every instance list from $\binom{k}{2}^{  \log\pnum  }$ lists, the total variance difference is
+%	\[\begin{split}
+%		\tvd((\hat{\instance}_1^i, \cdots, \hat{\instance}_{\pnum}^i), \zkcdistzero{\sqrt[\pnum]{R}}^{\pnum})
+%		\leq& \tvd((\hat{\instance}_1^i, \cdots, \hat{\instance}_{2^{\log\pnum}}^i), \zkcdistzero{\sqrt[2^{\log\pnum}]{R}}^{2^{\log\pnum}})\\
+%		\leq &\sum_{i=0}^{2^{\log\pnum-1}} 2^i\binom{k}{2}4^{\binom{k}{2}}3\lambda^k/{\sqrt[2^{i+1}]{R}} \\
+%%		\leq & 2^0\binom{k}{2}4^{\binom{k}{2}}3\lambda^k/{\sqrt{R}} + 2^1\binom{k}{2}4^{\binom{k}{2}}3\lambda^k/{\sqrt[4]{R}} + \cdots + 2^{\log\pnum-1}\binom{k}{2}4^{\binom{k}{2}}3\lambda^k/{\sqrt[2^{\log\pnum}]{R}}\\
+%		%&\leq (1+\cdots+2^{  \log \pnum  })\binom{k}{2}4^{\binom{k}{2}}3\lambda^k/{\sqrt[\pnum]{R}}\\
+%		\leq& (2\pnum-1)\binom{k}{2}4^{\binom{k}{2}}3\lambda^k/{\sqrt[\pnum]{R}}.
+%	\end{split}\]
+%%		since $\instance \getsr \zkcdistone{R}$, we change the output of $\Split(\instance)$ into $\binom{k}{2}$ instance lists where there exists one list sampled from $\zkcdistone{\sqrt{R}}^{2}$. According to \cref{thm:split}, there exists $n^* \in \binom{k}{2}$ such that
+%%		$$\tvd(\instancelist^{n^*},\instancelist \getsr \zkcdistone{\sqrt{R}}^{2}) \leq \binom{k}{2}4^{\binom{k}{2}}3\lambda^k/{\sqrt{R}}.$$
+%%		 For every $\depth = i>1$, since there exists one tuple $\instancelist^{n^*}$ where every instance $\instance$ in $\instancelist^{n^*}$ is sampled from $\zkcdistone{\sqrt[2^{i-1}]{R}}$, we change the output of $\Split(\instance)$ into $\binom{k}{2}$ instance lists where there exists one tuple in an instance list sampled from $\zkcdistone{\sqrt[2^{i}]{R}}^{2^i}$. According to \cref{thm:split}, there exists $n^* \in \binom{k}{2}^{i}$ such that
+%%		 $$\tvd(\instancelist^{n^*}, \instancelist \getsr \zkcdistone{\sqrt[2^{i}]{R}}^{2^i}) \leq (2^{i-1})\binom{k}{2}4^{\binom{k}{2}}3\lambda^k/{\sqrt[2^i]{R}}.$$
+%%		When $\depth =   \log\pnum  $, we have $\instancelist \getsr \zkcdistone{\sqrt[2^{  \log\pnum  }]{R}}^{2^{  \log\pnum  }}$. Therefore, there exists one instance list from $\binom{k}{2}^{  \log\pnum  }$ lists, the total variance difference is
+%%	\[\begin{split}
+%%		\epsilon_{\pnum\text{-}split} &\leq \binom{k}{2}4^{\binom{k}{2}}3\lambda^k/{\sqrt{R}} + \cdots + (2^{  \log \pnum  })\binom{k}{2}4^{\binom{k}{2}}3\lambda^k/{\sqrt[2^{  \log \pnum  }]{R}}\\
+%%		&\leq (1+\cdots+2^{  \log \pnum  })\binom{k}{2}4^{\binom{k}{2}}3\lambda^k/{\sqrt[\pnum]{R}}\\
+%%		&\leq (\pnum+1)\binom{k}{2}4^{\binom{k}{2}}3\lambda^k/{\sqrt[\pnum]{R}}.
+%%	\end{split}\]
+%%%	\end{compactitem}
+%%	Therefore, we pick the first $\pnum$ instances from $(\hat{\instance}_{1}^{j}, \cdots, \hat{\instance}_{2^{L+1}}^{j})$.
+%% When $\instance \getsr \zkcdistzero{R}$, $\npsplit$ has create
+%%	we get a list of tuples of instances with $\epsilon_{\pnum\text{-}split} \leq (\pnum+1)\binom{k}{2}4^{\binom{k}{2}}3\lambda^k/{\sqrt[\pnum]{R}}$. 
+%%	The total variance difference is the same when $\npsplit$ finally output the first $\pnum$ instances as one tuple for every $m \in \binom{k}{2}^{  \log\pnum  }$. 
+%%	When $\instance \getsr \zkcdistzero{R}$, by a union bound, the probability that any of these tuples has an error is less than
+%%	$$ \binom{k}{2}^{  \log\pnum  }(2^{  \log \pnum  +1}-1)\binom{k}{2}4^{\binom{k}{2}}3\lambda^k/{\sqrt[\pnum]{R}}.$$
+%%	Similarly when 
+%%	$\instance \getsr \zkcdistone{R}$, 
+%%%	we get one instance list from $\binom{k}{2}^{  \log\pnum  }$ lists from $\zkcdistone{\sqrt[2^{  \log\pnum  }]{R}}^{2^{  \log\pnum  }}$.
+%%	The probability of erroring here is less than
+%%	$$(2^{  \log \pnum  +1}-1)\binom{k}{2}4^{\binom{k}{2}}3\lambda^k/{\sqrt[\pnum]{R}}.$$
+%%	Therefore, the error here is 
+%%	$$\binom{k}{2}^{  \log\pnum  }(2^{  \log \pnum  +1}-1)\binom{k}{2}4^{\binom{k}{2}}3\lambda^k/{\sqrt[\pnum]{R}},$$
+%%	by a union bound.
+%\end{proof}
+%
+%\begin{proof}
+%	Let $\lambda$ be the security parameter and $\A=\{\adv\}$ be any adversary who can distinguish the output of $\npsplit$ and instance lists from $\zkcdistzero{R}$ and $\zkcdistone{R}$.
+%We now prove \cref{lem:npsplit} via a sequence of hybrid games as in \cref{fig:splittable-hyb}.
+%\begin{figure}[h!]
+%\begin{center}
+%\framebox{
+%\small
+%	\begin{tabular}{l}
+%	\begin{minipage}[t]{0.9\textwidth}
+%	Games $\gameg_0$, \fbox{$\gameg_1$}, \dbox{$\gameg_{1.1}-\gameg_{1.(  \log\pnum   - 1)}$}, \gbox{$\gameg_2$}
+%	\item $I \getsr \dist_0[R,\lambda]$ (resp. $I \getsr \dist_1[R,\lambda]$).
+%	\item $L =   \log\pnum  $.
+%	\item Run $\npsplit(I)$ as follows:
+%		\item\tab if $L = 1$,\\
+%			\tab\tab return $\Split(I)$.\\
+%			\tab\tab \fbox{return $\{(\instancelist^j) \getsr \zkcdistzero{\sqrt{R}}^{2}\}_{n \in [m]}$ (resp. for $i^* \in [m]$, $(\instancelist^{i^*}) \getsr \zkcdistone{\sqrt{R}}^{2}$).}
+%		\item\tab $L = L-1$.
+%		\item\tab $\pnum$-$\Split(I, L) = \{(\instancelist^1), \cdots, (\instancelist^m)\}$.
+%		\item\tab for every $t \in [m]$ and for every $i \in [2^{L}]$:\\
+%			\tab\tab $\Split(\instancelist_i^t) = \{(I_{2i-1}^{1 \times t}, I_{2i}^{1 \times t}), \cdots, (I_{2i-1}^{\binom{k}{2} \times t}, I_{2i}^{\binom{k}{2} \times t})\}$.\\
+%			\tab\tab \dbox{$\{(\instancelist_i^{n \times t}) \getsr \dist_0^2[\sqrt[2^L]{R}, \lambda]\}_{n \in [m]}$ (resp. for ${i^*} \in [m]$, $(\instancelist_i^{{i^*} \times t}) \getsr \dist_1^2[\sqrt[2^L]{R}, \lambda]$).}
+%		\item\tab if $L =   \log\pnum   - 1$,\\
+%			\tab\tab output $\{(I_1^{1 \times t}, \cdots, I_{2^{L+1}}^{1 \times t}), \cdots, (I_1^{\binom{k}{2} \times t}, \cdots, I_{2^{L+1}}^{\binom{k}{2} \times t})\}_{t \in [m]}$.\\
+%			\tab\tab \gbox{output $\{(I_1^{t}, \cdots, I_{2^{L+1}}^{t}) \getsr (\dist_0^{2^{L+1}}[\sqrt[2^L]{R}, \lambda])\}_{t \in [m \times \binom{k}{2}]}$.}\\
+%			\tab\tab \gbox{(resp. for ${i^*} \in [m]$, output $(I_1^{{i^*} \times t}, \cdots, I_{2^{L+1}}^{{i^*} \times t}) \getsr (\dist_1^{2^{L+1}}[\sqrt[2^L]{R}, \lambda])$).}
+%		\item\tab return $\{(I_1^{1 \times t}, \cdots, I_{2^{L+1}}^{1 \times t}), \cdots, (I_1^{m \times t}, \cdots, I_{2^{L+1}}^{m \times t})\}$.\\
+%		\tab \dbox{return $\{(I_1^{n \times t}, \cdots, I_{2^{L+1}}^{n \times t}) \getsr (\dist_0^{2^{L+1}}[\sqrt[2^L]{R}, \lambda])\}_{n \in [m]}$.}\\
+%		\tab \dbox{(resp. for ${i^*} \in [m]$, return $(I_1^{{i^*} \times t}, \cdots, I_{2^{L+1}}^{{i^*} \times t}) \getsr (\dist_1^{2^{L+1}}[\sqrt[2^L]{R}, \lambda])$).}
+%	\item Return $(I_1^{m}, \cdots, I_{2^{L+1}}^{m})$ to $\adv$.
+%	\item Outputs whatever $\adv$ outputs.
+%	\end{minipage}
+%	\end{tabular}
+%}
+%\end{center}
+%\caption{The challengers in $\gameg_0$-$\gameg_2$. We denote $\instancelist^j$ be the tuple of instances for $n \in [m]$ where $m$ is initialized with $\binom{k}{2}$ to represent the number of tuples, and $\instancelist^j_i$ be the $i$'th instance in the tuple $\instancelist^j$. We also denote $i^*$ as the index of the instances in $\instancelist^{i^*}$ all having one solution.}
+%\label{fig:splittable-hyb}
+%\end{figure}
+%
+%	\heading{$\gameg_0$.} This is the original $\npsplit$ algorithm when $\npsplit$ receives $I \getsr \dist_0[R,\lambda]$(resp. $I \getsr \dist_1[R,\lambda]$) and output $m = \binom{k}{2}^{\pnum}$ batch of instances.\\
+%	\heading{$\gameg_1$.} $\gameg_1$ and $\gameg_0$ only differ in the way that the value returns when $L = 1$, namely, $\gameg_1$ returns $\{(\instancelist_i^{n \times t}) \getsr \dist_0^2[\sqrt[2^L]{R}, \lambda]\}_{n \in [m]}$(resp. for ${i^*} \in [m]$, $(\instancelist_i^{{i^*} \times t}) \getsr \dist_1^2[\sqrt[2^L]{R}, \lambda]$).
+%	\begin{lem}
+%	\label{lem:split0-1}
+%$$
+%|\Pr[\gameg_1^{\adv}\Rightarrow 1]-\Pr[\gameg_0^{\adv}\Rightarrow 1]| \leq \binom{k}{2}4^{\binom{k}{2}}3\lambda^k/{\sqrt{R}}.
+%$$
+%%		The total variation distance between $\gameg_1$ and $\gameg_0$ is less than $\binom{k}{2}4^{\binom{k}{2}}3\lambda^k/{\sqrt{R}}$.
+%	\end{lem}
+%	\begin{proof}
+%		We construct an adversary $\B=\{\advb\}$ running in time $O(\lambda^k)$ against \cref{thm:split} as follows. 
+%		
+%		The challenger samples $\{(\instancelist^j) \getsr \zkcdistzero{\sqrt{R}}^{2}\}_{n \in [m]}$ (resp. for $i^* \in [m]$, $(\instancelist^{i^*}) \getsr \zkcdistone{\sqrt{R}}^{2}$).
+%		Since $I \getsr \zkcdistzero{R}$ (resp. $I \getsr \zkcdistone{R}$), the total variation distance between $\{(\instancelist_i^{n \times t}) \getsr \dist_0^2[\sqrt[2^L]{R}, \lambda]\}_{n \in [\binom{k}{2}]}$ (resp. there exists an ${i^*} \in [\binom{k}{2}]$, $(\instancelist_i^{{i^*} \times t}) \getsr \dist_1^2[\sqrt[2^L]{R}, \lambda]$) and $\{(\instancelist_i^{n \times t})\}_{n \in [\binom{k}{2}]}$ outputs by $\Split(I)$ is less than $\binom{k}{2}4^{\binom{k}{2}}3\lambda^k/{\sqrt{R}}$ according to \cref{thm:split}.
+%	\end{proof}
+%%	\heading{$\gameg_{1.1}$.} $\gameg_{1.1}$ is the same as $\gameg_1$ except for every $t \in [m]$ and $i \in [2]$ where $m = \binom{k}{2}$, we change the instances from $\Split(\instancelist_i^t)$ into the instances from $\dist_0^2[\sqrt[4]{R}, \lambda]\}$ (resp. for $i^* \in [m^2]$,  we change into $(\instancelist^{i^*}) \getsr \dist_1^2[\sqrt[4]{R}, \lambda]$). We also change the return value into $\{(I_1^{n \times t}, \cdots, I_{4}^{n \times t}) \getsr (\dist_0^{4}[\sqrt[4]{R}, \lambda])\}_{n \in [m]}$ (resp. for ${i^*} \in [m^2]$, $(I_1^{i^*}, \cdots, I_{4}^{i^*}) \getsr (\dist_1^{4}[\sqrt[4]{R}, \lambda])$).\\
+%	\heading{$\gameg_{1.0}$.} $\gameg_{1.0}$ is completely the same as $\gameg_1$. Thus the total variation distance between $\gameg_{1.0}$ and $\gameg_{1}$ is 0.\\
+%%	\begin{lem}
+%%	\label{lem:split1-1.1}
+%%		The total variation distance between $\gameg_{1.1}$ and $\gameg_1$ is less than $\binom{k}{2}4(\binom{k}{2} + 1)\frac{\lambda^k}{\sqrt[4]{R}}$.
+%%	\end{lem}
+%%%	 from $L = 1$ to $L =   \log\pnum   - 2$,
+%%	\begin{proof}
+%%		From $L=1$ to $L=2$, since every instance in $\instancelist^j$ is sampled from $\dist_{0}[\sqrt{R}, \lambda]$ for all $n \in [m]$ (resp. for $i^* \in [m]$, all instances in $\instancelist^{i^*}$ are sampled from $\zkcdistone{\sqrt{R}}$) where $m = \binom{k}{2}$, by splittable property, we can create $\binom{k}{2}^2$ new instances. Every instance output by $\Split$ can be transformed into an instance sampled from $\dist_{0}[\sqrt[4]{R}, \lambda]$ (resp. there exists a new $i^* \in m^{\prime}$, such that every instance in $\instancelist^{i^*}$ is sampled from $\dist_{1}[\sqrt[4]{R}, \lambda]$) where $m^{\prime} = \binom{k}{2}^2$ and $L=2$ according to \cref{thm:split}.
+%%		Thus the total variation distance between the transformed instances and instances output by $\Split$ is at most $\binom{k}{2}4(\binom{k}{2} + 1)\frac{\lambda^k}{\sqrt[4]{R}}$.
+%%		We apply the same argument for any reduction from $L = i$ to $L = i+1$ for $i \in [  \log\pnum  -2]$, thus we have the total variation distance between the transformed instances and instances output by $\Split$ is at most $(\binom{k}{2}^{2}+\cdots+\binom{k}{2}^{  \log\pnum  -2})4(\binom{k}{2} + 1)\frac{\lambda^k}{\sqrt[2^L]{R}}$.
+%%	\end{proof}
+%	\heading{$\gameg_{1.i}$.} $\gameg_{1.(i+1)}$ is the same as $\gameg_{1.i}$ except for every $t \in [m]$ and $j \in [2^{i+1}]$ where $m = \binom{k}{2}^{i+1}$, we change the instances from $\Split(\instancelist_j^t)$ into the instances from $\dist_0^{2^L}[\sqrt[2^L]{R}, \lambda]\}$ and for $i^* \in [m]$,  we change into $(\instancelist^{i^*}) \getsr \dist_1^{2^L}[\sqrt[2^L]{R}, \lambda]$ where $L = i+1$. We also change the return value into $\{(I_1^{n \times t}, \cdots, I_{2^L}^{n \times t}) \getsr (\dist_0^{2^L}[\sqrt[2^L]{R}, \lambda])\}_{n \in [m]}$ and for ${i^*} \in [m^2]$, $(I_1^{i^*}, \cdots, I_{2^L}^{i^*}) \getsr (\dist_1^{2^L}[\sqrt[2^L]{R}, \lambda])$.
+%	\begin{lem}
+%	\label{lem:split1.i}
+%		The total variation distance between $\gameg_{1.(i+1)}$ and $\gameg_{1.i}$ is less than $\binom{k}{2}^{i}\binom{k}{2}4^{\binom{k}{2}}3\lambda^k/{\sqrt[2^{i+1}]{R}}$.
+%	\end{lem}
+%	\begin{proof}
+%		From $L=i$ to $L=i+1$, since every instance in $\instancelist^j$ is sampled from $\dist_{0}[\sqrt[2^i]{R}, \lambda]$ for all $n \in [m]$ (resp. for $i^* \in [m]$, all instances in $\instancelist^{i^*}$ are sampled from $\dist_1[\sqrt[2^i]{R}, \lambda]$) where $m = \binom{k}{2}$, by splittable property, we can create $\binom{k}{2}^2$ new instances. Every instance output by $\Split$ can be transformed into an instance sampled from $\dist_{0}[\sqrt[2^{i+1}]{R}, \lambda]$ (resp. there exists a new $i^* \in m^{\prime}$, such that every instance in $\instancelist^{i^*}$ is sampled from $\dist_{1}[\sqrt[2^{i+1}]{R}, \lambda]$) where $m^{\prime} = \binom{k}{2}^2$ and $L=i+1$ according to \cref{thm:split}.
+%		Thus the total variation distance between the transformed instances and instances output by $\Split$ is at most $\binom{k}{2}\binom{k}{2}4^{\binom{k}{2}}3\lambda^k/{\sqrt[2^{i+1}]{R}}$.
+%		Since every instance in $\instancelist^j$ is sampled from $\dist_{0}[\sqrt[i]{R}, \lambda]$ for all $n \in [m]$ (resp. for $i^* \in [m]$, all instances in $\instancelist^{i^*}$ are sampled from $\dist_1[\sqrt[i]{R}, \lambda]$) where $m = \binom{k}{2}^i$, then by splittable property, we have the total variation distance between the transformed instances and instances output by $\Split$ is at most $\binom{k}{2}^{i}\binom{k}{2}4^{\binom{k}{2}}3\lambda^k/{\sqrt[2^{i+1}]{R}}$
+%	\end{proof}
+%	\heading{$\gameg_{2}$.} $\gameg_{2}$ is exactly the same as $\gameg_{(1.{  \log\pnum   - 1)}}$. Thus the total variation distance between $\gameg_{2}$ and $\gameg_{(1.{  \log\pnum   - 1)}}$ is 0.\\
+%	Hence, The total variation distance between $\gameg_0$ and $\gameg_3$ is less than $\allowbreak 4{  \log\pnum  }(\binom{k}{2}^{  \log \pnum   + 1}+\binom{k}{2}^{  \log \pnum  })\frac{\lambda^k}{\sqrt[2^{  \log\pnum  }]{R}}$.
+%	By \cref{lem:split0-1} and \cref{lem:split1.i}, we have 
+%	\[\begin{split}
+%		\epsilon_{\pnum\text{-}split} &\leq \binom{k}{2}4(\binom{k}{2} + 1)\frac{\lambda^k}{\sqrt{R}} + \cdots + \binom{k}{2}^{  \log\pnum  }4(\binom{k}{2} + 1)\frac{\lambda^k}{\sqrt[2^{  \log\pnum  }]{R}}\\
+%		&\leq (\binom{k}{2}+\cdots+\binom{k}{2}^{  \log\pnum  })4(\binom{k}{2} + 1)\frac{\lambda^k}{\sqrt[\pnum]{R}}\\
+%		&\leq 4{  \log\pnum  }(\binom{k}{2}^{  \log \pnum   + 1}+\binom{k}{2}^{  \log \pnum  })\frac{\lambda^k}{\sqrt[\pnum]{R}}
+%	\end{split}\]
+%	Note that since $\pnum$ and $k$ is some constant, we have algorithm $\npsplit$ also runs in time $\tilde{O}(\lambda^k)$.
+%\end{proof}
+%\begin{theorem}
+%\label{thm:split}
+%	If strong Zero-$k$-Clique hypothesis holds, the problem $\zkcp$ with instance distribution $\zkcdistzero{R}$ and $\zkcdistone{R}$ is said to be \emph{$\epsilon_{split}$-Splittable} with an error $\epsilon_{split} \leq 4(\binom{k}{2} + 1)\frac{\lambda^k}{\sqrt{R}}$, where $R = 4^{\delta}$ for some integer $\delta$ and $T(\lambda) = \lambda^k$ to the problem $P^{\prime}_{k, \lambda, \sqrt{R}}$ with instance distribution $\dist_{0}[\sqrt{R}, \lambda]$ and $\dist_{1}[\sqrt{R}, \lambda]$ if there exists a probabilistic algorithm running in time $O(T(\lambda)^{1-\delta})$ for some constant $\delta > 0$ and a constant $m$ such that
+%	\begin{compactitem}
+%		\item when given an instance $I \getsr \zkcdistzero{R}$, $\Split(I)$ produces a list of length $m$ of pairs of instances $\{(I_1^1, I_2^1), \cdots, (I_1^m, I_2^m)\}$ where $\forall i \in [m]$, $I_1^i, I_2^i$ are drawn from a distribution with total variation distance at most $\epsilon_{split}$ from $\zkcdistzero{\sqrt{R}} \times \zkcdistzero{\sqrt{R}}$.
+%		\item when given an instance $I \getsr \zkcdistone{R}$, $\Split(I)$ produces a list of length $m$ of pairs of instances $\{(I_1^1, I_2^1), \cdots, (I_1^m, I_2^m)\}$ where $\exists i \in [m]$ such that $I_1^i, I_2^i$ are drawn from a distribution with total variation distance at most $\epsilon_{split}$ from $\zkcdistone{\sqrt{R}} \times \zkcdistone{\sqrt{R}}$.
+%	\end{compactitem}
+%\end{theorem}
+
+%\begin{corollary}
+%\label{cor:splittable}
+%If the strong Zero-$k$-Clique-$R$ hypothesis holds, for a list $\instancelist = (\instance_1, \cdots, \instance_{\listlength})$ where $\instance_{i} \getsr \zkcdistone{R}$ or $\zkcdistzero{R}$, for every $i \in [\listlength]$, let $\instancelists_i \getsr \npsplit(\instance_{i})$.
+%%$\instancelist^j_i = (\hat{\instance}_i^1,\cdots,\hat{\instance}_i^{\listlength})$
+%\end{corollary}
+%\begin{proof}
+%a
+%\end{proof}
+%
+\subsection{Construction}
+\label{sec:tnike-con}
+\heading{Generalized splitting algorithm.}
+%Before giving our construction , we propose generalized splitting algorithms $\{\pnum$-$\Split\}$ as in \cref{fig:con-np-split}. Each splitting algorithm takes an instance $I$ and an integer $L =   \log\pnum  $ as input and generates $\binom{k}{2}^{\pnum}$ lists of instances where the number of the solutions for each instance remains unchanged.
+Before giving our construction, we propose generalized splitting algorithms $\{\pnum$-$\Split\}$. For any constant $\pnum$, let
+\[
+L=\lceil \log_2 \pnum\rceil
+\quad\text{and}\quad
+\bar{\pnum}=2^L .
+\]
+The binary recursive splitter is run to depth $L$, producing $\bar{\pnum}$ output instances in each list; $\pnum$-$\Split$ returns the first $\pnum$ of them. Since discarding output coordinates cannot increase total variation distance, the resulting $\pnum$-tuple inherits the bound for the $\bar{\pnum}$-tuple. The algorithm generates $m=\binom{k}{2}^{L}$ lists of instances in time $O(\lambda^{k(1-\delta)})$ for some constant $\delta > 0$, where the number of solutions for each instance remains unchanged.
+
+\begin{figure}[h!]
+\begin{center}
+\framebox{
+\small
+	\begin{tabular}{l}
+	\begin{minipage}[t]{0.7\textwidth}
+	\underline{$\pnum$-$\Split(I, L)$:}
+%<<<<<<< HEAD
+%		\item If $L = 1$,\\
+%			\tab return $\Split(I).$
+%		\item $L = L-1.$
+%		\item $\pnum$-$\Split(I, L) = \{\instancelist^1, \cdots, \instancelist^m\}$, where $\instancelist^t = (\instance^t_1,\cdots,\instance^t_{2^{\depth}})$ for every $t \in [m]$.
+%		\item For every $t \in [m]$ and for every $i \in [2^{L}]$:\\
+%			\tab $\Split(\instance_i^t) = \{(I_{2i-1}^{1 \times t}, I_{2i}^{1 \times t}), \cdots, (I_{2i-1}^{\binom{k}{2} \times t}, I_{2i}^{\binom{k}{2} \times t})\}.$
+%		\item Return $\{(I_1^{1 \times t}, \cdots, I_{2^{L+1}}^{1 \times t}), \cdots, (I_1^{\binom{k}{2} \times t}, \cdots, I_{2^{L+1}}^{\binom{k}{2} \times t})\}_{t \in [m]}.$
+%=======
+		\item Return $\Split(I)$ if $L = 1$
+		\item Set $L = L-1$ and run $(\instance^t_1,\cdots,\instance^t_{2^L})_{t\in[m]} \getsr \pnum\hyphen\Split(I, L)$
+		\item For each $t \in [m]$ and each $i \in [2^{L}]$, run $(\hat{\instance}_{2i-1}^{j \times t}, \hat{\instance}_{2i}^{j \times t})_{j \in [\binom{k}{2}]} \getsr \Split(\instance_i^t)$
+		\item Return $(\hat{\instance}_1^{j}, \cdots, \hat{\instance}_{2^{L+1}}^{j})_{j \in [m \cdot \binom{k}{2}]}$
+%>>>>>>> 20800725f1c8041a9a50efb87ac2da82976b7b0a
+	\end{minipage}
+	\end{tabular}
+}
+\end{center}
+\caption{The construction of $\pnum$-$\Split$. By $m$ we denote the number of lists, which is initialized with $\binom{k}{2}$. Let $\{\Split\}$ be the word-RAM family from \cref{thm:split}. }
+\label{fig:con-np-split}
+\end{figure}
+When the outermost call uses $L=\lceil\log_2\pnum\rceil$, each returned tuple is truncated to its first $\pnum$ coordinates.
+
+%\begin{figure}[h!]
+%\begin{center}
+%\framebox{
+%\small
+%	\begin{tabular}{l}
+%	\begin{minipage}[t]{0.9\textwidth}
+%	\underline{$\pnum$-$\Split(I, L)$:}
+%%		\item If $L = 1$,\\
+%%			\tab return $\Split(I).$
+%%		\item $L = L-1.$
+%%		\item $\pnum$-$\Split(I, L) = \{\instancelist^1, \cdots, \instancelist^m\}$, where $\instancelist^t = (\instance^t_1,\cdots,\instance^t_{2^{\depth}})$ for every $t \in [m]$.
+%%		\item For every $t \in [m]$ and for every $i \in [2^{L}]$:\\
+%%			\tab $\Split(\instance_i^t) = \{(I_{2i-1}^{1 \times t}, I_{2i}^{1 \times t}), \cdots, (I_{2i-1}^{\binom{k}{2} \times t}, I_{2i}^{\binom{k}{2} \times t})\}.$
+%%		\item Return $\{(I_1^{1 \times t}, \cdots, I_{2^{L+1}}^{1 \times t}), \cdots, (I_1^{\binom{k}{2} \times t}, \cdots, I_{2^{L+1}}^{\binom{k}{2} \times t})\}_{t \in [m]}.$
+%%=======
+%		\item Return $\Split(I)$ if $L = 1$.
+%		\item Set $L = L-1$ and run $\pnum\hyphen\Split(I, L) = \{(\instancelist^1), \cdots, (\instancelist^m)\}$ where $\instancelist^t = (\instance^t_1,\cdots,\instance^t_{2^{\depth}})$ for every $t \in [m]$.
+%		\item For each $t \in [m]$ and each $i \in [2^{L}]$:\\
+%			\tab run $\Split(\instance_i^t) = \{(\hat{\instance}_{2i-1}^{1 \times t}, \hat{\instance}_{2i}^{1 \times t}), \cdots, (\hat{\instance}_{2i-1}^{\binom{k}{2} \times t}, \hat{\instance}_{2i}^{\binom{k}{2} \times t})\}$.
+%		\item Return $\{(I_1^{1 \times t}, \cdots, I_{2^{L+1}}^{1 \times t}), \cdots, (I_1^{\binom{k}{2} \times t}, \cdots, I_{2^{L+1}}^{\binom{k}{2} \times t})\}_{t \in [m]}$
+%%>>>>>>> 20800725f1c8041a9a50efb87ac2da82976b7b0a
+%	\end{minipage}
+%	\end{tabular}
+%}
+%\end{center}
+%\caption{The construction of $\pnum$-$\Split$. For each $n \in [m]$, by $\instancelist^j$ we denote the tuple of instances where $m$ is initialized with $\binom{k}{2}$ to represent the number of tuples, and $\instancelist^j_i$ be the $i$'th instance in the tuple $\instancelist^j$. Let $\{\Split\}$ be the word-RAM family from \cref{thm:split}. }
+%\label{fig:con-np-split}
+%\end{figure}
+
+%\begin{lem}
+%\label{lem:npsplit}
+%If the strong Zero-$k$-Clique-$R$ hypothesis holds, then we have
+%$$\tvd((\hat{\instance}_1^i, \cdots, \hat{\instance}_\pnum^i), \zkcdistzero{\sqrt[\pnum]{R}}^{\pnum}) \leq (2\pnum-1) \cdot \binom{k}{2} \cdot 4^{\binom{k}{2}} \cdot 3\lambda^k/\sqrt[\pnum]{R}$$ for all $i \in [\binom{k}{2}^{\pnum}]$ where $(\hat{\instance}_1^j, \cdots, \hat{\instance}_\pnum^j)_{j \in [m]} \getsr \npsplit(I)$ for $\instance \getsr \zkcdistzero{R}$, and 
+%$$\tvd((\hat{\instance}_1^i, \cdots, \hat{\instance}_\pnum^i), \zkcdistone{\sqrt[\pnum]{R}}^{\pnum}) \leq (2\pnum-1) \cdot \binom{k}{2} \cdot 4^{\binom{k}{2}} \cdot 3\lambda^k/\sqrt[\pnum]{R}$$ for some $i \in [\binom{k}{2}^{\pnum}]$ where $(\hat{\instance}_1^j, \cdots, \hat{\instance}_\pnum^j)_{j \in [m]} \getsr \npsplit(I)$ for $\instance \getsr \zkcdistone{R}$.
+%%$$\tvd((\hat{\instance}_1^i, \cdots, \hat{\instance}_\pnum^i), \zkcdistzero{\sqrt[2^{  \log\pnum  }]{R}}^{\pnum}) \leq \binom{k}{2}^{  \log\pnum  +1}\cdot(2^{  \log \pnum  +1}-1) \cdot 4^{\binom{k}{2}} \cdot 3\lambda^k/\sqrt[\pnum]{R}$$ for all $i \in [\binom{k}{2}^{\pnum}]$ where $\instance \getsr \zkcdistzero{R}$, $(\hat{\instance}_1^j, \cdots, \hat{\instance}_\pnum^j)_{j \in [m]} \getsr \npsplit(I)$, and 
+%%$$\tvd((\hat{\instance}_1^i, \cdots, \hat{\instance}_\pnum^i), \zkcdistone{\sqrt[2^{  \log\pnum  }]{R}}^{\pnum}) \leq \binom{k}{2}^{  \log\pnum  +1}\cdot(2^{  \log \pnum  +1}-1) \cdot 4^{\binom{k}{2}} \cdot 3\lambda^k/\sqrt[\pnum]{R}$$ for some $i \in [\binom{k}{2}^{\pnum}]$ where $\instance \getsr \zkcdistone{R}$, $(\hat{\instance}_1^j, \cdots, \hat{\instance}_\pnum^j)_{j \in [m]} \getsr \npsplit(I)$.
+%%		when given an instance $I \getsr \zkcdistone{R}$, $\npsplit(I)$ produces a list of length $m$ of pairs of instances $\{(I_1^1, \cdots, I_\pnum^1), \cdots, (I_1^m, \cdots, I_\pnum^m)\}$ where $\exists i \in [m]$ such that $I_1^i, \cdots, I_m^i$ are drawn from a distribution with total variation distance at most $\epsilon$ from $\zkcdistone{\sqrt[2^{  \log\pnum  }]{R}}^{\pnum}$.
+%\end{lem}
+\begin{theorem}
+\label{thm:npsplit}
+If the strong Zero-$k$-Clique-$R$ hypothesis holds, then, for $L=\lceil\log_2\pnum\rceil$, $\bar{\pnum}=2^L$, and $m=\binom{k}{2}^{L}$, we have
+$$\tvd((\hat{\instance}_1^i, \cdots, \hat{\instance}_\pnum^i), \zkcdistzero{\sqrt[\bar{\pnum}]{R}}^{\pnum}) \leq (2\bar{\pnum}-1) \cdot \binom{k}{2} \cdot 4^{\binom{k}{2}} \cdot 3\lambda^k/\sqrt[\bar{\pnum}]{R}$$ for all $i \in [m]$ where $(\hat{\instance}_1^j, \cdots, \hat{\instance}_\pnum^j)_{j \in [m]} \getsr \npsplit(I)$ for $\instance \getsr \zkcdistzero{R}$, and
+$$\tvd((\hat{\instance}_1^i, \cdots, \hat{\instance}_\pnum^i), \zkcdistone{\sqrt[\bar{\pnum}]{R}}^{\pnum}) \leq (2\bar{\pnum}-1) \cdot \binom{k}{2} \cdot 4^{\binom{k}{2}} \cdot 3\lambda^k/\sqrt[\bar{\pnum}]{R}$$ for some $i \in [m]$ where $(\hat{\instance}_1^j, \cdots, \hat{\instance}_\pnum^j)_{j \in [m]} \getsr \npsplit(I)$ for $\instance \getsr \zkcdistone{R}$.
+
+\input{npsplit}
+%$$\tvd((\hat{\instance}_1^i, \cdots, \hat{\instance}_\pnum^i), \zkcdistzero{\sqrt[2^{  \log\pnum  }]{R}}^{\pnum}) \leq \binom{k}{2}^{  \log\pnum  +1}\cdot(2^{  \log \pnum  +1}-1) \cdot 4^{\binom{k}{2}} \cdot 3\lambda^k/\sqrt[\pnum]{R}$$ for all $i \in [\binom{k}{2}^{\pnum}]$ where $\instance \getsr \zkcdistzero{R}$, $(\hat{\instance}_1^j, \cdots, \hat{\instance}_\pnum^j)_{j \in [m]} \getsr \npsplit(I)$, and 
+%$$\tvd((\hat{\instance}_1^i, \cdots, \hat{\instance}_\pnum^i), \zkcdistone{\sqrt[2^{  \log\pnum  }]{R}}^{\pnum}) \leq \binom{k}{2}^{  \log\pnum  +1}\cdot(2^{  \log \pnum  +1}-1) \cdot 4^{\binom{k}{2}} \cdot 3\lambda^k/\sqrt[\pnum]{R}$$ for some $i \in [\binom{k}{2}^{\pnum}]$ where $\instance \getsr \zkcdistone{R}$, $(\hat{\instance}_1^j, \cdots, \hat{\instance}_\pnum^j)_{j \in [m]} \getsr \npsplit(I)$.
+%		when given an instance $I \getsr \zkcdistone{R}$, $\npsplit(I)$ produces a list of length $m$ of pairs of instances $\{(I_1^1, \cdots, I_\pnum^1), \cdots, (I_1^m, \cdots, I_\pnum^m)\}$ where $\exists i \in [m]$ such that $I_1^i, \cdots, I_m^i$ are drawn from a distribution with total variation distance at most $\epsilon$ from $\zkcdistone{\sqrt[2^{  \log\pnum  }]{R}}^{\pnum}$.
+\end{theorem}
+%We refer the reader to \cref{sec:npsplit} for the proof of \cref{thm:npsplit}.
+
+\heading{Our construction.} We now present our construction of fine-grained multi-party NIKE $\tnike$ based on the Zero-$k$-Clique hypothesis in \cref{fig:con-time-nike}. %Below we define several parameters. %Furthermore, we extend our results from $\cc_2$-$\epsilon$-weak security to $\cc_2$-$\epsilon$-security by employing the Goldreich-Levin method, as discussed in \cref{thm:hcp}.
+%\begin{figure}[h!]
+%\begin{center}
+%\framebox{
+%\small
+%  \begin{tabular}{l}
+%    \begin{minipage}[t]{0.9\textwidth}
+%    	\underline{$\gen(\bot)$:}
+%%    	\item Let $\set =  (s_i)_{i \in [\solutionlength]} \allowbreak$ where $s_i \getsr [\listlength]$
+%	\item Generate a random $\set \subset [\listlength]$, $|\set| = \solutionlength$
+%    	\item For $s \in [\listlength]$\\
+%			\tab If $s \in \set$\\
+%				\tab \tab $\instance_s = \Generate(R, k, 1)$\\
+%			\tab Else\\
+%				\tab \tab $\instance_s = \Generate(R, k, 0)$
+%	\item $\instancelist = (\instance_1,\cdots,\instance_{\listlength})$
+%%	\item $v \getsr \{0,1\}^{\log\log^2\elllambda}$
+%%    	\item Return $(\pk =(\instancelist, v),\sk)$
+%	\item Return $(\pk=\instancelist, \sk=\set)$
+%%      \end{minipage}&  \begin{minipage}[t]{0.48\textwidth}
+%        
+%    \underline{$\share(i,\sk_i,(\pk_j)_{j\in[\pnum]})$:}
+%    	\item Parse $(\pk_j)_{j\in[\pnum]}=(\instancelist^j,v_j)_{j\in[\pnum]}$, $\sk_i = \set_i$.
+%%	\item Let $v = v_t$, where $v_t$ is predetermined.
+%    	\item For $j \in [\pnum]/\{i\}$\\
+%		\tab $\tempset = \emptyset$\\
+%		\tab For every $s \in \set_i$\\
+%		\tab\tab Check by brute forcing whether $I^{j}_{s} \in \instancelist^{j}$ has one solution\\
+%		\tab\tab If check pass, $\tempset = \tempset \cup \{s\}$\\
+%		\tab $\set_i = \set_i \cap \tempset$
+%    	\item If $|\set_i| \geq 1$\\
+%		\tab $\tempkey = \bigoplus_{j=1}^{|\set_{i}|} \s_j$ for every $\s_j \in \set_i$
+%%		\tab $\key = \tempkey \cdot v$
+%	\item Else aborts
+%	\item Return $\tempkey$
+%    \end{minipage} 
+%      \end{tabular}
+%      }
+%\end{center}
+%\caption{Construction of time $\tnike=\{\gen,\share\}$.}
+%\label{fig:con-time-nike}
+%\end{figure}
+
+\begin{figure}[h!]
+\begin{center}
+\framebox{
+\small
+  \begin{tabular}{l}
+    \begin{minipage}[t]{0.7\textwidth}
+    	\underline{$\gen(\bot)$:}
+%    	\item Let $\set =  (s_i)_{i \in [\solutionlength]} \allowbreak$ where $s_i \getsr [\listlength]$
+	\item Sample a random subset $\set \subset [\listlength]$ such that $|\set| = \solutionlength$
+    	\item For all $j \in [\listlength]$
+	\item \tab $\instance^j = \Generate(R, k, 1)$ if $j \in \set$ and $\instance^j = \Generate(R, k, 0)$ otherwise
+%	\item $\instancelist = (\instance^1,\cdots,\instance^{\listlength})$
+%	\item $v \getsr \{0,1\}^{\log\log^2\elllambda}$
+%    	\item Return $(\pk =(\instancelist, v),\sk)$
+	\item Return $(\pk=(\instance^j)_{j\in[\ell]}, \sk=\set)$\\
+	
+%      \end{minipage}&  \begin{minipage}[t]{0.48\textwidth}
+        
+    \underline{$\share(i,\sk_i,(\pk_j)_{j\in[\pnum]})$:}
+    	\item Parse $(\pk_{t}=(\instance^j_t)_{j\in[\listlength]})_{t\in[\pnum]}$, $\sk_i = \set_i$.
+%	\item Let $v = v_t$, where $v_t$ is predetermined.
+    	\item For $t \in [\pnum]\backslash\{i\}$, $\tempset = \emptyset$\\
+		\tab For every $s \in \set_i$, check by brute forcing whether $I^{s}_{t}$ has one solution\\
+		\tab\tab If the check passes, $\tempset = \tempset \cup \{s\}$\\
+		\tab $\set_i = \set_i \cap \tempset$
+    	\item Return $\tempkey = \bigoplus_{j=1}^{|\set_{i}|} s_j$ for all $s_j \in \set_i$ if $|\set_i| \geq 1$ and abort otherwise
+%		\tab $\key = \tempkey \cdot v$
+    \end{minipage} 
+      \end{tabular}
+      }
+\end{center}
+\caption{Construction of $\tnike=\{\gen,\share\}$.}
+\label{fig:con-time-nike}
+\end{figure}
+
+Let $\cc_1$ (respectively, $\cc_2$) be the set of all word-RAM families such that for each $\mathcal{F} = \{f_{\lambda}\}\in\cc_1$ and each $\lambda\in\N$, $f_{\lambda}$ runs in time $\tilde{O}(\listlength\lambda^2 + \solutionlength\lambda^{k})$ (respectively, $\tilde{O}((\listlength\lambda^{k})^{1-\delta})$) for some constant $\delta>0$, where $\listlength = \lambda^{\Omega(1)}$, $\ell = \poly(\lambda)$, and $\solutionlength < \listlength$. 
+Let
+$\bar{\pnum}=2^{\lceil\log_2\pnum\rceil}$,
+$\epsilon_1= (1- (\solutionlength/\listlength)^{\pnum-1})^{\solutionlength}+2\ell\pnum\lambda^k/R$
+and 
+$$
+\epsilon_2 \leq 201/200 + \listlength(2\bar{\pnum}-1)\binom{k}{2}4^{\binom{k}{2}}3\lambda^k/{R}-(1-(\solutionlength-1)/\listlength)^{\pnum}+2\pnum(\solutionlength-1+\listlength)\lambda^{k}/{R}.
+$$
+We have the following theorem.
+%We give our construction in \cref{fig:con-time-nike}.
+
+%When $\pnum=3$, $k = 3$, $\listlength = \lambda^3$, and $\solutionlength = \lambda^2\log\lambda$. We have the probability that the protocol aborts is less than $e^{-{\log^{3}\elllambda}} = \negl{\lambda}$.
+%Note that when $\listlength = \lambda^{\pnum}$ and $\solutionlength = \lambda^{\pnum-1}\log\lambda$, we have
+%$$ \epsilon_1 \leq (1- (\frac{\solutionlength}{\listlength})^{\pnum-1})^{\solutionlength} = (1- (\frac{\lambda^{\pnum-1}\log\lambda}{\lambda^{\pnum}})^{\pnum-1})^{\lambda^{\pnum-1}\log\lambda} \approx \frac{1}{e^{\log^{\pnum}\lambda}} = \negl(\lambda).$$
+%	\[\begin{split}
+%	(1- (\frac{\solutionlength}{\listlength})^{\pnum-1})^{\solutionlength}= (1- (\frac{\lambda^2\log\lambda}{\lambda^3})^{2})^{\lambda^2\log\lambda} \approx e^{-{\log^{3}\elllambda}},
+%	\end{split}\]
+%	The running time for parties is $\tilde{O}(\elllambda^3\lambda^2+\elllambda^2\log\elllambda\lambda^k)$.
+%	Let $\elllambda = \lambda^{k-2}$. 
+%	The honest parties run in time $\tilde{O}(\lambda^{3k-4})$ while the dishonest parties run in time $\tilde{O}(\lambda^{4k-6})$.
+%	Let $k=3$, we have 
+%	$$ \epsilon \leq 1/100 + (96\listlength - 6)\frac{\lambda^3}{R} + \Pr[\mathsf{Bad}].$$
+
+%$\listlength = \elllambda^{\pnum}$ and $\solutionlength = \elllambda^{\pnum-1}\log\elllambda$ for any $\elllambda = \lambda^{\Omega(1)}$ and some constant $\pnum>2$.
+\begin{theorem}
+\label{thm:time-nike}
+	If the strong Zero-$k$-Clique-$R$ hypothesis holds, then  for any constant $\pnum$, $\tnike$ is a $\cc_1$-$\pnum$-NIKE with $\epsilon_{1}$-correctness and $\cc_2$-$\epsilon_{2}$-weak security. % where $\epsilon_1 \leq (1- (\frac{\solutionlength}{\listlength})^{\pnum-1})^{\solutionlength}$ and $\epsilon_2 \leq 201/200 + \listlength(2\pnum-1)\binom{k}{2}4^{\binom{k}{2}}3\lambda^k/{R}-(1-\frac{\solutionlength-1}{\listlength})^{\pnum}+2\pnum(\solutionlength-1+\listlength)\lambda^{k}/{R}$.
+\end{theorem}
+
+
+
+
+%	Since \cref{thm:aclh} allows for $\tilde{O}(\listlength\lambda^k)$ adversaries to have advantage at most 1/100. We can conclude that there does not exist a $\tilde{O}(\listlength\lambda^k)$ adversary who can find $\tempkey$ in NIKE with advantage more than 1/16 by \cref{thm:aclh}.
+
+%When $\listlength = \lambda^3$, $\solutionlength = \lambda^2\log\lambda$, $k = 3$, and $\pnum=3$. We have the probability that the protocol aborts is less than
+%	\[\begin{split}
+%	(1- (\frac{\solutionlength}{\listlength})^{\pnum-1})^{\solutionlength}=& (1- (\frac{\lambda^2\log\lambda}{\lambda^3})^{2})^{\lambda^2\log\lambda}\\
+%%	=& (1- \frac{\elllambda^4\log^2\elllambda}{\elllambda^6})^{\elllambda^2\log\elllambda}\\
+%	\approx& e^{-{\log^{3}\elllambda}},
+%	\end{split}\]
+%	and
+%%	The running time for parties is $\tilde{O}(\elllambda^3\lambda^2+\elllambda^2\log\elllambda\lambda^k)$.
+%%	Let $\elllambda = \lambda^{k-2}$. 
+%%	The honest parties run in time $\tilde{O}(\lambda^{3k-4})$ while the dishonest parties run in time $\tilde{O}(\lambda^{4k-6})$.
+%%	Let $k=3$, we have 
+%	$$ \Pr[\gameg_0^{\adv}\Rightarrow 1] \leq 1/100 + (96\listlength - 6)\frac{\lambda^3}{R} + \Pr[\mathsf{Bad}].$$
+%	Let $\listlength \geq 2^{21}$, since $0 < \Pr[\mathsf{Bad}] < 1/25$ and $(96\listlength - 6)\frac{\lambda^3}{R} < 1/100$, we have
+%	$$ \Pr[\gameg_0^{\adv}\Rightarrow 1] \leq \frac{1}{100} +  \frac{1}{25} + \frac{1}{100} < \frac{1}{16}.$$
+%	Since \cref{thm:aclh} allows for $\tilde{O}(\listlength\lambda^k)$ adversaries to have advantage at most 1/100. We can conclude that there does not exist a $\tilde{O}(\listlength\lambda^k)$ adversary who can find $\tempkey$ in NIKE with advantage more than 1/16 by \cref{thm:aclh}.
+
+%\begin{theorem}
+%\label{thm:time-nike}
+%	If the strong Zero-$k$-Clique-$R$ hypothesis holds for Zero-$k$-Clique-$R$ problem $P_{\lambda, k, R}$ over $R = \lambda^{\pnum k}$, $\listlength = \lambda^{\Omega(1)}$ and $\solutionlength < \lambda^{\Omega(1)}$, then $\tnike$ constructed in \cref{fig:con-time-nike} is an $\tilde{O}(\listlength\lambda^2 + \solutionlength\lambda^{k})$-$\pnum$-NIKE with $\tilde{\Omega}(\listlength\lambda^k)$-weak security for any constant $\pnum$.
+%\end{theorem}
+\begin{proof}
+
+\heading{Complexity.}
+Recall that $\Generate$ runs in time $O(\lambda^2)$, and the check by brute forcing takes time $O(\lambda^k)$. Since all parties run $\Generate$ for $\listlength$ times and run check for $\solutionlength$ times, its total running time is $\tilde{O}(\listlength \lambda^2 + \solutionlength \lambda^k)$.
+
+\heading{Correctness.}
+We first prove that the probability that the protocol aborts is at most $(1- (\solutionlength/\listlength)^{\pnum-1})^{\solutionlength}$.
+Without loss of generality, we assume that the indices in $\set_{\pnum}$ are independently sampled from $[\listlength]$ with replacement. Define the indicator $Y_x$ such that
+$Y_x=\begin{cases} 1 & x\in\cap_{i=1}^{\pnum-1}\set_i\\
+0 & \text{otherwise}
+\end{cases}$. For any $x\getsr [\listlength]$ we have
+\[\begin{split}
+\Pr[Y_x=1]=&\Pr[ x\in\set_1\cap\cdots\cap\set_{\pnum-1}]
+=\Pr[ x\in\set_1]\cdots\Pr[ x\in\set_{\pnum-1}]
+=({\solutionlength}/{\listlength})^{\pnum-1}
+\end{split}\]
+i.e.,
+$ \Pr[Y_x=0]=1- ({\solutionlength}/{\listlength})^{\pnum-1}$.
+Moreover, for $x_1,\cdots,x_\solutionlength\getsr[\ell]$ for any $q$, we have
+\[\begin{split}
+\Pr[Y_{x_1}=1\land \cdots \land Y_{x_\solutionlength}=1]
+=&\Pr[x_1,\cdots,x_{\solutionlength}\in \cap_{i=1}^{\pnum-1}\set_i]\\
+=&\prod_{i=1}^{\pnum-1}\Pr[x_1, \dots, x_{\solutionlength}\in \set_i]\ ( \because \mbox{independence of $\set_1,\cdots \set_{\pnum-1}$})\\
+=&\prod_{i=1}^{\pnum-1}(\Pr[x_1\in\set_i]\cdots\Pr[x_{\solutionlength}\in \set_i]) \ ( \because \mbox{independence of $\{x_j\}_{j \in [\solutionlength]}$})\\
+=&\Pr[x_1\in\cap_{i=1}^{\pnum-1}\set_i]\cdots\Pr[x_{\solutionlength}\in \cap_{i=1}^{\pnum-1}\set_i]
+=\Pr[Y_{x_1}=1]\cdots \Pr[Y_{x_{\solutionlength}}=1].
+\end{split}\]
+Hence, $\{Y_{x_j}\}_{j \in [\solutionlength]}$ are independent.
+
+%Feb14 Since the intersection of $\set_1,\cdots,\set_\pnum$ only becomes larger when variables in $\set_\pnum$ are sampled with non-replacement, the probability that the protocol aborts is no larger than
+%$
+%\Pr[\cap_{i=1}^\solutionlength Y_{x_i}=0] = \prod_{j=1}^{\solutionlength}\Pr[Y_{x_j}=0]=(1- (\frac{\solutionlength}{\listlength})^{\pnum-1})^{\solutionlength}.
+%$
+Since the intersection of $\set_1,\cdots,\set_\pnum$ only becomes larger when variables in $\set_\pnum$ are sampled without replacement, the probability that $\cap_{i=1}^{\pnum}\set_i = \emptyset$ (i.e., which is the probability that some user aborts) is no larger than
+$$
+\Pr[\land_{i=1}^\solutionlength Y_{x_i}=0] = \prod_{j=1}^{\solutionlength}\Pr[Y_{x_j}=0]=(1- (\solutionlength/\listlength)^{\pnum-1})^{\solutionlength}.
+$$
+%Recall that $\listlength = \elllambda^{\pnum}$ and $\solutionlength = \elllambda^{\pnum-1}\log\elllambda$, we have
+%$$ (1- (\frac{\solutionlength}{\listlength})^{\pnum-1})^{\solutionlength} = (1- (\frac{\elllambda^{\pnum-1}\log\elllambda}{\elllambda^{\pnum}})^{\pnum-1})^{\elllambda^{\pnum-1}\log\elllambda} \approx \frac{1}{e^{\log^{\pnum}\elllambda}} = \negl(\lambda),$$
+
+%Moreover, the probability that the $\pnum$ parties do not agree on the same key occurs conditioned on $\cap_{i=1}^{\pnum}\set_i = 0$ is $\tvd((\instance^j_i)_{j \in [\listlength], i \in [\pnum]}, (\dist_{b^j_i}[R])_{j \in [\listlength], i \in [\pnum]})$, where $\instance^j_i \getsr \Generate(R, k, b^j_i)$ and $b^j_i$ is the $i$th index in $\set_j$ (i.e., the probability that some $\instance_i^j$ generated by $\Generate(R,k,0)$ has one solution). Since $\tvd((\instance^j_i)_{j \in [\listlength], i \in [\pnum]}, (\dist_{b^j_i}[R])_{j \in [\listlength], i \in [\pnum]})=2\listlength\pnum\lambda^{k}/R$ according to \cref{cor:plantable}, the total error probability on correctness is $\epsilon_1= (1- (\frac{\solutionlength}{\listlength})^{\pnum-1})^{\solutionlength}\cdot 2\ell\pnum\lambda^k/R$.
+Moreover, the event that the $\pnum$ parties agree on the same key without aborting occurs if and only if $|\cap_{i=1}^{\pnum}\set_i| > 0$ and no instance generated by $\Generate(R,k,0)$ has a solution, which happens with probability
+$$\Pr[\land_{i=1}^\solutionlength Y_{x_i}=0] + \tvd((\instance^j_i)_{j \in [\listlength], i \in [\pnum]}, (\dist_{b^j_i}[R])_{j \in [\listlength], i \in [\pnum]}),$$ where $\instance^j_i \getsr \Generate(R, k, b^j_i)$, $b^j_i = 1$ if $j \in \set_i$, and $b^j_i = 0$ otherwise. Since 
+ $
+ \Pr[\land_{i=1}^\solutionlength Y_{x_i}=0]=(1- (\solutionlength/\listlength)^{\pnum-1})^{\solutionlength}
+ $,
+ and
+$$\tvd((\instance^j_i)_{j \in [\listlength], i \in [\pnum]}, \allowbreak(\dist_{b^j_i}[R])_{j \in [\listlength], i \in [\pnum]})=2\listlength\pnum\lambda^{k}/R$$ according to \cref{cor:plantable}, the correctness error probability is $\epsilon_1= (1- (\solutionlength/\listlength)^{\pnum-1})^{\solutionlength} + 2\ell\pnum\lambda^k/R$.
+	
+\heading{$\cc_2$-$\epsilon$-weak security.} 
+Let $\lambda$ be the security parameter, 
+%$\poly(\lambda)$ be some polynomial, 
+and $\advA = \{\advweak\} \in \cc_2$ be any adversary against the $\cc_2$-$\epsilon$-weak security of $\tnike$.
+%in time $\tilde{O}(\listlength\lambda^k)$. 
+The proof proceeds via a sequence of hybrid games as in \cref{fig:time-security-b1}.
+\begin{figure}[h!]
+\begin{center}
+\framebox{
+\small
+	\begin{tabular}{l}
+	\begin{minipage}[t]{0.9\textwidth}
+	\underline{Games $\gameg_0$, \fbox{$\gameg_1$}, \dbox{$\gameg_{2}$}, \gbox{$\gameg_3$}, \ddbox{$\gameg_4$}}
+%	Games $\gameg_0$, \fbox{$\gameg_1$}, \dbox{$\gameg_{2}$}, \gbox{$\gameg_3$}
+		\item Sample random $\{\set_i\}_{i \in [\pnum]} \subset [\listlength]$, each $|\set_i| = \solutionlength$\\
+		\dbox{Sample random $\{\set_i\}_{i \in [\pnum]} \subset [\listlength]$, each $|\set_i| = \solutionlength - 1$, and $i^* \getsr [\listlength]$}\\
+		\item Let $(\sk_1,\cdots,\sk_{\pnum}) = (\set_1,\cdots,\set_{\pnum})$\\
+		
+		\item \dbox{For each $i \in [\pnum]$, $\sk_i = \set_i \cup \{i^*\}$, if $|\sk_i| < \solutionlength$, abort}\\
+		\item For each $i \in [\pnum]$
+    			\item \tab For $s \in [\listlength]$, If $s \in \sk_i$, $\instance_i^s = \Generate(R, k, 1)$, else $\instance_i^s = \Generate(R, k, 0)$\\
+			\tab \fbox{For $s \in [\listlength]$, if $s \in \sk_i$, $\instance_i^s \getsr \zkcdistone{R}$, else $\instance_i^s \getsr \zkcdistzero{R}$}
+		\item \ddbox{\begin{minipage}[t]{0.75\textwidth}
+			For each $s \in [\listlength]$, if $s = i^*$, $\hat{\instance}^s \getsr \zkcdistone{R^{\bar{\pnum}}}$, else $\hat{\instance}^s \getsr \zkcdistzero{R^{\bar{\pnum}}}$\\
+			For each $s \in [\listlength]$,  $(\instance^s_1, \cdots, \instance^s_\pnum) \getsr \pnum\text{-}\Split(\hat{\instance}^s, \lceil\log_2\pnum\rceil)$
+%		\item \gbox{\begin{minipage}[t]{0.75\textwidth}
+%			For each $s \in [\listlength]$, if $s = i^*$, $\hat{\instance}^s \getsr \zkcdistone{R^{\pnum}}$, else $\hat{\instance}^s \getsr \zkcdistzero{R^{\pnum}}$\\
+%			For each $s \in [\listlength]$,  $(\instance^s_1, \cdots, \instance^s_\pnum) \getsr \pnum\text{-}\Split(\hat{\instance}^s,   \log\pnum  )$
+%			Pick first $\pnum$ instances $(\instancelist^1_m,\cdots,\instancelist^\pnum_m)_{m \in [\binom{k}{2}^{\pnum}]}$ from $\pnum\text{-}\Split$.
+		\end{minipage}}
+			
+		\item \gbox{For each $i \in [\pnum]$ and $s \in [\listlength]$, If $s \in \set_i$, $\instance_i^s = \Generate(R, k, 1)$
+		}\\
+%Feb14 1		\item Let $(\pk_i = (\instance_{i}^{j})_{j \in [\listlength]})_{i \in [\pnum]}$  
+%		Let $\{\instancelist_{i} = (\instance_i^1, \cdots, \instance_i^\listlength)\}_{i\in[\pnum]}$ and $(\pk_1, \cdots, \pk_{\pnum}) = (\instancelist_1,\cdots,\instancelist_\pnum)$
+%			\item \tab $\instancelist = (\instance^1,\cdots,\instance^{\listlength})$\\
+%			\item \tab Return $(\pk=\instancelist, \sk=\set)$
+%		\dbox{\begin{minipage}[t]{0.9\textwidth}
+%		Sample a random $\{\set_i\}_{i \in [\pnum]} \subset [\listlength]$, each $|\set_i| = \solutionlength - 1$\\
+%		Let $i^* \getsr [\listlength]$ and $(\sk_1,\cdots,\sk_{\pnum}) = (\set_1 \cup \{i^*\},\cdots,\set_{\pnum} \cup \{i^*\})$\\
+%		For each $j \in [\pnum]$, if $|\sk_j| < q$, abort.\\
+%		For each $j \in [\pnum]$ and each $s \in [\listlength]$, if $s = i^*$,  $\instance^s_j \getsr \zkcdistone{R}$, else $\instance^s_j \getsr \zkcdistzero{R}$\\
+%		\ddbox{\begin{minipage}[t]{0.85\textwidth}
+%		For each $i \in [\listlength]$, if $i = i^*$, $\hat{\instance}^i \getsr \zkcdistone{R^{\pnum}}$, else $\hat{\instance}^i \getsr \zkcdistzero{R^{\pnum}}$
+%		For each $i \in [\listlength]$,  $(\instance_i^j)_{i\in[\pnum]} \getsr \pnum\text{-}\Split(\hat{\instance}^j,   \log\pnum  )$
+%%			Pick first $\pnum$ instances $(\instancelist^1_m,\cdots,\instancelist^\pnum_m)_{m \in [\binom{k}{2}^{\pnum}]}$ from $\pnum\text{-}\Split$.
+%		\end{minipage}}\\
+%		For each $j \in [\pnum]$ and each $s \in \set_j$, $\instance_i^{s} \getsr \zkcdistone{R}$\\
+%		\gbox{\begin{minipage}[t]{0.85\textwidth}
+%			For each $j \in [\pnum]$ and each $s \in \set_j$, $\instance_i^{s} \getsr \Generate(R, k, 1)$
+%%			Pick first $\pnum$ instances $(\instancelist^1_m,\cdots,\instancelist^\pnum_m)_{m \in [\binom{k}{2}^{\pnum}]}$ from $\pnum\text{-}\Split$.
+%		\end{minipage}}\\
+%		Let $\{\instancelist_{j} = (\instance_i^1, \cdots, \instance_i^\listlength)\}_{j\in[\pnum]}$ and $(\pk_1, \cdots, \pk_{\pnum}) = (\instancelist_1,\cdots,\instancelist_\pnum)$
+%		\end{minipage}}
+%	\item $\instancelists = \{\pk_i\}_{i \in [\pnum]}$
+%Feb14	\item $\tempset = \bigcap_{i=1}^{\pnum}\sk_i$ and $\tempkey = \bigoplus_{i=1}^{|\tempset|}t_i$ for all $t_i \in \tempset$
+%%	\fbox{Let $\tempset = \bigcap_{i=1}^{\pnum}\set_i$ and $\tempkey = (\bigoplus_{i=1}^{|\tempset|}t_i) \oplus i^*$ for all $t_i \in \tempset$}
+%	\item Return $(\pk_i)_{i \in [\pnum]}$ to $\advweak$ and get $\tempkey^*$ from $\advweak$
+%	\item If $\tempkey^* = \tempkey$ then output 1 and 0 otherwise
+	\item Let $(\pk_i = (\instance_{i}^{j})_{j \in [\listlength]})_{i \in [\pnum]}$ and $\tempset = \bigcap_{i=1}^{\pnum}\sk_i$
+%	\fbox{Let $\tempset = \bigcap_{i=1}^{\pnum}\set_i$ and $\tempkey = (\bigoplus_{i=1}^{|\tempset|}t_i) \oplus i^*$ for all $t_i \in \tempset$}
+	\item Return $(\pk_i)_{i \in [\pnum]}$ to $\advweak$ and get $\tempkey$ from $\advweak$
+	\item If $\tempkey = \bigoplus_{i=1}^{|\tempset|}t_i$ for all $t_i \in \tempset$ then output 1 and 0 otherwise
+	\end{minipage}
+	\end{tabular}
+}
+\end{center}
+\caption{The challengers in $\gameg_0$, $\gameg_1$, $\gameg_2$, $\gameg_3$, and $\gameg_4$.}
+%\caption{The challengers in $\gameg_0$, $\gameg_1$, $\gameg_2$, and $\gameg_3$.}
+\label{fig:time-security-b1}
+\end{figure}
+%\begin{figure}[h!]
+%\begin{center}
+%\framebox{
+%\small
+%	\begin{tabular}{l}
+%	\begin{minipage}[t]{0.9\textwidth}
+%	Games $\gameg_0$, \fbox{$\gameg_1$}, \dbox{$\gameg_{2}$}, \gbox{$\gameg_3$}, \ddbox{$\gameg_4$}
+%	\item For each $i \in [\pnum]$, $({\pk_i,\sk_i}) \getsr \gen(\bot)$\\
+%		\fbox{\begin{minipage}[t]{0.9\textwidth}
+%		Sample a random $\{\set_i\}_{i \in [\pnum]} \subset [\listlength]$, each $|\set_i| = \solutionlength$\\
+%		$(\sk_1,\cdots,\sk_{\pnum}) = (\set_1,\cdots,\set_{\pnum})$\\
+%    		For each $i \in [\pnum]$ and each $s \in [\listlength]$, if $s \in \set_i$, $\instance_i^s \getsr \zkcdistone{R}$, else $\instance_i^s \getsr \zkcdistzero{R}$\\
+%		Let $\{\instancelist_{j} = (\instance_i^1, \cdots, \instance_i^\listlength)\}_{j\in[\pnum]}$ and $(\pk_1, \cdots, \pk_{\pnum}) = (\instancelist_1,\cdots,\instancelist_\pnum)$
+%		\end{minipage}}
+%		\dbox{\begin{minipage}[t]{0.9\textwidth}
+%		Sample a random $\{\set_i\}_{i \in [\pnum]} \subset [\listlength]$, each $|\set_i| = \solutionlength - 1$\\
+%		Let $i^* \getsr [\listlength]$ and $(\sk_1,\cdots,\sk_{\pnum}) = (\set_1 \cup \{i^*\},\cdots,\set_{\pnum} \cup \{i^*\})$\\
+%		For each $j \in [\pnum]$, if $|\sk_j| < q$, abort.\\
+%		For each $j \in [\pnum]$ and each $s \in [\listlength]$, if $s = i^*$,  $\instance^s_j \getsr \zkcdistone{R}$, else $\instance^s_j \getsr \zkcdistzero{R}$\\
+%		\ddbox{\begin{minipage}[t]{0.85\textwidth}
+%		For each $i \in [\listlength]$, if $i = i^*$, $\hat{\instance}^i \getsr \zkcdistone{R^{\pnum}}$, else $\hat{\instance}^i \getsr \zkcdistzero{R^{\pnum}}$
+%			For each $i \in [\listlength]$,  $(\instance_i^j)_{i\in[\pnum]} \getsr \pnum\text{-}\Split(\hat{\instance}^j,   \log\pnum  )$
+%%			Pick first $\pnum$ instances $(\instancelist^1_m,\cdots,\instancelist^\pnum_m)_{m \in [\binom{k}{2}^{\pnum}]}$ from $\pnum\text{-}\Split$.
+%		\end{minipage}}\\
+%		For each $j \in [\pnum]$ and each $s \in \set_j$, $\instance_i^{s} \getsr \zkcdistone{R}$\\
+%		\gbox{\begin{minipage}[t]{0.85\textwidth}
+%			For each $j \in [\pnum]$ and each $s \in \set_j$, $\instance_i^{s} \getsr \Generate(R, k, 1)$
+%%			Pick first $\pnum$ instances $(\instancelist^1_m,\cdots,\instancelist^\pnum_m)_{m \in [\binom{k}{2}^{\pnum}]}$ from $\pnum\text{-}\Split$.
+%		\end{minipage}}\\
+%		Let $\{\instancelist_{j} = (\instance_i^1, \cdots, \instance_i^\listlength)\}_{j\in[\pnum]}$ and $(\pk_1, \cdots, \pk_{\pnum}) = (\instancelist_1,\cdots,\instancelist_\pnum)$
+%		\end{minipage}}
+%	\item $\instancelists = \{\pk_i\}_{i \in [\pnum]}$
+%	\item Let $\tempset = \bigcap_{i=1}^{\pnum}\sk_i$ and $\tempkey = \bigoplus_{i=1}^{|\tempset|}t_i$ for all $t_i \in \tempset$
+%%	\fbox{Let $\tempset = \bigcap_{i=1}^{\pnum}\set_i$ and $\tempkey = (\bigoplus_{i=1}^{|\tempset|}t_i) \oplus i^*$ for all $t_i \in \tempset$}
+%	\item Return $\mathcal{I}$ to $\advweak$ and get $\tempkey^*$ from $\advweak$
+%	\item If $\tempkey^* = \tempkey$ then output 1 and 0 otherwise
+%	\end{minipage}
+%	\end{tabular}
+%}
+%\end{center}
+%\caption{The challengers in $\gameg_0$, $\gameg_1$, $\gameg_2$, and $\gameg_3$.}
+%\label{fig:time-security-b1}
+
+\heading{$\gameg_0$.} This is the original security game where $\advweak$ receives $(\pk_i)_{i\in[\pnum]}$ where $(\pk_i,\sk_i)\getsr\Gen(\bot)$ for all $i \in [\pnum]$, and outputs a session key $\tempkey$.
+
+\heading{$\gameg_1$.} $\gameg_1$ and $\gameg_0$ only differ in the way that $(\instance_i^j)_{i \in [\pnum], j \in [\listlength]}$ are generated, namely, every instance $\instance_i^j$ in $\pk_i$ is generated as $\instance_i^j \getsr \zkcdistzero{R}$ (or $\instance_i^j \getsr \zkcdistone{R}$) rather than $\instance_i^j \getsr \Generate(R, k, 0)$ (or $\instance_i^j \getsr \Generate(R, k, 1)$) for all $i \in [\pnum]$ and $j \in [\listlength]$.
+\begin{lemma}
+\label{lem:timenike-0}
+$|\Pr[\gameg_1^{\adv}\Rightarrow 1]-\Pr[\gameg_0^{\adv}\Rightarrow 1]| \leq 2\pnum\listlength\lambda^{k}/{R}.$
+\end{lemma}
+This lemma follows immediately from \cref{cor:plantable}.
+%\begin{proof}
+%We construct an adversary $\advB^0=\{\advb^0\}$ in the game described in \cref{cor:plantable} as follows.
+%
+%On receiving $\instance^j_i \getsr \Generate(R, k, b^j_i)$ or $\instance^j_i \getsr \dist_{b^j_i}[R]$ for all $j \in [\listlength]$ and $i \in [\pnum]$, $\advb^0$ sets $(\pk_i = (\instance_i^j)_{j\in[\listlength]})_{i \in [\pnum]}$ and sends $(\pk_i)_{i \in [\pnum]}$ to $\adv$. When $\adv$ returns $\tempkey^*$, $\advb^0$ returns $1$ if $\tempkey^* = \tempkey$ and $0$ otherwise.
+%
+%We note that when $\instance^j_i \getsr \Generate(R, k, b^j_i)$ (respectively, $\instance^j_i \getsr \dist_{b^j_i}[R]$), the view of $\adv$ is identical to its view in $\gameg_0$ (respectively, $\gameg_1$). Hence, the advantage of $\advb^0$ is
+%$|\Pr[\gameg_1^{\adv}\Rightarrow 1]-\Pr[\gameg_0^{\adv}\Rightarrow 1]|,$
+%which is no more than $2\pnum\listlength\lambda^{k}/R$ according to \cref{cor:plantable},
+%completing this part of proof.
+%\end{proof}
+
+\heading{$\gameg_2$.} $\gameg_2$ and $\gameg_1$ differ in the way that $(\sk_i)_{i \in [\pnum]}$ are generated, namely,  for each $i \in [\pnum]$, $\sk_i = \{i^*\} \cup \set_i$ where $i^* \getsr [\listlength]$, $\set_i \subset [\listlength]$, and $|\set_i| = \solutionlength-1$, and aborts if $|\sk_i| < \solutionlength$ rather than $\sk_i = \set_i$ where $\set_i \subset [\listlength]$ and $|\set_i| = \solutionlength$.
+%$\pk_i = (\instance_i^{1}, \cdots, \instance_i^{\listlength})$ where $\instance_i^{j} \getsr $ 
+%for $j \in [\listlength].$
+%planting solutions on a lists $(\instancelist^1,\cdots,\instancelist^{\pnum})$ where every $\instance_{i^*}^{j}$ in $\{\instancelist^{j}\}_{j \in [\pnum]}$ is sampled from $\zkcdistone{R}$ rather than $\Generate(R, k, 1)$.
+\begin{lemma}
+\label{lem:timenike-1}
+%For any sufficiently large $\lambda$, we have
+$
+|\Pr[\gameg_2^{\adv}\Rightarrow 1]-\Pr[\gameg_1^{\adv}\Rightarrow 1]| \leq 1-(1-({\solutionlength-1})/{\listlength})^{\pnum}.
+$
+\end{lemma}
+\begin{proof}
+We define $\mathsf{Bad}$ as the event that $\gameg_2$ aborts. Note that $\mathsf{Bad}$ does not occur as long as we avoid the index with one solution when planting $\solutionlength-1$ indices in each list. Let $s^j_{i}$ be the $j$th variable in $\set_{i}$, for each $i \in [\pnum]$ and $j \in [\solutionlength-1]$, we have
+$
+\Pr[\mathsf{Bad}]=1- \prod_{i=1}^{\pnum}\Pr[s_{i}^1 \neq i^* \land \cdots \land s_{i}^{\solutionlength-1} \neq i^*] \leq 1-(1-({\solutionlength-1})/{\listlength})^{\pnum}.
+% \prod_{i=1}^{\pnum}\Pr[s^{i}_1 \neq i^* \land \cdots \land s^{i}_{\solutionlength-1} \neq i^*]\cdots\Pr[s^{\pnum}_1 \neq i^* \land \cdots \land s^{\pnum}_{\solutionlength-1} \neq i^*]= (1-\frac{\solutionlength-1}{\listlength})^{\pnum}
+$
+
+%We construct an adversary $\advB=\{\advb\} \in \cc_2$.
+%that runs in time $O((\solutionlength-1)(\lambda^2))$ as follows. 
+%We denote $\instancelists_0$ as $(\pk_i)_{i\in[\pnum]}$ from $\gameg_0$ and $\instancelists_1$ as $(\pk_i)_{i\in[\pnum]}$ from $\gameg_1$.
+
+%On receiving $\pk_i$ in $\gameg_2$ or $\pk_i$ in $\gameg_1$,  a list of instances $(\instancelist_1,\cdots,\instancelist_{\pnum})$ for a fixed index $i^* \getsr [\listlength]$ such that every $\instance_{i^*}^{j}$ in $\{\instancelist^{j}\}_{j \in [\pnum]}$ is sampled from $\zkcdistone{R}$ or $\Generate(R, k, 1)$. $\{\advb\}$ generates $\{\sk_i = \{i^*\} \cup \set_i\}_{i \in [\pnum]}$, then sends $\instancelists = \{\pk_i\}_{i \in [\pnum]}$ after planting solutions in  $(\instancelist^1,\cdots,\instancelist^{\pnum})$ to $\adv$. Let $\tempset = \bigcap_{i=1}^{\pnum}\set_i$, when $\adv$ returns $\tempkey^*$, $\advb$ return $1$ if $\tempkey^* = \tempkey$ and 0 otherwise. 
+%
+%First we note that since $\{\advb\}$ runs $\Generate$ $\solutionlength-1$ times, $\{\advb\}$ runs in time $O((\solutionlength-1)(\lambda^2))$ by \cref{thm:plantable}. If every $\{\set_i\}_{i \in [\pnum]}$ do not intersect with $i^*$, then the distribution of $\sk_i$ in $\gameg_0$ is same as that in $\gameg_1$. Let $s^i_{j}$ be the $j$'th element in $\set_{i}$, we have
+
+%\[\begin{split}
+%	 \Pr[s^i_j \neq i^*] &= \Pr[s^1_j \neq i^*]\times\cdots\times\Pr[s^{\pnum}_j \neq i^*]\\
+%	 &= (1-\frac{1}{\listlength})^{(\solutionlength-1)\pnum}
+%\end{split}\]
+%\[\begin{split}
+%	 &\Pr[\forall j\in[\solutionlength-1] \land \forall i\in[\pnum], s^i_j \neq i^*]\\
+%	 &= \Pr[\forall j\in[\solutionlength-1], s^1_j \neq i^*]\times\cdots\times\Pr[\forall j\in[\solutionlength-1], s^{\pnum}_j \neq i^*]\\
+%	 &= (1-\frac{\solutionlength-1}{\listlength})^{\pnum}
+%\end{split}\]
+%\[\begin{split}
+% \Pr[s^1_1 \neq i^* \land \cdots \land s^1_{\solutionlength-1} \neq i^*]\cdots\Pr[s^{\pnum}_1 \neq i^* \land \cdots \land s^{\pnum}_{\solutionlength-1} \neq i^*]= (1-\frac{\solutionlength-1}{\listlength})^{\pnum}.
+%\end{split}\]
+%Then we change $\solutionlength-1$ instances in $\instancelist^j$ from $\Generate(R, k, 1)$ to the instances from $\zkcdistone{R}$. By $\cref{thm:plantable}$, we have 
+%	$$ \tvd(\{\instance^{j}_{t}\}_{j\in[\pnum], t\in\set_i}, \zkcdistone{R}^{t\pnum}) \leq \frac{2\pnum(\solutionlength-1)\lambda^{k}}{R}.$$
+%Since the total variation distance between $(\instancelist^1,\cdots,\instancelist^{\pnum})$ in $\gameg_1$ and $\gameg_0$ is $\epsilon_{plant} \leq 2\lambda^{k}/R$ according to \cref{thm:plantable}, we have the total variance distance between the generated instances and instances from $\zkcdistone{R}$ is $\leq (1-\frac{\solutionlength-1}{\listlength})^{\pnum} \times 2\lambda^{k}/R$. 
+%Let $\instancelists^{\prime} = (\pk_i)_{i\in[\pnum]}$ where all indices of instance with one solution from $\instancelists^{\prime}$ is the same as the one from $\instancelists_0$, while all instances in $\instancelists^{\prime}$ is sampled from $\zkcdistone{R}$ or $\zkcdistzero{R}$. Notice that we have changed $\instancelists_1$ into $\instancelists^{\prime}$. Finally we change all instances from the distribution $\zkcdistone{R}$ (respectively, $\zkcdistzero{R}$) to the instances from $\Generate(R, k, 1)$ (respectively, $\Generate(R, k, 0)$) in $\instancelists^{\prime}$. By a union bound, we have 
+%	$$ \tvd(\instancelists_0, \instancelists^{\prime}) \leq \listlength\frac{2\pnum\lambda^{k}}{R}.$$
+
+%\[\begin{split}
+%	\Pr[\gameg_2^{\adv}\Rightarrow 1] &= \Pr[\gameg_2^{\adv}\Rightarrow 1, \overline{\mathsf{Bad}}] + \Pr[\gameg_2^{\adv}\Rightarrow 1\mid \mathsf{Bad}]\Pr[\mathsf{Bad}]\\
+%	&\leq \Pr[\gameg_2^{\adv}\Rightarrow 1 \mid \overline{\mathsf{Bad}}]\Pr[\overline{\mathsf{Bad}}] + \Pr[\mathsf{Bad}]\\
+%	&= \Pr[\gameg_2^{\adv}\Rightarrow 1 \mid \overline{\mathsf{Bad}}](1-\Pr[\mathsf{Bad}]) + \Pr[\mathsf{Bad}]\\
+%\end{split}\]
+Since the view of $\adv$ is identical to its view in $\gameg_1$ when $\mathsf{Bad}$ does not occur in $\gameg_2$,  we have
+%$\Pr[\gameg_2^{\adv}\Rightarrow 1 \mid \overline{\mathsf{Bad}}] = \Pr[\gameg_1^{\adv}\Rightarrow 1]$, we have
+%When \mathsf{Bad} does not occur in $\gameg_2$, the view of $\adv$ is identical to its view in $\gameg_1$. Hence, 
+%	$$  |\Pr[\gameg_2^{\adv}\Rightarrow 1 \mid \overline{\mathsf{Bad}}]-\Pr[\gameg_1^{\adv}\Rightarrow 1]|.$$
+%	By the analyzing above, we have
+%	$$  |\Pr[\gameg_2^{\adv}\Rightarrow 1]-\Pr[\gameg_1^{\adv}\Rightarrow 1]| \leq 2(1-(1-\frac{\solutionlength-1}{\listlength})^{\pnum}).$$
+	$$  |\Pr[\gameg_2^{\adv}\Rightarrow 1]-\Pr[\gameg_1^{\adv}\Rightarrow 1]| \leq \Pr[\mathsf{Bad}] \leq 1-(1-(\solutionlength-1)/{\listlength})^{\pnum},$$
+	completing this part of the proof.
+ \end{proof}
+ 
+\heading{$\gameg_3$.} $\gameg_3$ and $\gameg_2$ only differ in the way that $\{\instance_i^{s}\}_{i\in[\pnum], s\in\set_i}$ are generated, namely, for each $i \in [\pnum]$ and each $s \in \set_i$, $\instance_i^{s} \getsr \Generate(R, k, 1)$ rather than $\instance_i^{s} \getsr \zkcdistone{R}$.
+
+%\heading{$\gameg_3$.} $\gameg_3$ and $\gameg_2$ only differ in the way that $(\instance_i^j)_{i\in[\pnum]}$ $(\instancelist^1,\cdots,\instancelist^{\pnum})$ are generated, namely, $(\instancelist^1,\cdots,\instancelist^{\pnum})$ is generated from picking the first $\pnum$ instances output by $\npsplit(\instance_i,   \pnum  )$ for every $i \in [\listlength]$. Note that $\npsplit$ will create $m = \binom{k}{2}^{\pnum}$ instance lists, we will need to brute force $m$ of these instances to check whether the $i^*$'th instance has one solution. 
+
+
+\begin{lemma}
+\label{lem:timenike-2}
+%$$
+%|\Pr[\gameg_2^{\adv}\Rightarrow 1]-\Pr[\gameg_1^{\adv}\Rightarrow 1]|\leq\listlength\binom{k}{2}^{  \log\pnum  }(2^{  \log \pnum  +1}-1)\binom{k}{2}4^{\binom{k}{2}}3\lambda^k/{R}.
+%$$
+%$$
+%|\Pr[\gameg_3^{\adv}\Rightarrow 2]-\Pr[\gameg_1^{\adv}\Rightarrow 1]|\leq\listlength(2^{  \log \pnum  +1}-1)\binom{k}{2}4^{\binom{k}{2}}3\lambda^k/{R}.
+%$$
+$
+|\Pr[\gameg_3^{\adv}\Rightarrow 1]-\Pr[\gameg_2^{\adv}\Rightarrow 1]|\leq 2\pnum(\solutionlength-1)\lambda^{k}/{R}.
+$
+\end{lemma}
+This lemma follows immediately from \cref{cor:plantable}.
+
+%\begin{proof}
+%We construct an adversary $\advB^2=\{\advb^2\} $ in the game described in \cref{cor:plantable} as follows.
+%
+%On receiving $\instance^s_i \getsr \Generate(R, k, 1)$ or  $\instance^s_i \getsr \zkcdistone{R}$ for all $i \in [\pnum]$ and $s \in \set_i$, $\advb^2$ sets $(\pk_i = (\instance_i^j)_{j\in[\listlength]})_{i \in [\pnum]}$ and sends $(\pk_i)_{i\in[\pnum]} $ to $\adv$. When $\adv$ returns $\tempkey^*$, $\advb^2$ returns $1$ if $\tempkey^* = \tempkey$ and $0$ otherwise.
+%
+%We note that when $\instance^s_i \getsr \Generate(R, k, 1)$ (respectively, $\instance^s_i \getsr \zkcdistone{R}$), the view of $\adv$ is identical to its view in $\gameg_3$ (respectively, $\gameg_2$). Hence, the advantage of $\advb^2$ is
+%$|\Pr[\gameg_1^{\adv}\Rightarrow 1]-\Pr[\gameg_0^{\adv}\Rightarrow 1]|$,
+%which is no more than ${2\pnum(\solutionlength-1)\lambda^{k}/R}$, according to \cref{cor:plantable}, 
+%completing this part of proof.
+%\end{proof}
+%On receiving 
+%running in time $\tilde{O}(\listlength \lambda^{k})$ to distinguish $(\instancelist^1,\cdots,\instancelist^{\pnum})$ in $\gameg_1$ and $\gameg_2$ as follows.
+%
+%Recall that $(\instancelist^1,\cdots,\instancelist^{\pnum})$ in $\gameg_1$ are distributed as follows: for every $\instance_{i^*}^{j}$ in $\{\instancelist^{j}\}_{j \in [\pnum]}$ is distributed as $\zkcdistone{R}$.
+
+\heading{$\gameg_4$.} In $\gameg_4$, $(\instance_i^j)_{i\in[\pnum]}$ are generated by $\pnum\text{-}\Split(\hat{\instance}^j,\lceil\log_2\pnum\rceil)$ for all $j$ instead.
+%\heading{$\gameg_3$.} In $\gameg_3$, $(\instance_i^j)_{i\in[\pnum]}$ are generated by $\pnum\text{-}\Split(\hat{\instance}^j,   \log\pnum  )$ for all $j$ instead.
+
+%<<<<<<< HEAD
+%Note that $\npsplit$ in $\gameg_4$ returns $m = \binom{k}{2}^{\pnum}$ instance lists. We can check the correctness of each instance in the list by brute forcing. When $\listlength$ is polynomial in $\lambda$, the time required to check by brute forcing a single instance is polynomially smaller than the time needed to solve the entire list instance. We will need to brute force $m$ of these instances, one for each of the $m$ produced $\pnum$ lists. When $\listlength/m = \lambda^{-\Omega(1)}$, the total time required for all the checks by brute forcing is polynomially smaller than the time needed to solve a single list instance. Therefore, we only focus on the instance list which is verified by this check.
+%=======
+Here, note that $\npsplit$ returns $m = \binom{k}{2}^{\lceil\log_2\pnum\rceil}$ instance lists every time, and we can check the correctness of each instance in the list by brute forcing. When $\listlength$ is polynomial in $\lambda$, the time required to check by brute forcing a single instance is polynomially smaller than the time needed to solve the entire list instance. We will need to check $m$ of these instances by brute forcing, one for each of the $m$ produced $\pnum$ lists. Since $m=\binom{k}{2}^{\lceil\log_2\pnum\rceil}$ is constant and $\listlength=\lambda^{\Omega(1)}$, we have $m/\listlength=\lambda^{-\Omega(1)}$. Therefore, the total time required for all the checks by brute forcing is polynomially smaller than the time needed to solve a single list instance, and we only focus on the instance list that is verified by this check.
+%>>>>>>> c8bac0e07fbc93e3a2960f87f9620f8dbba0e873
+%Note that since $\npsplit$ in $\gameg_4$ returns $m = \binom{k}{2}$ instance lists. When $\listlength/m=\lambda^{-\Omega(1)}$, the total time for all brute forces is polynomial smaller than the time required to solve the list instance. We check every $\tempkey^*$ outputted by $\adv$, if $\exists \tempkey^* = \tempkey$, we output $1$. Therefore, we only need to focus on the instance lists that pass the check.
+\begin{lemma}
+\label{lem:time-nike-3}
+	$|\Pr[\gameg_4^{\adv}\Rightarrow 1]-\Pr[\gameg_3^{\adv}\Rightarrow 1]| \leq \listlength(2\bar{\pnum}-1)\binom{k}{2}4^{\binom{k}{2}}3\lambda^k/{R}.$
+\end{lemma}
+%\begin{lemma}
+%\label{lem:time-nike-3}
+%	$|\Pr[\gameg_3^{\adv}\Rightarrow 1]-\Pr[\gameg_2^{\adv}\Rightarrow 1]| \leq \listlength(2\pnum-1)\binom{k}{2}4^{\binom{k}{2}}3\lambda^k/{R}.$
+%\end{lemma}
+By \cref{thm:npsplit} and a union bound, \cref{lem:time-nike-3} immediately follows. 
+%We construct an adversary $\advB^3=\{\advb^3\}$ in the game described in \cref{thm:npsplit} as follows.
+%
+%On receiving $(\instance^j_1, \cdots, \instance^j_\pnum) \getsr \pnum\text{-}\Split(\hat{\instance}^j,   \log\pnum  )$ or $(\instance^j_1, \cdots, \instance^j_\pnum) \getsr \dist_{b}[R]^{\pnum}$ when $\hat{\instance}^j \getsr \dist_{b}[R^{\pnum}]$, $\advb^3$ sets $\instance_i^{s} \getsr \Generate(R, k, 1)$ for each $i \in [\pnum]$ and each $s \in \set_j$. Then $\advb^3$ sets $(\pk_i = (\instance_i^j)_{j\in[\listlength]})_{i \in [\pnum]}$ and sends $(\pk_i)_{i \in [\pnum]}$ to $\adv$. When $\adv$ returns $\tempkey^*$, $\advb^3$ returns $1$ if $\tempkey^* = \tempkey$ and $0$ otherwise.
+%
+%We note that when $(\instance^j_1, \cdots, \instance^j_\pnum)$ are gerated by $\Split$ (respectively, $\dist_{b}[R]$), the view of $\adv$ is identical to its view in $\gameg_4$ (respectively, $\gameg_3$). Hence, the advantage of $\advb^3$ is
+% $
+% |\Pr[\gameg_4^{\adv}\Rightarrow 1]-\Pr[\gameg_3^{\adv}\Rightarrow 1],$
+%which is no more than $\listlength(2\pnum-1)\binom{k}{2}4^{\binom{k}{2}}3\lambda^k/{R}$ by a union bound, according to \cref{thm:npsplit}, completing this part of proof.
+ %\end{proof}
+\begin{lemma}
+$\Pr[\gameg_4^{\adv}\Rightarrow 1]\leq 1/200$.
+\end{lemma}
+%\begin{lemma}
+%$\Pr[\gameg_3^{\adv}\Rightarrow 1]\leq 1/200$.
+%\end{lemma}
+\begin{proof}
+	We construct an adversary $\advB = \{\advb\}$ in the game described in \cref{thm:aclh} as follows.
+	
+	$\advb$ runs in exactly the same way as the challengers in $\gameg_4$ except that $(\hat{\instance}^1, \cdots, \hat{\instance}^\listlength)$ is generated by its own challenger as $\hat{\instance}^{i^*} \getsr \zkcdistone{R^{\bar{\pnum}}}$ for $i^* \getsr [\listlength]$ and $\hat{\instance}^{j} \getsr \zkcdistzero{R^{\bar{\pnum}}}$ for all $j \in [\listlength]\backslash\{i^*\}$. When $\adv$ returns $\tempkey$, $\advb$ computes $\mathcal{T} = \bigcap_{i=1}^{\pnum}\set_i$ and returns $i^* = \tempkey \oplus \bigoplus_{i=1}^{|\mathcal{T}|}t_i$.
+%	$\advb$ runs in exactly the same way as the challengers in $\gameg_3$ except that $(\hat{\instance}^1, \cdots, \hat{\instance}^\listlength)$ is generated by its own challenger as $\hat{\instance}^{i^*} \getsr \zkcdistone{R^{\pnum}}$ for $i^* \getsr [\listlength]$ and $\hat{\instance}^{j} \getsr \zkcdistzero{R^{\pnum}}$ for all $j \in [\listlength]\backslash\{i^*\}$. When $\adv$ returns $\tempkey^*$, $\advb$ computes $\mathcal{T} = \bigcap_{i=1}^{\pnum}\set_i$ and returns $i^* = \tempkey^* \oplus \bigoplus_{i=1}^{|\mathcal{T}|}t_i$. 
+	
+	Recall that $\npsplit$ runs in time $\tilde{O}(\lambda^{k(1-\delta_{\mathsf{sp}})})$ for some constant $\delta_{\mathsf{sp}}>0$. Since $\advb$ runs $\adv$ once, $\npsplit$ for $\listlength$ times, $\Generate$ for $\pnum\cdot \solutionlength$ times, and check for $\binom{k}{2}^{\lceil\log_2\pnum\rceil}$ times, its total running time is $\tilde{O}((\listlength\lambda^k)^{1-\delta}+\listlength\lambda^{k(1-\delta_{\mathsf{sp}})} + \pnum\solutionlength \lambda^2+\binom{k}{2}^{\lceil\log_2\pnum\rceil}\lambda^k)=\tilde{O}((\listlength\lambda^k)^{1-\delta^\prime})$ for some $\delta^\prime >0$.
+
+%<<<<<<< HEAD
+%%Feb14	Since the view of $\adv$ is identical to its view in $\gameg_4$, the advantage of $\advb$ is exactly 
+%	Since the view of $\adv$ is identical to its view in $\gameg_3$, the advantage of $\advb$ is exactly 
+%%Feb14	$$\Pr[\gameg_4^{\adv}\Rightarrow 1],$$
+%	$$\Pr[\gameg_3^{\adv}\Rightarrow 1],$$
+%=======
+%<<<<<<< HEAD
+%	Since the view of $\adv$ is identical to its view in $\gameg_4$, the advantage of $\advb^4$ is exactly 
+%	$\Pr[\gameg_4^{\adv}\Rightarrow 1],$
+%=======
+	Since the view of $\adv$ is identical to its view in $\gameg_4$, the advantage of $\advb$ is exactly 
+	$\Pr[\gameg_4^{\adv}\Rightarrow 1],$
+%>>>>>>> refs/remotes/origin/main
+%>>>>>>> 118b2782c2cbf492c7d36516c1ed18866b5257a0
+	 which is  no more than $1/200$, according to \cref{thm:aclh}.
+\end{proof}
+
+Putting all the above together, we have
+\[\begin{split}
+	\Pr[\gameg_0^{\adv}\Rightarrow 1]
+	\leq 201/200 + \epsilon_{\mathsf{split}} -(1-(\solutionlength-1)/\listlength)^{\pnum}
+	\allowbreak+2\pnum(\solutionlength-1+\listlength)\lambda^{k}/{R},
+\end{split}\]
+	where $\epsilon_{\mathsf{split}} = \listlength(2\bar{\pnum}-1)\binom{k}{2}4^{\binom{k}{2}}3\lambda^k/{R}$, completing the proof of \cref{thm:time-nike}.
+	\end{proof}
+%	where $\Pr[\mathsf{Bad}] = 1$.
+%%	Since we assume $\adv$ breaks $\cc_2\text{-}\epsilon\shs$ with probability of $\advhcp$, we construct an adversary $\B=\{b_\lambda\} \in \cc_2$ to find the index $i$ when given $\instancelist = (\instance_1,\cdots,\instance_{\listlength})$ where $I_i \getsr \zkcdistone{R^{\pnum}}$ for $i \getsr [l(\lambda)]$ and $I_j \getsr \zkcdistzero{R^{\pnum}}$ for all $j \in [l(\lambda)]/\{i\}$. Note that $\{b_\lambda\}$ find the index exactly when $\adv$ wins in $\gameg_2$. We have
+%%	$$ \Pr[b_{\lambda} (\instancelist) = i] \geq \advhcp - (3\listlength\binom{k}{2}^{\lceil \log\pnum \rceil+1}(2^{\lceil \log \pnum \rceil+1}-1)(4^{\binom{k}{2}})+2-2\Pr[\mathsf{Bad}]+2\listlength)\frac{\lambda^k}{R} - \Pr[\mathsf{Bad}] $$
+%%	$$ \Pr[b_{\lambda} (\instancelist) = i] \geq \advhcp - (3\listlength\binom{k}{2}4^{\binom{k}{2}}(2^{\lceil \log \pnum \rceil+1}-1)+2-2\Pr[\mathsf{Bad}]+2\listlength)\frac{\lambda^k}{R} - \Pr[\mathsf{Bad}] $$
+%	Recall that $\Split$ runs in time time $\tilde{O}(\lambda^k)$, $\Generate$ runs in time $O(\lambda^2)$, and checking by brute forcing runs in time $O(\lambda^k)$.
+%	Since each of the parties run $\Generate$ for $\listlength$ times and run $\solutionlength$ checks, its total running time is $\tilde{O}(\listlength \lambda^2 + \solutionlength \lambda^k)$.
+%	Moreover, since $b_\lambda$ runs $\npsplit$ for $\listlength$ times, runs $\Generate$ $\pnum\solutionlength$ for times, and runs check for $\binom{k}{2}^\pnum$ times, its total running time is $\tilde{O}(\listlength\lambda^k + \pnum\solutionlength \lambda^2+\binom{k}{2}^\pnum\lambda^k)$, which is $\tilde{O}(\listlength\lambda^k)$ when $\pnum$ is any constant.
+%%	Since all users run $\Generate$ $\listlength$ times and run check by brute forcing $\solutionlength$ times, we have all users run in $\tilde{O}(\listlength \lambda^2 + \solutionlength \lambda^k)$.
+%%	Since $\{b_\lambda\}$ run $\npsplit$ $\listlength$ times, run $\Generate$ $\pnum\solutionlength$ times and run check by brute forcing $\binom{k}{2}^\pnum$ times, we have $\{b_\lambda\}$ running in time $\tilde{O}(\listlength\lambda^k + \pnum\solutionlength \lambda^2+\binom{k}{2}^\pnum\lambda^k)$, which is $\tilde{O}(\listlength\lambda^k)$ when $\pnum$ is any constant.
+%=======
+%	Since we assume $\adv$ breaks $\cc_2\text{-}\epsilon$-weak security with probability of $\advhcp$, we construct an adversary $\B=\{\advb\} \in \cc_2$ to find the index $i$ when given $\instancelist = (\instance_1,\cdots,\instance_{\listlength})$ where $I_i \getsr \zkcdistone{R^{\pnum}}$ for $i \getsr [l(\lambda)]$ and $I_j \getsr \zkcdistzero{R^{\pnum}}$ for all $j \in [l(\lambda)]/\{i\}$. Note that $\{\advb\}$ find the index exactly when $\adv$ wins in $\gameg_2$. We have
+%	$$ \Pr[\advb (\instancelist) = i] \geq \advhcp - (3\listlength\binom{k}{2}^{  \log\pnum  +1}(2^{  \log \pnum  +1}-1)(4^{\binom{k}{2}})+2-2\Pr[\mathsf{Bad}]+2\listlength)\frac{\lambda^k}{R} - \Pr[\mathsf{Bad}] $$
+%	$$ \Pr[\advb (\instancelist) = i] \geq \advhcp - (3\listlength\binom{k}{2}4^{\binom{k}{2}}(2^{  \log \pnum  +1}-1)+2-2\Pr[\mathsf{Bad}]+2\listlength)\frac{\lambda^k}{R} - \Pr[\mathsf{Bad}] $$
+%	Recall that $\Split$ runs in time time $\tilde{O}(\lambda^k)$, $\Generate$ runs in time $O(\lambda^2)$, and check by brute forcing runs in time $O(\lambda^k)$.
+%	Since all parties run $\Generate$ for $\listlength$ times and run check for $\solutionlength$ times, its total running time is $\tilde{O}(\listlength \lambda^2 + \solutionlength \lambda^k)$.
+	
+%	Since all parties run $\Generate$ $\listlength$ times and run check by brute forcing $\solutionlength$ times, we have all parties run in $\tilde{O}(\listlength \lambda^2 + \solutionlength \lambda^k)$.
+%	Since $\{\advb\}$ run $\npsplit$ $\listlength$ times, run $\Generate$ $\pnum\solutionlength$ times and run check by brute forcing $\binom{k}{2}^\pnum$ times, we have $\{\advb\}$ running in time $\tilde{O}(\listlength\lambda^k + \pnum\solutionlength \lambda^2+\binom{k}{2}^\pnum\lambda^k)$, which is $\tilde{O}(\listlength\lambda^k)$ when $\pnum$ is any constant.
+%\end{proof}
+%	Recall that $\epsilon_{plant} \leq \frac{1}{128\listlength}$ and $\epsilon_{split} \leq \frac{\log\pnum}{128\listlength}$, we have
+%	$$ \Pr[b^1_{\lambda}(\mathbf {I}) = i] \geq \advhcp - \frac{1+\log\pnum}{128} + p + (1-p)\frac{\log\elllambda}{128\elllambda}$$
+
+
+\heading{Example with asymptotic complexity.} Let $\listlength=\lambda^{\pnum}$, $\solutionlength=\lambda^{\pnum-1}\log\lambda$, and $R = \lambda^{\pnum k}$. We have 
+$$\epsilon_1 \leq (1-(\solutionlength/\listlength)^{\pnum-1})^{\solutionlength} + 2\listlength\pnum\lambda^{k}/R = (1 - ((\lambda^{\pnum-1}\log\lambda)/\lambda^\pnum)^{\pnum-1})^{\lambda^{\pnum-1}\log\lambda}+2\pnum\lambda^{\pnum+k}/\lambda^{\pnum k},$$ which approaches $$e^{-\log^{\pnum}\lambda} + O(1/\lambda^{k\pnum-k-\pnum}) = O(1/\lambda^{k\pnum-k-\pnum})$$ when $\lambda$ is sufficiently large, and
+$$\epsilon_2 \leq 1/200 + \tilde{O}(\lambda^{-1})+\tilde{O}(\lambda^{\pnum+k-k\pnum}).$$
+In this case, the scheme is computable within time
+$\tilde{O}(\lambda^{\pnum+k-1})$ and secure against adversaries running in time $\tilde{O}(\lambda^{\pnum+k-\Omega(1)})$. When $\pnum$ is fixed, setting $k = 3$ provides better bounds in our instantiation.
+%In this case, the scheme is computable with time
+%$\tilde{O}(\listlength\lambda^2+\solutionlength\lambda^k) = \tilde{O}(\lambda^{\pnum+k-1})$ and secure against adversaries with running time $\tilde{\Omega}(\listlength\lambda^k) = \tilde{\Omega}(\lambda^{\pnum+k})$.
+
+%\heading{Concrete examples.}
+%We now give a concrete example of the parameters.
+%Let $\listlength \geq 2^{21}$, $\pnum=3$, and $k = 3$, since $0 < 1-(1-\frac{\solutionlength-1}{\listlength})^{\pnum} < 16/100$ and $\epsilon_{\mathsf{split}} + 2\pnum(\solutionlength-1+\listlength)\lambda^{k}/{R}<1/200$, $(96\listlength - 6)\frac{\lambda^3}{R} < 1/200$, we have $\epsilon_1 < 5.24 \times 10^{-22}$ and 
+%	$ \epsilon_2 \leq \frac{1}{200} +  \frac{16}{100} + \frac{1}{200} < \frac{1}{5}.$
+\heading{Concrete example.}
+%We now give a concrete example of the parameters.
+%Let $\listlength = 2^{21}$, $\pnum=3$, and $k = 3$, since $0 < 1-(1-\frac{\solutionlength-1}{\listlength})^{\pnum}-\frac{1}{\lambda^3} < 16/100$ and $\epsilon_{\mathsf{split}} + 2\pnum(\solutionlength-1+\listlength)\lambda^{k}/{R}<1/200$, we have $\epsilon_1 < 2.87 \times 10^{-6}$ and 
+%	$ \epsilon_2 \leq \frac{1}{200} +  \frac{16}{100} + \frac{1}{200} < \frac{1}{5}.$
+We now give a concrete example of the parameters.
+Let $\lambda = 2^{16}$, $\listlength = 2^{48}$, $\solutionlength = 2^{36}$, $R = 2^{144}$, $\pnum=3$, and $k = 3$, since $(1-(\solutionlength/\listlength)^{\pnum-1})^{\solutionlength} < 10^{-16}$, $2\listlength\pnum\lambda^{k}/R = 6/2^{48}<2.14 \times 10^{-14}$ and $201/200-(1-(\solutionlength-1)/\listlength)^{\pnum}< 1/200+1/1000 = 3/500$, we have $\epsilon_1 < 2.15 \times 10^{-14}$ and
+	$ \epsilon_2 \leq 3/500 + 1/500 < 1/125.$
+	
+%\heading{Concrete examples.}
+%We now give a concrete example of 
+%\begin{theorem}
+%	If a multi-party fine-grained time $\tnike$ exists where the correctness is $1-\negl(\lambda)$ and the adversary advantage is $O(1)$. Then there exists a multi-party fine-grained time $\tnike$ with $1-\negl(\lambda)$ correctness and $O(\frac{1}{\lambda^c})$ security for some constant $c>0$.
+%\end{theorem}
+%\begin{proof}
+%	We phrase breaking this key exchange as an eavesdropper as an honest-verifier two-round parallel repetition game. The original game as a $O(\elllambda T(\lambda))$ prover and verifier. The prover generates an honest transcript of the key exchange between $\pnum$ parties. Note that the single-bit key sent in this protocol is uniformly distributed. The prover wins if the prover can output the key correctly. Let $\beta$ denote the winning probability of the adversary. If we generate $m$ independent transcripts from \cref{fig:con-time-nike}, then the probability that the prover can find all of the keys in $O(\elllambda \lambda^k)$ is less than $\frac{16}{1-\beta} \cdot e^{-m(1-\beta^2)/256}$ according to Theorem 4.1 of [Parallel Repetition]. Let $m=\frac{512}{1-\beta^2} \cdot \log(\lambda)$, we have the probability that  the prover can find all of the keys is at most $O(\frac{1}{\lambda^2})$. Since the probability that all the $m$ keys are correct is $(1-\negl(\lambda))^{d\cdot \log(\lambda)}$ for some constant $d$, we have ??, which means the correctness of the parallel repetition scheme is ??. Then we turn this parallel repetition scheme into a key exchange. The original key exchange will run $m$ times in parallel and there is one party $P_i$ additionally sends a uniform random binary vector $v = (v_1, \cdots, v_m)$ with length $m$. Then the final $\key = v \cdot \tempkey$ for $\tempkey = (\tempkey_1, \cdots, \tempkey_m)$ . Since $m$ is sub-polynomial in $\lambda$ and Goldreich-Levin security reduction requires $\tilde{O}(m^2)$ time. Therefore, the adversary will have advantage at most $\frac{1}{2} + \frac{1}{\lambda^c}$ for some constant $c > 0$ in determining the shared key.
+%\end{proof}
+
+%\heading{Full security.} While $\tnike$ only satisfy weak security, we can extend it to one with $\cc_2$-${4\cdot\epsilon_2}$-security via privacy amplification by the Goldreich-Levin extractor~\cite{GL89}. 
+\heading{Full security.} While $\tnike$ has an $O(\log\lambda)$-bit weakly secure key, the Goldreich--Levin transformation in \cref{fig:con-search-nike} outputs a one-bit key $\key^*$. This gives a fully secure scheme with the parameter loss stated in \cref{thm:hcp}.
+%We refer readers to \cref{sec:hcp} for more detail.
+%We refer readers to the full paper for more detail.
+Before giving our fully secure construction, we recall the following Chebyshev bound.
+\input{timenike-appendix}
+%Under the default parameters above, $\epsilon_w=1/200+o(1)$. Hence the Goldreich--Levin transformation yields a one-bit fully secure NIKE with non-negligible but nontrivial security error $p_{\mathrm{GL}}^{-1}(\epsilon_w)$.
+
+
+%remark on applications
+\heading{Extension to IB-NIKE.} Similar to our construction in the bounded-parallel-time model given in \cref{sec:ncnike-con}, we can show that our construction in this section satisfies extendability (see \cref{def:ext}), and thus can be converted into a BPRF and an IB-NIKE in the same fine-grained setting. We refer the reader to \cref{sec:ibnike} for the full details.
+%We refer the reader to the full paper for the details.

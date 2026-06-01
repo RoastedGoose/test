@@ -1,0 +1,1003 @@
+\renewcommand{\heading}[1]{\vspace{1ex}\noindent{\bf #1}}
+\section{Introduction}
+\subsection{Background}
+Non-interactive key exchange (NIKE) is a central primitive in cryptography, enabling a group of parties to simultaneously release a single message (i.e., the public key), and then securely agree on a session key in the presence of any potential adversaries after observing the public keys. Existing two-party NIKE schemes are constructed based on various cryptographic assumptions. These include well-established assumptions such as the Diffie-Hellman assumption~\cite{DH76}, Learning With Errors~\cite{GKRS22}, and assumptions related to factoring~\cite{PKC:FHKP13}, and more exotic ones such as the existence of generic groups \cite{EC:Shoup97,IMA:Maurer05} and algebraic groups \cite{C:FucKilLos18}. Joux~\cite{Joux04} proposed a three-party NIKE based on the bilinear Diffie-Hellman assumption over pairings. When it comes to multi-party NIKE involving more than four parties, all known candidates (against polynomial-time adversaries) are in the world of ``obfustopia'', where obfuscation exists~\cite{C:BonZha14}. This raises a natural question of whether it is possible to construct multi-party NIKE from much more established assumptions.
+
+\heading{Multi-party NIKE based on mild assumptions.}
+Very recently, Afshar et al. \cite{EC:ACMS23} provided an affirmative answer to the above question by introducing  $\pnum$-party NIKE schemes for any constant $\pnum$ in the random oracle model and Shoup's ($(\pnum/2-1)$-linear) generic group model (i.e., the idealized multilinear map model where the number of groups is $\pnum/2$). These schemes are in the context of \emph{fine-grained cryptography  \cite{C:DegVaiVas16}}, where adversaries can only have limited resources and honest users do not possess more resources than adversaries. One of the main motivations of fine-grained cryptography is to base security on weak assumptions, or in some models no computational assumptions at all. Hence, the use of random oracles or generic groups makes their work less desirable.
+
+\begin{quote}
+	\it 
+	Our Goal: Can we construct a fine-grained multi-party NIKE without idealized assumptions, such as random oracles and generic groups?
+\end{quote}
+
+%We take a closer look at the fine-grained setting. Essentially, there are different ways to restrict users' and adversaries' computing power. It can be in the terms of running time (e.g., \cite{Merkle78,TCC:BihGorIsh08}), parallel-running time (i.e., circuit depths) (e.g., \cite{Has87,C:DegVaiVas16}), or storage (e.g., \cite{IMA:Mitchell95,EC:DodQuaWic23}). The multi-party NIKE of Afshar et al. was treated in the bounded time model. In their scheme, an honest user runs in time $O(\lambda^{\pnum-1})$ and the adversary runs in time $\Omega(\lambda^{\pnum})$ in the random oracle model. Although the assumptions of the random oracle and generic group model are already considered weak for multi-party NIKE schemes, they still fall into the worlds of ``minicrypt'' (the random oracle model), ``cryptomania'' (the generic group model), or even ``obfustopia'' (the multi-linear generic group model) when dealing with a large number of parties. This raises another question whether we can have multi-party NIKE even if we are in, say, the Pessiland, where one-way function does not exist.
+%We take a closer look at the fine-grained setting. Essentially, there are different ways to restrict users' and adversaries' computing power. It can be in terms of running time (e.g., \cite{Merkle78,TCC:BihGorIsh08}), parallel-running time (i.e., circuit depths) (e.g., \cite{Has87,C:DegVaiVas16}), or storage (e.g., \cite{IMA:Mitchell95,EC:DodQuaWic23}). 
+We take a closer look at the fine-grained setting. Essentially, there are different ways to restrict users' and adversaries' computing power. It can be in terms of running time (e.g., \cite{Merkle78,TCC:BihGorIsh08,EC:BrzCou22}), parallel running time (i.e., circuit depths) (e.g., \cite{Has87,C:DegVaiVas16,TCC:CamGen18}), or storage (e.g., \cite{JC:Maurer92,C:CacMau97,EC:DodQuaWic23}).
+The multi-party NIKE of Afshar et al. was treated in the bounded-time model. In their scheme, an honest user runs in time $O(\lambda^{\pnum-1})$ (respectively, $O(\lambda)$) and the scheme is secure against adversaries running in time $o(\lambda^{\pnum})$ in the random oracle model (respectively, $o(\lambda^2)$ in Shoup's $(\pnum/2-1)$-linear generic group model). Although the assumptions of the random oracle and generic group model are already considered weak for multi-party NIKE schemes, they still fall into the worlds of ``minicrypt'' (the random oracle model), ``cryptomania'' (the generic group model), or even ``obfustopia'' (the multilinear generic group model) when dealing with a large number of parties. This raises the question of whether we can have multi-party NIKE even if we are in, say, the Pessiland, where one-way functions do not exist.
+
+%An independent and concurrent recent work by Bauer et al. [] introduced a multi-party NIKE protocol with quadratic hardness gap assuming the existence of exponential secure injective pseudorandom generators and the sub-exponential hardness of CDH in $(\pnum/2-1)$-linear groups (i.e., the multilinear map model where the number of groups is $\pnum/2$). They further showed that their protocol is secure in Maurer's $(\pnum/2-1)$-linear generic group model (i.e., the idealized multilinear map model where the number of groups is $\pnum/2$), with a smaller hardness gap (up to $\lambda^{1.6}$), assuming the existence of non-uniformly secure injective pseudorandom generators with exponential hardness.
+\heading{\bf Concurrent work.}
+An independent and concurrent recent work by Couteau et al. \cite{C:BauCouSad24} introduced a 4-party NIKE protocol with a quadratic gap between users and adversaries (with honest users running in time $O(\lambda)$ and secure against adversaries running in time $o(\lambda^{2})$), assuming the existence of exponentially secure injective pseudorandom generators (exp-iPRGs) and the sub-exponential hardness of the computational Diffie-Hellman problem (seCDH). Their results can also be extended to a 6-party NIKE under exp-iPRGs and CDH in bilinear groups, as well as to a 6-party NIKE (respectively, 9-party NIKE) with honest users running in time $O(\lambda)$ and secure against adversaries running in time  $o(\lambda^{1.5})$ under exp-iPRGs and CDH without pairings (respectively, with pairings). They further showed that their 4-party protocol is secure in Maurer's generic group model with a smaller gap between users and adversaries (with honest users running in time $O(\lambda)$ and secure against adversaries running in time $o(\lambda^{1.6})$), assuming the existence of non-uniformly exponentially secure injective pseudorandom generators.
+
+%The $\pnum$-party NIKE schemes for any constant $\pnum$ in the random oracle model and Shoup's generic group model, and also showed impossibl results on $3$-party NIKE in Maurer's generic group model.
+
+%More precisely, the work of Wang and Pan considers that all parties are in $\ncone$. In this setting, they obtained a \inNIZK system under a rather mild assumption, $\assump$. 
+%Their system is very efficient since only simple operations such as $\AND$, $\OR$, and $\mathsf{PARITY}$ for bits are involved.
+%The assumption, $\assump$, also yields the security of proof systems in \cite{JOC:EWT19,C:BalDacKul20,C:WanPanChe21}.
+%
+%%In complexity theory, it has not been proven that $\assump$ or even $\ncone \subsetneq \mathsf{L}$, although both of them are widely accepted.\footnote{We note that $\mathsf{L} \subsetneq \lpoly$.} 
+%%We further push this direction and study whether it is possible construct an \emph{unconditionally secure} \inNIZK system in the fine-grained setting.
+%
+%However, in complexity theory, it has not been proven that $\assump$, although it is widely accepted. %\footnote{We note that $\mathsf{L} \subsetneq \lpoly$.} 
+%It is desirable to further push this direction and study whether it is possible to construct an \emph{unconditionally secure} \inNIZK system in the fine-grained setting.
+%
+%We suppose that in the classical setting it seems not possible to have unconditional security for \inNIZK. The reason is that for proving the zero-knowledge property, the common reference string (CRS) is often related to the simulation trapdoor, and given the CRS an (unbounded) adversary may recover the simulation trapdoor and break the soundness. 
+%Meanwhile, it is promising to construct unconditionally secure \inNIZK in the fine-grained setting, since it restricts the capability of an adversary. However, this will also limit the resources of an honest user, which makes it particularly difficult to instantiate a scheme. Our technical goal is to resolve this tension.
+%
+%
+\subsection{Our Contributions}
+%<<<<<<< HEAD
+We revisit multi-party NIKE in the fine-grained setting and propose constructions in the bounded-parallel-time, bounded-time, and bounded-storage models based on weak fine-grained complexity assumptions or, in the BSM, no computational assumptions. More precisely:
+%=======
+%In this work, we revisit multi-party NIKE in the fine-grained settings and propose instantiations in the bounded-parallel-time model, the time-bounded model, and the bounded storage model (BSM), based on very mild fine-grained complexity assumptions or even no assumption.
+%>>>>>>> 9153793e8718de0dbdd80edad130739ac39e3c1e
+
+\begin{compactitem}
+\item In the bounded-parallel-time model, we construct an $\pnum$-party NIKE for any constant $\pnum$ computable in $\aczerotwo$ and secure against adversaries in $\ncone$ ({i.e., circuits with logarithmic depth and polynomial size}).
+Clearly, the honest users consume less computational resources than adversaries, since $\aczerotwo\subsetneq\ncone$ \cite{Razborov1987,STOC:Smolensky87}.
+Similar to prior works in the same setting (e.g.,~\cite{C:DegVaiVas16,TCC:CamGen18}), our security is based on the worst-case assumption $\assump$, which is widely believed to hold.
+All existing $\ncone$-fine-grained schemes are based on $\assump$ \cite{C:DegVaiVas16,TCC:CamGen18,C:BalDacKul20,C:WanPanChe21,JC:EgaWanTan21,EC:WanPan22}. According to Barrington, $\lpoly$ is the class of languages with polynomial-sized branching programs and $\ncone$ languages have polynomial-sized branching programs of constant width \cite{STOC:Barrington86}. Hence, this assumption holds if there exists one language having only branching programs of super-constant width. It would be quite surprising if this does not hold.
+
+\item In the bounded-time model, we construct an $\pnum$-party NIKE for any constant $\pnum$ computable in $\tilde{O}(\lambda^{\pnum+k-1})$ and secure against adversaries running in time $\tilde{O}(\lambda^{\pnum + k-\Omega(1)})$.
+The underlying assumption is the average-case Zero-$k$-Clique hypothesis for any constant $k>2$, which is exactly the one used in \cite{C:LaVLinWil19} for constructing fine-grained two-party NIKE.  It is also widely used in the fine-grained complexity to derive conditional lower bounds for other problems (e.g., \cite{ICALP:AbbWilWei14,SODA:BGMW18,SODA:LinWilWil18,ICML:BacTza17}). 
+Note that no known approach for this assumption is faster than essentially $\lambda^k$, and the worst-case Zero-$k$-Clique hypothesis for any constant $k$ does not appear to imply $\mathsf P\neq\mathsf{NP}$~\cite{C:LaVLinWil19}. Moreover, although subsequent work~\cite{EC:AlmHuaYeo25} shows that the conjecture fails for sufficiently large $k$ in the absence of one-way functions, our construction already achieves the largest security gap at $k=3$, which is the weakest instantiation of the assumption since its strength increases with $k$. 
+Therefore, the large-$k$ separation of~\cite{EC:AlmHuaYeo25} does not apply to our small-constant regime and does not imply that our (strictly weaker) assumption entails one-way functions.
+ %, and there exists no non-trivial average-case algorithms breaking it. %As noted in \cite{C:LaVLinWil19}, no known approach for this assumption is faster than essentially $n^k$.
+
+\item In the bounded-storage model (BSM)~\cite{C:CacMau97}, we extend the two-party NIKE in \cite{C:CacMau97} to an $\pnum$-party NIKE for any constant $\pnum$. The resulting scheme is unconditionally secure against  adversaries with memory bounds $O(\lambda^{\pnum+1})$ and each user consumes $O(\lambda^\pnum)$ bits of memory.
+Also, the total communication cost between the parties (i.e., the total size of the public keys in this case) is $O(\lambda)$. This is also part of our efficiency measure. %Our security proof is a natural generalization of that by \cite{C:CacMau97}, while the proof of correctness and security has never been seriously addressed before, even in the two-party setting.
+%\item In the bounded storage model, we construct a multi-party key exchange, Our result generalizes to $\pnum$ parites consume $O(\lambda^{2-\frac{1}{\pnum}})$ memories, adversaries consume $\frac{\lambda^4}{2}$, and the communication cost is $O(\pnum\log \lambda^2)$. When $k = n$, our result generalizes to $\pnum$ parties that all parties consume $O(\lambda^{4-\frac{3}{\pnum}})$ memories, adversaries consume $\frac{\lambda^4}{2}$, and the communication cost is $O(\pnum\log \lambda^2)$.
+\end{compactitem}
+
+These results show that weak (non-idealized) fine-grained assumptions, and in the BSM even without any computational assumptions, suffice to realize multi-party NIKE, which was previously achieved only via obfuscation- or multilinear-map-based constructions against polynomial-time adversaries, or under idealized assumptions in the fine-grained setting.
+
+\heading{Remarks on the uniformly random string (URS).}
+While our construction in the bounded-time model is proposed in the plain model, where no trusted public parameter is exploited, the constructions in the bounded-parallel-time model and BSM mentioned above are instantiated in the URS model, where there exists a URS accessible to all parties and adversaries. It is important to note that this model is weaker than the common reference string model, since the URS is generated in a ``nothing up my sleeve'' manner, ensuring that it contains no hidden information or trapdoors. Moreover, our scheme in the bounded-parallel-time model can also be instantiated without using a URS in the random oracle model, by deriving the URS from a hash function modeled as a random oracle. The same argument does not apply to our construction in the BSM, since it crucially relies on the URS disappearing after a certain period of time.
+
+%2.6.2026
+\heading{\bf Comparison.}
+In \cref{fig:comparison-muke,fig:comparison-muke2}, we provide a comparison of all existing fine-grained multi-party NIKE constructions. The table contrasts the schemes with respect to the number of parties, adversarial and user complexity, the use of a uniform random string (URS), correctness error, security error, computational model, the underlying assumptions, and key lengths. 
+%We also compare the two-party case $\pnum=2$ of our construction in \cref{sec:time-nike} with the two-party Zero-$k$-Clique NIKE of~\cite{C:LaVLinWil19}, normalizing both to user time $\tilde O(\lambda)$. 
+%Any $\tilde O(\lambda^{\frac{k+2}{k+1}})$-time adversary against our construction succeeds with probability at most $\frac{1}{200}+\tilde O(\lambda^{1-k})$, and the correctness error is $O(\lambda^{2-k})$. 
+%Any $\tilde O(\lambda^{\frac{3k-4}{2k-2}})$-time adversary against~\cite{C:LaVLinWil19} succeeds with probability at most $3/4$, and the correctness error is at most $O(\lambda^{-\frac{2k-4}{2k-2}})$.
+%In \cref{fig:comparison-muke2}, the table compares the schemes with respect to the shared key length (after repetition), public key length, secret key length.
+
+\begin{table*}[h]
+\centering
+\scriptsize
+\setlength{\tabcolsep}{4pt}
+\begin{tabular}{|l|c|c|c|c|c|c|c|c|}
+\hline
+\textbf{Scheme} 
+& \textbf{\#P} 
+& \shortstack{\textbf{Adv.}\\\textbf{Comp.}}
+& \shortstack{\textbf{User}\\\textbf{Comp.}}
+& \textbf{URS} 
+%& \textbf{Key}
+%& \textbf{PK}
+%& \textbf{SK}
+& \shortstack{\textbf{Correctness}\\\textbf{Error}}
+& \shortstack{\textbf{Security}\\\textbf{Error}}
+& \textbf{Model} 
+& \textbf{Assumption} \\
+\hline
+
+\multirow{2}{*}{ACMS23\cite{EC:ACMS23}}
+%ACMS23\cite{EC:ACMS23} 
+& $\pnum$ 
+& $\lambda^{\pnum/(\pnum-1)}$
+& $\tilde{O}(\lambda)$  
+& No  
+& $\negl(\lambda)$ 
+& $\negl(\lambda)$
+& T 
+& ROM \\ 
+%\hline
+\cline{2-9}
+
+%ACMS23\cite{EC:ACMS23} 
+& $2\pnum$ 
+& $o(\lambda^2)$ 
+& $O(\lambda)$ 
+& No 
+%& $O(\log\lambda)$ 
+%& $O(\lambda\log\lambda)$
+%& $O(\lambda\log\lambda)$
+& $\negl(\lambda)$ 
+& $\negl(\lambda)$ 
+& T
+& $(\pnum-1)$-linear SGGM \\ 
+\hline
+
+\multirow{5}{*}{BCS24\cite{C:BauCouSad24}}
+%BCS24\cite{C:BauCouSad24} 
+& $4$ 
+& $o(\lambda^2)$ 
+& $O(\lambda)$ 
+& No 
+%& $O(\log\lambda)$ 
+%& $O(\lambda\log\lambda)$
+%& $O(\lambda\log\lambda)$
+& $\negl(\lambda)$ 
+& $\negl(\lambda)$ 
+& T 
+& exp-iPRGs, seCDH \\ 
+%\hline
+\cline{2-9}
+
+%BCS24\cite{C:BauCouSad24} 
+& $6$ 
+& $o(\lambda^2)$ 
+& $O(\lambda)$ 
+& No 
+%& $O(\log\lambda)$ 
+%& $O(\lambda\log\lambda)$
+%& $O(\lambda\log\lambda)$
+& $\negl(\lambda)$ 
+& $\negl(\lambda)$ 
+& T 
+& exp-iPRGs, seCDH2 \\ 
+%\hline
+\cline{2-9}
+
+%BCS24\cite{C:BauCouSad24} 
+& $6$ 
+& $o(\lambda^{1.5})$ 
+& $O(\lambda)$ 
+& No 
+%& $O(\log\lambda)$ 
+%& $O(\lambda\log\lambda)$
+%& $O(\lambda\log\lambda)$
+& $\negl(\lambda)$ 
+& $\negl(\lambda)$ 
+& T 
+& exp-iPRGs, seCDH \\ 
+%\hline
+\cline{2-9}
+
+%BCS24\cite{C:BauCouSad24} 
+& $9$ 
+& $o(\lambda^{1.5})$ 
+& $O(\lambda)$ 
+& No 
+%& $O(\log\lambda)$ 
+%& $O(\lambda\log\lambda)$
+%& $O(\lambda\log\lambda)$
+& $\negl(\lambda)$ 
+& $\negl(\lambda)$ 
+& T 
+& exp-iPRGs, seCDH2 \\ 
+%\hline
+\cline{2-9}
+
+%BCS24\cite{C:BauCouSad24} 
+& $4$ 
+& $o(\lambda^{1.6})$ 
+& $O(\lambda)$ 
+& No 
+%& $O(\log\lambda)$ 
+%& $O(\lambda\log\lambda)$
+%& $O(\lambda\log\lambda)$
+& $\negl(\lambda)$ 
+& $\negl(\lambda)$ 
+& T 
+& exp-iPRGs, MGGM \\ 
+\hline
+
+
+\cref{sec:nc1-nike} 
+& $\pnum$ 
+& $\ncone$ 
+& $\aczero[2]$ 
+& Yes 
+%& $\poly(\lambda)$ 
+%& $\lambda^2$
+%& $\lambda(\lambda+1)/2$
+& $0$ 
+& $\negl(\lambda)$ 
+& P 
+& $\assump$ \\ 
+\hline
+
+\cref{sec:time-nike} 
+& $\pnum$ 
+& $\widetilde{O}(\lambda^{\pnum+k-\Omega(1)})$
+& $\widetilde{O}(\lambda^{\pnum+k-1})$
+& No 
+%& $O(\log\lambda)$ 
+%& $\tilde{O}(\lambda^{\frac{\pnum+2}{\pnum+k-1}})$
+%& $\tilde{O}(\lambda^{\frac{\pnum-1}{\pnum+k-1}})$
+& $O(\lambda^{k+\pnum-k\pnum})$  
+& $p_{\mathrm{GL}}^{-1}(\epsilon_w)$
+& T 
+& Zero-$k$-Clique \\ 
+\hline
+
+\cref{sec:bsm-nike} 
+& $\pnum$ 
+%& $O(\lambda^{\frac{\pnum+1}{\pnum}})$ 
+%& $O(\lambda)$ 
+& $O(\lambda^{\pnum+1})$ 
+& $O(\lambda^\pnum)$ 
+& Yes 
+%& $\poly(\lambda)$ 
+%& $O(\lambda)$
+%& $O(\lambda^\pnum)$
+& $2/\lambda$ 
+& $O(1/\sqrt{\lambda}), \negl(\lambda)$
+& M 
+& None \\ 
+\hline
+
+\end{tabular}
+\caption{Comparison of fine-grained multi-party NIKEs. 
+Here, $\lambda$ denotes the security parameter and $\pnum$ the (constant) number of parties. 
+$\negl$ is an unspecified negligible function. 
+Let $k \ge 3$ be a constant; larger $k$ implies a stronger Zero-$k$-Clique assumption. 
+The column ``\#P'' denotes the number of parties, 
+``Adv. Comp.'' the complexity of the adversary, ``User Comp.'' the complexity of the user, 
+and ``URS'' whether a uniform random string is used. 
+In the ``Model'' column, ``T'', ``P'', and ``M'' denote the bounded-time, bounded-parallel-time, and bounded-storage models, ``seCDH2'' denotes the seCDH assumption with bilinear pairings.
+For \cref{sec:time-nike}, $\epsilon_w=1/200+\widetilde{O}(\lambda^{-1})+\widetilde{O}(\lambda^{\pnum+k-k\pnum})$ denotes the weak-security error before the Goldreich--Levin transformation, and $p_{\mathrm{GL}}(\epsilon)=\epsilon^{O(1)}$ is the standard Goldreich--Levin reconstruction success probability.
+%The security error in~\cref{sec:bsm-nike} shows that construction in~\cref{sec:bsm-nike} satisfies $(O(\lambda^{\frac{\pnum+1}{\pnum}}), \negl(\lambda), O(\frac{1}{\sqrt{\lambda}}))$-security in the BSM as defined in \cref{def:nike}.
+For \cref{sec:bsm-nike}, the ``Adv. Comp.'' and ``Security Error'' columns denote that the construction satisfies the $(O(\lambda^{{\pnum+1}}), O(1/\sqrt{\lambda}), \negl(\lambda))$-security in the BSM as defined in~\cref{def:munike}.
+}
+\label{fig:comparison-muke}
+\end{table*}
+
+\begin{table*}[h]
+\centering
+\scriptsize
+\setlength{\tabcolsep}{4pt}
+\begin{tabular}{|l|c|c|c|c|}
+\hline
+\textbf{Scheme} 
+& \textbf{\#P} 
+& \textbf{|Key|}
+& \textbf{|PK|}
+& \textbf{|SK|}\\
+%& \textbf{Correctness}
+%& \textbf{Security}
+%& \textbf{Model} 
+%& \textbf{Assump.} \\
+\hline
+
+\multirow{2}{*}{ACMS23\cite{EC:ACMS23}}
+%ACMS23\cite{EC:ACMS23} 
+& $\pnum$
+& $O(\log\lambda)$ 
+& $O(\lambda^{\pnum/(\pnum-1)})$
+& $O(\lambda\log\lambda)$\\
+%\hline
+\cline{2-5}
+
+%ACMS23\cite{EC:ACMS23} 
+& $2\pnum$
+& $O(\log\lambda)$ 
+& $O(\lambda\log\lambda)$
+& $O(\lambda\log\lambda)$\\
+\hline
+
+\multirow{5}{*}{BCS24\cite{C:BauCouSad24}}
+%BCS24\cite{C:BauCouSad24} 
+& $4$
+& $O(\log\lambda)$ 
+& $O(\lambda\log\lambda)$
+& $O(\lambda\log\lambda)$\\ 
+%\hline
+\cline{2-5}
+
+%BCS24\cite{C:BauCouSad24} 
+& $6$
+& $O(\log\lambda)$ 
+& $O(\lambda\log\lambda)$
+& $O(\lambda\log\lambda)$\\ 
+%\hline
+\cline{2-5}
+
+%BCS24\cite{C:BauCouSad24} 
+& $6$
+& $O(\log\lambda)$ 
+& $O(\lambda\log\lambda)$
+& $O(\lambda\log\lambda)$\\ 
+%\hline
+\cline{2-5}
+
+%BCS24\cite{C:BauCouSad24} 
+& $9$
+& $O(\log\lambda)$ 
+& $O(\lambda\log\lambda)$
+& $O(\lambda\log\lambda)$\\ 
+%\hline
+\cline{2-5}
+
+%BCS24\cite{C:BauCouSad24} 
+& $4$
+& $O(\log\lambda)$ 
+& $O(\lambda\log\lambda)$
+& $O(\lambda\log\lambda)$\\ 
+\hline
+
+\cref{sec:nc1-nike} 
+& $\pnum$
+& $\poly(\lambda)$ 
+%& $\lambda^2$
+%& $\lambda(\lambda+1)/2$\\ 
+& $\poly(\lambda)$
+& $\poly(\lambda)$\\ 
+\hline
+
+\cref{sec:time-nike} ($\tnike^*$)
+& $\pnum$
+& $1$
+& $\tilde{O}(\lambda^{(\pnum+2)/(\pnum+k-1)})$
+& $\tilde{O}(\lambda^{(\pnum-1)/(\pnum+k-1)})$\\
+\hline
+
+\cref{sec:bsm-nike} 
+& $\pnum$
+& $O(\lambda)$ 
+& $O(\lambda)$
+& $O(\lambda^\pnum)$\\ 
+\hline
+
+\end{tabular}
+\caption{Comparison of fine-grained multi-party NIKEs. 
+Here, $\lambda$ denotes the security parameter. 
+Let $k \ge 3$ be a constant in the Zero-$k$-Clique assumption. 
+The column 
+``|Key|'' denotes shared key length, 
+``|PK|'' denotes the public key length,
+and ``|SK|'' denotes the secret key length. For \cref{sec:time-nike}, the row reports the Goldreich--Levin-transformed one-bit scheme $\tnike^*$.}
+\label{fig:comparison-muke2}
+\end{table*}
+Note that although our schemes in the bounded-time model and the BSM incur non-negligible correctness and security errors, similar to the 2-party fine-grained NIKEs in~\cite{C:LaVLinWil19,C:CacMau97} under the same assumptions and with comparable asymptotic parameters, these errors remain acceptable for concrete parameter choices in practice (see the concrete examples in \cref{sec:time-nike,sec:bsm-nike}).
+
+
+%\begin{table*}[h]
+%\begin{center}
+%\begin{minipage}[c]{0.95\textwidth} \scriptsize
+%\begin{center}
+%\begin{tabular}{|l|l|l|l|l|l|l|l|l|}
+%\hline
+%\multicolumn{1}{|c|}{\textbf{Scheme}} & \multicolumn{1}{c|}{|\textbf{Party}|} 
+%& \multicolumn{1}{c|}{\shortstack{\textbf{Power of}\\\textbf{Adversary}}}
+%& \multicolumn{1}{c|}{\shortstack{\textbf{Power of}\\\textbf{User}}}
+%&  \multicolumn{1}{c|}{\textbf{URS}} 
+%& \multicolumn{1}{c|}{\shortstack{\textbf{Key}\\\textbf{Length}}}
+%& \multicolumn{1}{c|}{\shortstack{\textbf{Correctness}\\\textbf{Error}}}
+%& \begin{tabular}[c]{@{}l@{}}\textbf{Model}\end{tabular} & \multicolumn{1}{c|}{\textbf{Assumption}} \\ \hline
+%%WSP24\cite{C:WanSuPan24} & $\pnum$ &
+%%%$O(\pnum\lambda^{\pnum-1}\log^2\lambda)$
+%%$\tilde{O}(\lambda^{\pnum-1})$
+%% & 
+%%% $O(\log k \lambda^{2+\pnum+\pnum k})$
+%%$O(\lambda^{2+\pnum+\pnum k})$
+%%  & 
+%%%  $O(\pnum\lambda^{\pnum-1}\log^2\lambda)$ 
+%%  $\tilde{O}(\lambda^{\pnum-1})$
+%%  &                $\tilde{O}(\lambda^{\frac{\pnum+k-1}{\pnum+k}})$ & Zero-$k$-Clique \\ \hline
+%ACMS23\cite{EC:ACMS23} & $\pnum$ & $\lambda^{\frac{\pnum}{(\pnum-1)}}$ & $\tilde{O}(\lambda)$  & $\text{No}$  & $O(\log\lambda)$ & $\negl(\lambda)$ & $\text{T}$ & ROM \\ \hline
+%%\cite{C:ACMS24} & $O(\log\lambda)$ & $O(\lambda)$ & $O(\log\lambda)$ &                $2\pnum/(2\pnum-1)$ & multilinear GGM \\ \hline
+%ACMS23\cite{EC:ACMS23} & $2\pnum$ & $o(\lambda^2)$ & $O(\lambda)$ & $\text{No}$ & $O(\log\lambda)$ & $\negl(\lambda)$ & $\text{T}$
+%  & $(\pnum-1)$-linear SGGM \\ \hline
+%BCS24\cite{C:BauCouSad24} & $4$ & $o(\lambda^2)$ & $O(\lambda)$ & $\text{No}$ & $O(\log\lambda)$ & $\negl(\lambda)$ & $\text{T}$ & exp-iPRGs, seCDH \\ \hline
+%BCS24\cite{C:BauCouSad24} & $6$ & $o(\lambda^2)$ & $O(\lambda)$ & $\text{No}$ & $O(\log\lambda)$ & $\negl(\lambda)$ & $\text{T}$ & exp-iPRGs, seCDH2 \\ \hline
+%BCS24\cite{C:BauCouSad24} & $6$ & $o(\lambda^{1.5})$ & $O(\lambda)$ & $\text{No}$ & $O(\log\lambda)$ & $\negl(\lambda)$ & $\text{T}$ & exp-iPRGs, seCDH \\ \hline
+%BCS24\cite{C:BauCouSad24} & $9$ & $o(\lambda^{1.5})$ & $O(\lambda)$ & $\text{No}$ & $O(\log\lambda)$ & $\negl(\lambda)$ & $\text{T}$ & exp-iPRGs, seCDH2 \\ \hline
+%BCS24\cite{C:BauCouSad24} & $4$ & $o(\lambda^{1.6})$ & $O(\lambda)$ & $\text{No}$ & $O(\log\lambda)$ & $\negl(\lambda)$ & $\text{T}$ & exp-iPRGs, MGGM \\ \hline
+%\cref{sec:nc1-nike} & $\pnum$ & $\ncone$ & $\aczero[2]$ & $\text{Yes}$ & $\poly(\lambda)$ & $0$ & $\text{P}$ & $\assump$ \\ \hline
+%\cref{sec:time-nike} & $\pnum$ & $\tilde{O}(\lambda^{\frac{\pnum+k}{\pnum+k-1}})$ & $\tilde{O}(\lambda)$ & $\text{No}$ & $O(\log\lambda)$ & $O(\lambda^{k+\pnum-k\pnum})$  & $\text{T}$ & Zero-$k$-Clique \\ \hline
+%\cref{sec:bsm-nike} & $\pnum$ & $O(\lambda^{\frac{\pnum+1}{\pnum}})$ & $O(\lambda)$ & $\text{Yes}$ & $\poly(\lambda)$ & $2/\lambda$ & $\text{M}$ & No Assumption \\ \hline
+%
+%%\multirow{3}{*}{\cref{sec:fnike}} & \multirow{2}{*}{$\pnum$} &\multirow{3}{*}{$O(\frac{\log\lambda}{2\log\log\lambda})$} & \multirow{3}{*}{$O(\lambda)$} & \multirow{3}{*}{$O(\log\log\log\lambda)$} & 
+%%%\multirow{3}{*}{$\tilde{O}(\lambda^{\frac{\pnum}{\pnum-1}})$} 
+%%$\tilde{o}(\lambda^{\frac{\pnum}{\pnum-1}})$
+%%& RLM \\ \cline{6-7}
+%% &  &  & &  &$\tilde{O}(\lambda^{\frac{\pnum}{\pnum-1}})$  & Zero-$k$-Clique \\ \cline{6-7}
+%% &  &  & &  &$\tilde{o}(\lambda^{\frac{\pnum}{\pnum-1}})$  & Sub-exp OWF \\ \hline
+%%\multirow{2}{*}{\cref{sec:fgnike2}} & \multirow{2}{*}{$\pnum$} & \multirow{2}{*}{$O(\log\lambda)$} & \multirow{2}{*}{$O(\lambda)$} & \multirow{2}{*}{$O(\log\lambda)$} & 
+%%%\multirow{2}{*}{$\tilde{O}(\lambda^{\frac{2\pnum}{2\pnum-1}})$}
+%%$\tilde{O}(\lambda^{\frac{2\pnum}{2\pnum-1}})$
+%% & RLM \\ \cline{6-7}
+%% &  &  & &  & $O(\lambda^{\frac{2\pnum}{2\pnum-1}})$ & exp PRGs \\ \hline
+%%\cref{sec:fnike} & $O(\log\lambda/(2\log\log\lambda))$ & $O(\lambda)$ & $O(\log\log\log\lambda)$ & $O(\lambda^{\frac{\pnum}{\pnum-1}})$ & RLM \\ \hline
+%%\cref{sec:fgnike2} & $O(\log\lambda)$ & $O(\lambda)$ & $O(\log\lambda)$ & $O(\lambda^{\frac{2\pnum}{2\pnum-1}})$ & RLM \\ \hline
+%\end{tabular}
+%\vspace{10pt}
+%\caption{Comparison of fine-grained multi-party NIKEs. Here, $\lambda$ denotes the security parameter, and $\pnum$ the (constant) number of parties. 
+%$\negl$ is an unspecified negligible function. 
+%Let $k \ge 3$ be a constant. Larger $k$ corresponds to a stronger Zero-$k$-Clique assumption.
+%The columns ``Party'', ``Power of Adversary'', ``Power of User'', ``URS'', 
+%``Key Length'', ``Correctness Error'', ``Setting'', and ``Assumption'' respectively denote 
+% the number of parties, the adversarial complexity for which the scheme remains secure; 
+%the user complexity; whether a URS is used; the shared key length (after repetition); 
+%the correctness error; the fine-grained model; and the underlying assumption.
+%``T'' denotes the bounded-time model, ``P'' the bounded-parallel-time model,
+%and ``M'' the bounded storage model. 
+%``SGGM'' refers to Shoup's generic group model. 
+%``iPRGs'' are injective pseudorandom generators. 
+%``seCDH'' denotes the sub-exponential computational Diffie-Hellman assumption, 
+%and ``seCDH2'' its bilinear pairing variant.}
+%\label{fig:comparison-muke}
+%\end{center}
+%\end{minipage}
+%\end{center}
+%\end{table*}
+%2.6.2026
+
+
+%\heading{Extension to multi-party Identity-based NIKE (IB-NIKE).} We further show that our NIKEs can be transformed into IB-NIKEs for any constant number of parties. Our transformation contains several intermediate steps, as described figuratively in \cref{fig:overview-ibnike}.
+%\begin{figure}
+% \adjustbox{scale=0.89,center}{
+% \begin{tikzcd}[row sep = 0.5cm,column sep = 1cm]
+%  \text{Multi-Party IB-NIKE} \stackrel{\text{Sec. \ref{sec:bprf-ibnike}}}{\Longleftarrow}  \text{(Restricted) BPRF} \stackrel{\text{Sec. \ref{sec:munike-bprf}}}{\Longleftarrow}  \text{Extendable Multi-Party NIKE}
+% \end{tikzcd}}
+%\caption{Overview of our approaches in constructing IB-NIKE in the fine-grained setting.}
+%\label{fig:overview-ibnike}
+%\end{figure} 
+%Specifically, we follow the technique in \cite{HKKW13} to show that in the fine-grained settings, BPRFs can be converted into multi-party IB-NIKEs, and then provide a generic construction of bit-fixing pseudorandom function (BPRF) from any NIKE with a nice and natural property we call extendability, which is satisfied by all our constructions (and indeed also ones in previous works \cite{Joux04,EC:ACMS23}).
+%% all our constructions satisfy a nice and natural property we call extendability, and provide a generic construction of bit-fixing pseudorandom function (BPRF) from any NIKE satisfying this property. Subsequently, we show that these  Importantly, the asymptotic complexity of both users and adversaries in these resulting schemes remain equivalent to those of our multi-party NIKEs.
+%Here we note that our multi-party NIKE in the bounded-parallel-time model only satisfies restricted extendability and can only be converted into a restricted version of BPRF. Nonetheless, this restricted version is sufficient for achieving multi-party IB-NIKE.
+% We refer the readers to \cref{sec:ibnike} for the full details.
+\heading{Extension to multi-party identity-based NIKE (IB-NIKE).} We further show that our NIKEs can be transformed into IB-NIKEs for any constant number of parties. Notice that such IB-NIKEs can be trivially constructed from NIKE by including NIKE public keys of all users in the IB-NIKE key for each identity. However, our construction of IB-NIKE is significantly better than this trivial one, since the identity-space of IB-NIKE is much larger. 
+If the underlying NIKE supports a super-constant (say, polynomial) number of users, then our IB-NIKEs can support an exponentially large identity-space.
+Indeed, for our results in the BSM, making the number of users super-constant does not spoil the security proof since it is based on no assumptions. Similarly, our results in the bounded-time model can also support a super-constant number of users if we make the underlying assumption stronger, i.e., Zero-$k$-Clique assumption for super-constant $k$, which, however, may imply $\mathsf P\neq\mathsf{NP}$~\cite{C:LaVLinWil19}.
+
+Our transformation contains several intermediate steps, as described figuratively in \cref{fig:overview-ibnike}.
+%\begin{figure}
+% \adjustbox{scale=0.89,center}{
+% \begin{tikzcd}[row sep = 0.5cm,column sep = 1cm]
+%  \text{Multi-Party IB-NIKE} {\Longleftarrow} \text{(Restricted) BPRF} {\Longleftarrow} \text{Extendable Multi-Party NIKE}
+% \end{tikzcd}}
+%\caption{Overview of our approaches in constructing IB-NIKE in the fine-grained setting.}
+%\label{fig:overview-ibnike}
+%\end{figure} 
+\begin{figure}
+ \adjustbox{scale=0.89,center}{
+ \begin{tikzcd}[row sep = 0.5cm,column sep = 1cm]
+  \text{Multi-Party IB-NIKE} \stackrel{\text{Sec. \ref{sec:bprf-ibnike}}}{\Longleftarrow}  \text{(Restricted) BPRF} \stackrel{\text{Sec. \ref{sec:munike-bprf}}}{\Longleftarrow}  \text{Extendable Multi-Party NIKE}
+ \end{tikzcd}}
+\caption{Overview of our approaches in constructing IB-NIKE in the fine-grained setting.}
+\label{fig:overview-ibnike}
+\end{figure} 
+Specifically, we follow the technique in \cite{HKKW13} to show that in the fine-grained setting, bit-fixing pseudorandom functions (BPRFs) can be converted into multi-party IB-NIKEs, and then provide a generic construction of  BPRF from any NIKE with a natural property we call extendability, which is satisfied by all our constructions (and indeed also the ones in previous works \cite{Joux04,EC:ACMS23}) except for those based on multilinear maps.
+% all our constructions satisfy a nice and natural property we call extendability, and provide a generic construction of bit-fixing pseudorandom function (BPRF) from any NIKE satisfying this property. Subsequently, we show that these  Importantly, the asymptotic complexity of both users and adversaries in these resulting schemes remain equivalent to those of our multi-party NIKEs.
+Here we note that our multi-party NIKE in the bounded-parallel-time model only satisfies restricted extendability and can only be converted into a restricted version of BPRF. Nonetheless, this restricted version is sufficient for achieving multi-party IB-NIKE.
+Moreover, when the number of users is constant, instantiating the above transformation with any of our NIKE constructions preserves all parameters up to asymptotic equivalence. In particular, the adversary’s resources, user complexity, and key length remain asymptotically the same as in the underlying NIKE.
+We refer the reader to \cref{sec:ibnike} for the full details.
+%We refer the readers to the full paper for the details.
+
+\heading{Negative result in the BSM.} In the BSM, in addition to our positive result, we extend the negative result in \cite{EC:DziMau04} for two-party NIKEs to show that for an $\pnum$-party NIKE with (even restricted) extendability and a natural property we call local key independence, the entropy of the shared key conditioned on the public keys is bounded by roughly $\umem^\pnum/\amem^{\pnum-1}$, where $\umem$ and $\amem$  represent the amounts of memory consumed by each user and adversary respectively. Hence, for sharing $\lambda$ bits,
+$
+\umem\gtrsim \sqrt[\pnum]{\lambda\cdot\amem^{\pnum-1}}.
+$
+Local key independence is the BSM-specific regularity condition formalized in \cref{def:localkeyind}. Here local keys are the intermediate keys produced during the extendability procedure. Roughly, it says that public keys and auxiliary key pairs leak only limited information about local keys, and that adding one more independently generated key pair does not create much extra leakage through the common URS. %These bounds allow the Dziembowski--Maurer averaging argument to be applied step by step.
+%Local key independence is the BSM-specific regularity condition formalized in \cref{def:localkeyind}. Roughly, it requires that public keys and independently generated auxiliary key pairs do not significantly leak local keys (i.e., intermediate keys generated during the extendability procedure.), and that the additional dependence caused by the common URS is limited.
+ %Once this residual dependence is controlled, the standard averaging argument of Dziembowski and Maurer yields the per-level contraction used in our lower-bound proof. 
+ Additionally, as mentioned earlier, (restricted) extendability is satisfied by all existing multi-party NIKE schemes  (except for those based on multilinear maps) to the best of our knowledge. Both properties are quite natural, and it would be surprising if any construction could circumvent our lower bound.
+This suggests that our multi-party NIKE in the BSM is optimal up to constant factors within the natural class of schemes satisfying extendability and local key independence. 
+
+As far as we know, this is the first negative result for multi-party NIKE in the BSM. In contrast to \cite{EC:DziMau04}, our analysis does not require the schemes to satisfy perfect security. In this sense, our result applies more broadly even in the two-party setting.
+
+\heading{Practical implications.}
+Other than relying on weak assumptions and having low computational complexity, our results have the following practical implications.
+
+
+Our constructions in the bounded (parallel-)time setting are particularly well-suited for systems in which attacks are only meaningful if they succeed within a short time window. For example, users may employ the shared key to protect information that is valuable only temporarily and can be safely revealed or discarded afterward. Concretely, the key can be used to transmit short-lived information (e.g., verification codes) that are revealed only after a prescribed deadline. Similarly, the key can be used to encrypt files that, although logically deleted by users, remain temporarily retained by the cloud provider before permanent erasure. Security is required only during this enforced retention window.
+
+Another direct application is the generation of message authentication codes (MACs) using the shared key. The verifier imposes a strict upper bound on the allowed computation time for generating a valid tag, and any party exceeding this bound is rejected. Thus, adversaries who require asymptotically more time gain no advantage, since tags produced after the deadline are invalid.
+
+To illustrate the concrete magnitude of this gap, in our construction in the bounded-parallel-time model, the honest user runs in $\aczero$ and hence in $\ncone$, whereas the known distinguishing approach for $\assump$ proceeds via determinant computation in $\mathsf{NC}^2$ for matrices from $\zs$ and $\os$. For $\lambda = 2^{50}$ and any constant $\pnum$, honest evaluation has depth $O(\log \lambda)$, which is about $50$ ignoring constant factors (and can in fact be implemented in $\aczerotwo$ using only a constant number of layers). In contrast, this determinant-based approach has depth $O((\log \lambda)^2)$, which is about $2500$ ignoring constant factors. This concrete separation makes the timeout mechanism practically enforceable.
+
+In the bounded-time model, although the security gap is smaller, the same paradigm applies. For example, when the number of parties is $3$, each honest party runs in time about $\tilde O(\lambda^5)$, whereas the scheme remains secure against adversaries below the $\lambda^6$ barrier by a polynomial factor. By enforcing a strict sequential time budget for generating valid MACs, the system ensures that honest users succeed within the permitted window, while slower adversaries are rejected.
+
+In the BSM, our construction is optimal up to constant factors within the natural class of schemes satisfying extendability and local key independence, as shown by our matching impossibility result. This setting naturally captures scenarios where a high-speed broadcast channel generates URSs that are too large for an adversary to store but can be processed on the fly by honest parties.
+
+More generally, as observed in~\cite{C:DegVaiVas16}, combining fine-grained primitives with standard cryptographic primitives yields hybrid schemes that are secure against restricted adversaries under weak (or even no) assumptions, while retaining security against polynomial-time adversaries under stronger assumptions.
+
+%Other than relying on weak assumptions and having low computational complexity, our results have the following practical implications.
+
+%Our constructions in the bounded (parallel-)time setting are well-suited for systems where attacks are only meaningful if they can succeed quickly. For instance, users can use the shared key to protect messages valuable for a short period and can be either published or deleted later. Another application is the generation of message authentication codes (MACs) using the shared key. It prevents adversaries from forging MACs within the time it takes for an honest user to compute the MAC. This ensures security by allowing the system to reject users who have timed out while attempting to generate MACs. 
+%More specifically, let $n=\log\lambda$. In the bounded-parallel-time model, the parallel running-time of each party is about $3n$, while any adversary with parallel running-time $O(n)$ cannot break it. Then we can let the parties re-share the session key with period, say $10n$, if we use it as the key of a MAC. Also, we can use it to transmit messages (e.g., verification codes) that can be published after a time of $10n$.
+%In the bounded time model, assuming that the number of parties is $3$, the running-time of each party can be about $\lambda^5\log \lambda$, while any adversary with running-time $O(\lambda^6)$ cannot break it. The applications are similar to the above.
+%The construction in BSM also finds direct applications in scenarios where a high-speed broadcast channel generates URSs that are too large for an adversary to store.
+%Moreover, as mentioned in \cite{C:DegVaiVas16}, combining fine-grained primitives with standard ones immediately yield hybrids secure against restricted adversaries under weak assumptions (or no assumption) and secure against polynomial time adversaries under stronger assumptions.
+%
+%We believe that the applications are natural. Let $n=log\lambda$. For result 1, the parallel running-time of each party is about $3n$, while any adversary with parallel running-time $O(n)$ cannot break it. Then we can let the parties share the session key with period, say $10n$, if we use it as the key of a MAC. Also, we can use it to transmit messages (e.g., verification codes) that can be published after a time of $10n$.
+%For result 2, assuming that the number of parties is $3$, the running-time of each party can be about $\lambda^5(1+\log \lambda)$, while any adversary with running-time $O(\lambda^6)$ cannot break it. The applications are similar to the above.
+
+%\begin{compactitem}
+%\item In the parallel-time-bounded, we construct a multi-party NIKE based on $\assump$ computable in $\aczerotwo$ against adversaries runs in $\ncone$.
+%\item In the time-model, we construct a multi-party NIKE based on the Zero-$k$-Clique hypothesis computable in $\tilde{O}(\lambda)$ against adversary with running time $\tilde{O}(\lambda^{\frac{4k-6}{3k-4}})$
+%\item In the bounded storage model, we construct a multi-party key exchange, Our result generalizes to $\pnum$ parites consume $O(\lambda^{2-\frac{1}{\pnum}})$ memories, adversaries consume $\frac{\lambda^4}{2}$, and the communication cost is $O(\pnum\log \lambda^2)$. When $k = n$, our result generalizes to $\pnum$ parties that all parties consume $O(\lambda^{4-\frac{3}{\pnum}})$ memories, adversaries consume $\frac{\lambda^4}{2}$, and the communication cost is $O(\pnum\log \lambda^2)$.
+%\end{compactitem}
+
+%%\todo{mention: It is the first NIZK from worst-case assumptions(?)}
+%We consider the $\aczero$-fine-grained setting, namely, all adversaries, honest provers, and verifiers are in $\aczero$.
+%In this setting, we construct the \emph{first} unconditionally secure {\inNIZK} proof system for circuit satisfiability (SAT). More precisely, it is perfectly sound and has zero-knowledge against any  adversaries in $\aczero$. Our system only involves simple operations in $GF(2)$ and does not require any cryptographic group operations or assumptions such as Discrete Logarithm and Factoring.
+%%\jpnote{I will mention the Cryptomania}
+%%Notice that a statement circuit supported by our NIZK for SAT cannot go beyond $\aczero$. 
+%
+%Our NIZK only supports statements verifiable in $\aczero$ given witnesses, since if a statement circuit is beyond $\aczero$ then an honest prover in $\aczero$ cannot decide its truth with the witness. However, we stress that our method is not limited to $\aczero$ statements. For instance, if we allow polynomial-time honest provers as in \cite{C:BalDacKul20}, our constructions naturally support statement circuits with polynomial-size.
+%Moreover, any polynomial-size statement circuit can be represented as one verifiable in $\aczero$. Specifically, if a witness contains the bits of all wires in the circuit, then an $\aczero$ algorithm can efficiently verify the validity of an input/output pair of each gate in parallel and check whether the bit for the final output wire is $1$. In this sense, the prover of our NIZK works for any $\NP$ statement, given a witness containing “enough information”. 
+%
+%\heading{Applications of Security against $\aczero$.}
+%Security against $\aczero$ naturally captures adversaries with limited resources. Moreover, an $\aczero$-fine-grained NIZK works well in systems requiring “online security”, where attacks are valid only if they succeed immediately. For instance, our NIZK with composable zero-knowledge against $\aczero$ and perfect soundness can be used to protect secrets only valuable in a short period of time. Also, its dual mode enjoys everlasting security. Namely, its perfect zero-knowledge continuously prevents the adversary from learning information on secrets and its soundness guarantees security in a system requiring users to provide proofs in a short time.
+%
+%%when we set the CRS as a hiding one, our NIZK achieves computational soundness against AC0 and perfect zero-knowledge. A system may require a user to provide a proof in a short period of time. In this case, an AC0 adversary cannot break soundness and will never obtain information on the secret. Also, the dual mode with composable zero-knowledge against AC0 and perfect soundness can be used in the case that the secret is only valuable in a short period of time. 
+%
+%
+%\heading{Impacts of Our Work.}
+%Our work gives us interesting insights to the minimum hardness assumptions required by \inNIZK and the landscape of $\aczero$-fine-grained cryptography.
+%Before our work, it seemed that cryptographic assumptions, in particular, those imply public-key encryption (PKE), were necessary for \inNIZK in the standard model. 
+%Putting it in Impagliazzo's view of complexity landscape \cite{Impagliazzo95}, \inNIZK seemed to be in the Cryptomania. Examples are Diffie-Hellman-based NIZKs \cite{GOS12,EC:GroSah08}. Even in the $\ncone$-fine-grained setting, \inNIZK systems \cite{EC:WanPan22} require the assumption $\assump$, which implies PKE schemes \cite{C:DegVaiVas16}.
+%
+%Our work shows that those assumptions implying PKE are not necessary, since in the $\aczero$-fine-grained setting, it is not known whether there is a PKE scheme yet. \footnote{How to construct a provably secure PKE scheme in the $\aczero$-fine-grained setting is left as an open problem in \cite{C:DegVaiVas16}.} Up until now, only ``minicrypt primitives'' such as one-way function, weak pseudorandom function, secret-key encryption, and collision-resistant hash function are known to exist \cite{Has87,C:DegVaiVas16} in this setting, and we were not aware of any impossibility or possibility results showing that assumptions implying PKE are necessary for \inNIZK, in particular, in the $\aczero$-fine-grained setting, or not. 
+%As a further direction left open, we will explore how to extend our techniques in the classical setting and construct a \inNIZK from weaker assumptions (e.g., Discrete Logarithms) that are not known to imply PKE.
+%%The implications of this are twofold: First, \inNIZK can be in the Minicrypt where there is one-way functions, but no PKE. Second, 
+%
+%%Finally, we stress that our work shows that in the $\aczero$-fine-grained setting unconditionally secure \inNIZK is possible.
+%
+%
+%
+%\heading{Extensions.}
+%While all the aforementioned NIZKs are in the CRS model, we can further extend them to the uniform random string (URS) model, where a trust setup only samples public coins.
+%We also prove that our NIZKs have verifiable correlated key generations \cite{GOS12}, which lead to a conversion from our NIZKs to unconditionally secure non-interactive zaps \cite{FOCS:DwoNao00} (i.e., non-interactive witness-indistinguishability proof systems in the plain model) \cite{GOS12} against $\aczero$. 
+%
+%
+%
+%
+%
+\subsection{Technical Details}
+\label{sec:overview}
+\heading{Multi-party NIKE based on $\assump$.}
+We now give technical details on how we construct our fine-grained multi-party NIKE in the bounded-parallel-time model. All the adversaries we consider in this part are in $\ncone$.
+%\heading{Fine-grained multi-party NIKE in $\assump$.} 
+Similar to previous works \cite{C:DegVaiVas16,TCC:CamGen18,C:BalDacKul20,C:WanPanChe21,JC:EgaWanTan21,EC:WanPan22}, we exploit the indistinguishability of two specific distributions $\zs$ and $\os$ outputting $\lambda\times\lambda$ matrices with rank $\lambda-1$ and full rank respectively. It is implied by $\assump$.
+%Here, $\lambda$ is the security parameter, and the randomized sampling functions $\ZeroSamp$ and $\OneSamp$ output $\lambda\times\lambda$ matrices with rank $\lambda-1$ and full rank respectively (see \cref{sec:samp} for details). %As proved in~\cite{JC:EgaWanTan21}, 
+
+%\heading{Starting point: hash proof system.}
+Our starting point is to utilize the fine-grained hash proof system proposed in~\cite{JC:EgaWanTan21} to construct an NIKE via the technique proposed in ~\cite{C:HesHofKoh18}. Roughly we can let the projection and the statement of the hash proof system serve as the public keys in a two-party NIKE and let the parties share the proof with the (secret) verification key and the witness respectively.
+Security is guaranteed by the smoothness of the hash proof system.
+%In \cite{JC:EgaWanTan21}, to prove that some statement $\vec x$ is in the following language 
+%$$\mathcal{L}_{\matr M\getsr\zs}=\{\vec x\mid\exists \vec r\ \mbox{s.t.}\ \vec x = \matr M \vec r\},$$
+%the prover uses its public key $\vec p^\top=\vec k^\top\matr M$, where $\vec k\getsr\bin^\lambda$, to generate a proof $\pi = \vec p^\top \vec r=\sk^\top\matr M\vec r$ with its witness $\vec r$.
+%A designated verifier checks whether $\pi=\vec k^\top \vec x=\vec k^\top\matr M\vec r$ with $\vec k$. The subset membership problem, i.e.,  the indistinguishability between random vectors inside and outside $\lang$, is proven to be implied by the indistinguishability of $\zs$ and $\os$. The ``$\frac{1}{2}$-soundness'' holds since $\pi$ is a uniformly random bit given $\pk$ and $\vec x$, if we switch $\vec x$ to a random vector outside $\lang$. Such a system immediately yields a two-party NIKE if we set $(\pk_1=\vec p,\sk_1=\vec k)$ and $(\pk_2=\vec x,\sk_2=\vec r)$ as the public/secret key pairs of two parties respectively, and let them share $\pi$ as the session key.
+%\heading{Technical hurdles in the multi-party setting.}
+To extend it to a multi-party one, the first problem we must address is that the key pairs are vectors generated by different types of algorithms. 
+When more parties are involved, it is unclear how to combine multiple vectors to generate a session key.
+%to let each party generate both types of key pairs. Meanwhile, it is still unclear how to securely share a session key between them.
+%Recall that the shared key between two parties is a single bit. If a third party is involved, the shared key is likely to be a vector again, while there appear to be no way to extract a random bit from it. Hence, we further extend all key pairs from vectors to matrices.
+
+A straw-man solution is to extend the vectors to matrices.
+Taking the three-party case as an example, the public keys of the parties $\party_1$, $\party_2$, and $\party_3$ are generated as $\matr R_1\matr M$, $\matr M\matr R_2$, and $\matr M\matr R_3$ respectively, where $\matr M\getsr\zs$ is the public parameter and $\matr R_i$'s are the random secret matrices in $\bin^{\lambda\times\lambda}$. The parties can share $\matr R_1\matr M\matr R_2\matr M\matr R_3$ with certain entropy. However, unfortunately, it does not satisfy correctness. Specifically, $\matr R_1\matr M\matr R_2\matr M\matr R_3$ is indeed computable by $\party_1$ and $\party_2$ with their secret matrices, while it is not computable by $\party_3$ due to the lack of knowledge on $\matr R_2\matr M$.
+To address this issue, we need to additionally publish $\matr R_2\matr M$. Nevertheless, this change will result in too much leakage about $\matr R_2$, compromising the security proof.
+%making us unable to utilize the subset membership problem.
+
+To overcome the technical hurdles mentioned above, we exploit the power of symmetric matrices.
+Specifically, we make the public parameter symmetric by computing $\sM=\matr M^\top\matr M$, and generate $\sM\sR_i$ and $\sR_i$ as the public/secret key pair for each party, where $\sR_i\getsr\sr$ and $\sr$ is the uniform distribution over symmetric matrices in $\bin^{\lambda\times\lambda}$. The shared key is in the form of
+$\sR_1\sM\sR_2\cdots \sM\sR_n$. Thanks to the symmetry of the matrices, each party knows both $\sM\sR_i$ and $\sR_i\sM=\sR_i^\top\sM^\top=(\sM\sR_i)^\top$, enabling each party to compute the shared key, ensuring correctness. 
+
+Since the secret keys are not uniformly random in $\bin^{\lambda\times\lambda}$ now, we can no longer rely on the smoothness of the fine-grained hash proof system to prove security. To find a counterpart compatible with symmetric matrices, we define two new distributions $\ZDist$ and $\ODist$:
+\[\small{ \underbrace{\{ \sM\sR : \sR\getsr\sr \}}_{=\ZDist}
+\ \mbox{and}\
+\underbrace{\{\sM\sR+\matI  : \sR\getsr\sr\}}_{=\ODist}}, \]
+where $\sM=\matr M^\top\matr M$ for the public parameter $\matr M \getsr \zs$ and $\matI$ is the identity matrix.
+We then prove the indistinguishability of $\ZDist$ and $\ODist$ by proposing a new technique to leverage the symmetry and the indistinguishability of the matrices. For more details, we refer the reader to \cref{sec:nc1-nike}.
+
+A useful property of the above distribution is that the last column and row vectors in a matrix in $\ZDist$ (respectively, $\ODist$) must be in (respectively, outside) the span of $\sM$. Hence, by embedding a random bit into the secret key of one party via vectors in $\Ker(\matr M)$, and therefore in $\Ker(\sM)$ since $\sM=\matr M^\top\matr M$, and switching the distributions of public keys of other parties between $\ZDist$ and $\ODist$ in a flexible way, we can prove that the right-bottom entry of the shared matrix is uniformly random in the view of an $\ncone$ adversary. By running the scheme multiple times in parallel, they can share a session key with any polynomial size, without increasing the complexity of the circuits' depth.
+
+We note that \cite{EC:WanPan22} has shown the existence of a public-coin algorithm (denoted by $\rs$ in this work, see \cref{fig:rs}) with the output distribution being identical to $\zs$ and $\os$ with probability one half each. Therefore, we can use this algorithm to generate a public parameter indistinguishable from the original one, resulting in a fine-grained multi-party NIKE in the URS model.
+ 
+ \heading{Multi-party NIKE based on Zero-$k$-Clique.}
+Our construction in the bounded-time model, which is based on the Zero-$k$-Clique hypothesis, extends the one presented in \cite{C:LaVLinWil19}. In the construction in \cite{C:LaVLinWil19}, two parties exchange lists containing $\listlength$ instances of the Zero-$k$-Clique problem, out of which $\sqrt{\listlength}$ instances have solutions. The expectation is that there would be exactly a single instance in common having a solution, allowing the parties to share the index of this instance by brute forcing among the $\sqrt{\listlength}$ instances.
+%The Zero-$k$-Clique hypothesis says that it would take a relatively long time for the adversary to find the correct solution among the $\listlength$ instances.
+The Zero-$k$-Clique hypothesis says that finding the correct solution among the $\listlength$ instances requires essentially solving all instances, ensuring security.
+
+To extend this construction to a multi-party setting, a natural approach is to let all parties exchange their lists of instances, and share the common indices of the instances with one solution. The primary challenge lies in the rapid increase in the error probability of correctness as the number of users increases. To address this issue, we increase the number of instances with solutions for each party and allow users to share the sum of the overlapping part. For a rigorous analysis of correctness, we exploit a set of indicators in a careful manner. Each indicator, denoted by index $i$, equals 1 if the $i$th random index chosen by the last party is also chosen by all other parties, and $0$ otherwise. Without loss of generality, we assume that the indices chosen by the last party are genuinely independent, while those chosen by each of the other parties are independent but conditioned on the event that they are all distinct. The former guarantees the independence of these indicators, and the latter ensures that each indicator equals $1$ with a high probability. By computing the probability that all indicators are equal to 0, we obtain the small error probability.
+
+%Our security proof generalizes that of the two-party setting, except that we introduce a generalized splitting algorithm with a binary tree structure. 
+%Our security proof introduces a generalized splitting algorithm with a binary tree structure, which splits one instance into multiple ones having the same number of solutions as the original one. This allows us to simulate the transcript with a single list of instantiations. By introducing additional checking and extraction procedures we can proceed the proof without security loss potentially caused by our sharing strategy as described before. To ensure a sufficient gap between users and adversaries, many more details need to be considered, including the number of solutions to be planted into instances during the simulation. We omit the details and refer the reader to \cref{sec:time-nike} for details.
+%proof of sketch
+%Recall that the hardness of Zero-$k$-Clique problem is to find the correct solution among the $\listlength$ instances. Our security reduction involves considering a list of Zero-$k$-Clique instances, where one instance has a solution as input. We then split this list into multiple instances with a solution in the same location, with high probability if the original instance has a solution. Finally, we plant solutions into the list to simulate random solution planting among different parties.
+
+Our reduction of security aims to find the correct solution among $\listlength$ instances of the Zero-$k$-Clique problem by making use of an adversary that can recover the shared key. To simulate the view of the adversary, which consists of the transcript (i.e., the public keys) among different parties, the reduction splits the list into multiple ones with a solution in the same location, and plants $\ell^{(\pnum-1)/\pnum}$ solutions into the list. Then the reduction can extract the index of the solution by using the common indices in the shared key.
+Specifically, our security proof introduces a generalized splitting algorithm with a binary tree structure, which splits one instance into multiple ones having the same number of solutions as the split one. %This allows us to simulate the transcript with a single list of instantiations. 
+By introducing additional checking procedures the proof can proceed without security loss potentially caused by the generalized splitting algorithm. When employing the Goldreich--Levin extractor~\cite{GL89} for privacy amplification, letting each party compress the shared indices by summing them up, as mentioned earlier, ensures that the running time of the Goldreich--Levin reduction remains acceptable.
+
+To ensure a sufficient gap between users and adversaries, many more details need to be considered, including the number of solutions to be planted into instances during the simulation. We omit them here and refer the reader to \cref{sec:time-nike}.
+
+
+
+%We also utilize three properties in Zero-$k$-Clique as follows:
+% \begin{compactitem}
+% 	\item The plantable property says that one can efficiently sample the instance of Zero-$k$-Clique problem with one solution or with no solution. 
+%	\item The average case list-hard property says that if one is given a list of instances where all but one of them are drawn uniformly over instances with no solutions, and a random one of them is drawn uniformly from instances with one solution, then it is computationally hard to find the instance with one solution.
+%	\item The splittable property says that one can generate from one average case instance, two new average case instances that have the same number of solutions as the original one.
+% \end{compactitem}
+ %The key exchange is instantiated similar to the form of Merkle Puzzels \cite{DBLP:Merkle78,C:BarMah09,TCC:BihGorIsh08}. 
+%
+%Their security is established through a reduction which aims to simulate the transcript (i.e., Alice and Bob's instances). It involves splitting an average-case list-hard instance list into two independent instances and planting solutions in $\sqrt{\listlength}$ of them. If one can find the shared key, one can break average-case list-hard property.
+% In the multi-party settings, the reduction must simulate additional instances. A straightforward approach is to independently sample more instance lists. However, this simulation does not ensure the shared key contains the information of the index from list-hard. To achieve this, we extend splittable property to have more independent instance lists. We organized these lists in a binary tree structure, where each node represents an instance. Specifically, since all parent nodes are independent, instances generated from them also remain independent and share the same number of solutions as their parent nodes. The running time of this binary tree is a constant multiple of the time taken for a single split if the number of parties is a constant. An additional challenge lies in the fact that, with an increasing number of parties, the probability of transcripts sharing the same index decreases significantly. To overcome this, we allow transcripts to have more overlaps and plant additional solutions when simulate the transcript. We then extract the index from all intersections.
+% 
+% Since we allow transcripts to have more overlaps, ensuring correctness requires more techniques. A straightforward approach is to follow the method in \cite{EC:ACMS23} and utilize the Chernoff bound to calculate the probability of having a certain amount of intersections from two sets. More specifically, they fix the size of one set and calculate the probability of the sum of Bernoulli random variable, which is defined as a event that an element from another set intersects with the fixed set. However, a concern arises in a non-replacement scenario, the events are not independent. Even if we assume replacement, the lower bound we obtain is not a true lower bound because there may be overlapping solutions. We overcome this by restrict one of our sets sampled with replacement, then define an indicator $Y_{x}=1$ to be the event that $x$ is a intersection of all sets for $x$ sampled from the non-replacement set and $Y_{x} = 0$ otherwise. The true lower bound is exactly the probability when the sum of all $Y_{x}$ equals to 0.
+% One key difference between our work and \cite{EC:ACMS23} is that their indicator (i.e., the Bernoulli random variable) only benefits from only one set with independent elements, while our new indicator benefits not only from one set with independent elements but also from the independence of all sets. We refer the reader to \cref{sec:time-nike} for more details.
+ 
+% Since we already have a fine-grained multi-party NIKE based on Zero-$k$-Clique with weak security (i.e., the adversary can not compute the shared key in a fine-grained sense), we would extend it to stronger security by trying to use the Goldreich-Levin method \cite{STOC:GolLev89}. In the fine-grained setting, we need to be careful about the reduction time, that is, we need to restrict our seed length to be some sub-polynomial. If we have polynomial intersections, our seed length will bother the reduction. We overcome this by summing all intersections. When security reduction receives the sum,  it extract the index of list-hard instances from the sum by firstly subtracting the intersections sampled from reduction and then check whether the result is the index of instance with one solution.
+ 
+ \heading{Multi-party key exchange in the bounded-storage model.}
+Recall that in the BSM, all parties and the adversary have access to a long URS. When the URS becomes unavailable, all parties broadcast public keys and share a session key with no additional interaction.
+The state-of-the-art NIKE (with public discussion) in this model is the two-party construction proposed in~\cite{C:CacMau97}. Each party stores a set of bits in the URS, and these bits are indexed in a way that they are (approximately) pairwise independent. Once the URS disappears, the parties exchange the indices and save the bits in common. It is crucial that the indices in the intersection are also pairwise independent so that the shared bits have high entropy. This allows the parties to apply privacy amplification.
+To ensure efficiency in terms of memory and communication, the parties utilize strongly 2-universal hash functions to represent the pairwise independent indices.
+
+We apply the security analysis to the multi-user setting by proving that the common indices obtained from several approximately pairwise-independent index sets still satisfy the pairwise distribution needed for privacy amplification. While this is a natural extension of the two-party analysis, it has not been rigorously treated before, as far as we know.
+For correctness, we also need to show that the intersection contains sufficiently many distinct indices. Even in the two-party construction of \cite{C:CacMau97}, only the expected intersection size was analyzed. We prove a concentration bound by introducing indicators for the indices chosen by the last party. These indicators are not independent, while they are pairwise negatively correlated, which is enough for Chebyshev-type bound. The injectivity of the hash family ensures that their sum counts distinct common indices, and thus the proof analyzes the actual shared bits rather than multiplicity hits.
+
+%We apply the security analysis to the multi-user setting by proving that the indices in the intersection of multiple sets of pairwise independent indices are also pairwise independent. While this is a somewhat natural generalization, it has not been rigorously treated before, as far as we know. To ensure correctness, we need to guarantee that this intersection is sufficiently large so that all parties can share a session key of a certain size, which reflects a main part of our contribution in this part.
+%%<<<<<< HEAD
+%Indeed, even in the two-party setting as in \cite{C:CacMau97}, only the expected size of the secret key was shown. We introduce a set of indicators in a similar way to our Zero-$k$-Clique based construction. The main difference is that the indicators need not be independent. Instead, they are pairwise negatively correlated, which is sufficient for the Chebyshev bound. The injectivity of the hash family ensures that the sum of these indicators counts distinct common indices, so the proof analyzes the actual shared bits rather than multiplicity hits.
+%=======
+%Indeed, even in the two-party setting as in \cite{C:CacMau97}, only the expected size of the secret key was shown. We introduce a set of indicators in a similar way to our Zero-$k$-Clique based construction. The main difference is that we only prove that these indicators are pairwise independent rather than completely independent and provide a lower bound of their sum. This is done by simultaneously exploiting the independence between all sets and the pairwise independence of elements within each set, and applying a theorem implied by the Chebyshev's and Markov's inequalities. Here notice that this argument holds only when the set of indices chosen by one of the parties are perfectly pairwise independent and may repeat. Fortunately, this only makes the sum smaller and hence does not affect our result. 
+%>>>>>>> refs/remotes/origin/main
+
+We would like to highlight that in \cite{EC:ACMS23}, the Chernoff bound is used in an elegant way for proving the correctness of a fine-grained multi-party NIKE. Compared to their approach, ours offers conceptual simplicity by defining the indices differently, eliminating the need for a chain of Chernoff bounds, and is more general, in the sense that it works for pairwise-independent indices rather than only for completely independent ones.
+
+%<<<<<<< HEAD
+%\heading{\sc Extendability and IB-NIKE.}
+%Without considering the steps for privacy amplification, the sharing procedures of all our constructions (as well as the multi-party NIKEs in \cite{EC:ACMS23}) involve combining the secret key with public keys of other users sequentially. Each intermediate value, termed as a ``local key'', essentially represents a shared key (without privacy amplification) amongst a subgroup of all parties. We refer to this inherent property as extendability. With this property, one can easily extend the shared (local) key amongst a certain group of parties to a larger group by simply combining it with the public keys of newly joined parties, without the need to rerun the entire sharing procedure. Besides its independent interest, we observe that such a property provides us a ``multilinear map-like'' structure: the public keys can be viewed as group elements, and together with a local key, they forms a ``multilinear Diffie-Hellman-like'' tuple. By carefully combining this insight with the technique introduced by Boneh and Waters \cite{AC:BonWat13}, which constructs BPRFs using multilinear maps, we obtain a generic construction of BPRFs from multi-party NIKEs with extendability. Ultilizing existing generic techniques \cite{AC:BonWat13,HKKW13}, we subsequently achieve fine-grained multi-party IB-NIKEs from BPRFs.
+%=======
+\heading{Extendability and IB-NIKE.}
+Without considering the steps for privacy amplification, the sharing procedures of all our constructions (as well as the multi-party NIKEs in \cite{EC:ACMS23}) involve combining the secret key with public keys of other users sequentially. Each intermediate value, termed as a ``local key'', essentially represents a shared key (without privacy amplification) amongst a subgroup of all parties. We refer to this inherent property as extendability. With this property, one can easily extend the shared (local) key amongst a certain group of parties to a larger group by simply using the public keys of newly joined parties, without the need to re-run the entire sharing procedure. Besides its independent interest, we observe that such a property provides us with a ``multilinear map-like'' structure: the public keys can be viewed as group elements, and together with a local key, they form a ``multilinear Diffie-Hellman-like'' tuple. By carefully combining this insight with the technique introduced by Boneh and Waters \cite{AC:BonWat13}, which constructs BPRFs using multilinear maps, we obtain a generic construction of BPRFs from multi-party NIKEs with extendability. Utilizing existing generic techniques \cite{AC:BonWat13,HKKW13}, we subsequently achieve fine-grained multi-party IB-NIKEs from BPRFs.
+%>>>>>>> 7750d8dd10766015700ac4d661e6422563cbacea
+
+\heading{Negative results on multi-party NIKE in the BSM.}
+For adversaries with memory bound $\amem$, each user in our $\pnum$-party NIKE in the BSM consumes
+$\umem=O(\sqrt[\pnum]{\lambda\cdot\amem^{\pnum-1}})$ bits of memory, which might seem a bit disappointing.
+However, we extend the negative result of Dziembowski and Maurer~\cite{EC:DziMau04} for two-party NIKEs and show that this memory consumption is optimal up to constant factors within the natural class of multi-party NIKEs satisfying extendability and local key independence.
+
+The proof proceeds by induction. First, the entropy of the local key shared by two parties is bounded by roughly $\umem^2/\amem$. Then, assuming that the entropy of the local key shared by $i-1$ parties is at most roughly $\umem^{i-1}/\amem^{i-2}$, we show that the entropy of the local key shared by $i$ parties is at most roughly $\umem^i/\amem^{i-1}$. The key observation is that extending an $(i-1)$-party local key using the public key of a new user can be viewed as a two-party key agreement step between the subgroup and the new user.
+
+In the original two-party argument of~\cite{EC:DziMau04}, the parties' stored information is almost independent of Eve's view. This is no longer automatic when one party's state is replaced by an intermediate local key, which may already have some leakage. We handle this using local key independence, which bounds both the leakage of local keys and the extra leakage caused by the common URS. Together with the Dziembowski-Maurer averaging lemma~\cite{EC:DziMau04} and Maurer's public-discussion bound~\cite{Maurer93}, this yields the desired iterative lower bound. We refer the reader to \cref{sec:negative} for the full details.
+%For adversaries with memory bounds $\amem$, each user in our $\pnum$-party NIKE in the BSM consumes $\umem=O(\sqrt[\pnum]{\lambda\cdot\amem^{\pnum-1}})$ bits of memory, which might seem a bit disappointing. However, we extend the negative result by Dziembowski and Maurer \cite{EC:DziMau04} for two-party NIKEs to show that to share a key with length $O(\lambda)$, this memory consumption is indeed optimal up to constant factors within the natural class of multi-party NIKEs satisfying extendability and local key independence. We prove this through mathematical induction. Initially, we show that the entropy of the local key between two parties must be no larger than $\umem^2/\amem$ (ignoring the small error probability that occurs in potential instantiations). Then we prove that the entropy of the local key amongst $i$ parties must be no larger than  $\umem^i/\amem^{i-1}$, assuming that the entropy of the local key amongst $i-1$ parties is no larger than $\umem^{i-1}/\amem^{i-2}$. This is made possible by our insight that combining the local key of a subgroup of parties with a new public key to obtain a new local key can be regarded as a two-party key exchange procedure between the subgroup and the new user. Consequently, we can employ the technique in \cite{EC:DziMau04} iteratively to prove our new lower bound. Here we highlight that the proof in \cite{EC:DziMau04} requires that the mutual information of one user's secret information and the view of the adversary and public keys is (at least close to) $0$. However, when replacing one user's secret information by a local key, which only remains certain entropy, their technique cannot be applied iteratively. We resolve this problem by combining local key independence, which controls the residual dependence caused by the common URS, with the averaging lemma of Dziembowski and Maurer and the data processing inequality, and we refer the reader to \cref{sec:negative} for the full details.
+
+\subsection{Comparison with the Proceedings Version}
+This is the extended version of the paper that appeared at Crypto 2024 \cite{C:WanSuPan24}. In this version, we show new limitations of multi-party NIKEs in the BSM, which imply the optimality of our construction up to constant factors within the natural class of schemes satisfying extendability and local key independence, in \cref{sec:negative}. Additionally, we give definitions, constructions, and security proofs of the fine-grained BPRFs and multi-party IB-NIKEs in \cref{sec:ibnike}.
+%Moreover, unlike the proof in  \cite{EC:DziMau04}, our analysis does not require the schemes to satisfy perfect correctness and perfect security, making our result more generic and applicable in a wider range of scenarios.
+
+
+%We further observe that all our multi-party NIKEs satisfy a nice property called extendability. Roughly, extendability says that 
+
+%\heading{New Lower Bound.}
+
+
+%the strongly 2-universal hash function we employ has the desirable property that all indices are distinct with overwhelming probability.
+
+%We additionally introduce trade-offs concerning both memory cost and communication cost. In essence, we allow the last party to store only a small number of bits in the URS using pairwise independent indices, while all other parties sample a limited number of pairwise independent values with a strongly 2-universal hash function and store all the bits with the ``prefixes'' of indices being these values. We demonstrate that the common indices remain pairwise independent to ensure security. As the memory used by other parties increases, the memory requirement for the last party significantly diminishes and becomes independent of the size of the URS. Additionally, the total communication cost becomes lower since each party, except for the last one, can employ a shorter strongly 2-universal hash function to represent the prefixes.
+
+%While we can show that this also holds in the multi-party setting, this inevitably causes increase on the memory cost for each party and the total communication cost along with the number of parties.
+
+%To prove the indistinguishability, we define two intermediate distributions $\ZDist'$ and  $\ODist'$ which are the same as $\ZDist$ and $\ODist$ respectively except that we replace $\zs$ by $\os$, and then show that $\ZDist'$ and  $\ODist'$ are identical. In more details,
+%for $\matr M\getsr\os$ and $\sR\getsr\sr$, $\matr M^\top\matr M$ must be of full rank. Hence, we have 
+%$$\matr M^\top\matr M(\sR+(\matr M^\top\matr M)^{-1})=\matr M^\top\matr M\sR+\matI.$$
+%Moreover, $(\sR+(\matr M^\top\matr M)^{-1})$ is uniformly distributed in $\sr$ since $(\matr M^\top\matr M)^{-1}$ is also a symmetric matrix.
+
+%Here we note that the product of a matrix and its transpose must be symmetric. 
+
+%To prove the indistinguishability, we define two intermediate distributions $\ZDist'$ and  $\ODist'$ which are the same as $\ZDist$ and $\ODist$ respectively except that we replace $\zs$ by $\os$. When $\matr M\in\os$, $\matr M^\top\matr M$ must have full rank and thus have an inverse $(\matr M^\top\matr M)^{-1}$. Hence, 
+%$\matr M^\top\matr M\sR+\matI=\matr M^\top$ 
+%
+%We show that the distribution of $\ZDist'$ and $\ODist'$ are exactly the same due to the fact that the distributions of the following when $\matr M$
+%$\sM$
+
+%\[ \underbrace{\{ \sM\sR : \matr M \getsr\os,\sM=\matr M^\top\matr M,\sR\getsr\sr \}}_{=\ZDist'} \]
+%and
+%\[\underbrace{\{\sM\sR+\matI  : \matr M \getsr \os,\sM=\matr M^\top\matr M,\sR\getsr\sr\}}_{=\ODist'}. \]
+%The indistinguishability between $\ZDist$ and $\ZDist'$
+%
+% the distribution of $\matr M$ in $\ZDist$ from $\zs$ to $\os$ to make $\sM$ have full rank and have an inverse $\sM^{-1}$. Next we switch $\sR$ to $\sR+\sM^{-1}$, which does not affect the distribution since $\sR$ is a uniformly random symmetric matrix and $\sM^{-1}$ is also symmetric. The distribution of a matrix in 
+ 
+
+
+
+%one can easily see that all matrices in these distributions are symmetric the indistinguishability between them follows immediately from that between $\zs$ and $\os$. Then we 
+
+
+%By using $\vec k$ as a simulation trapdoor, a zero-knowledge simulator can return the simulated proof as $\pi:=\ga{\vec{y}^\top \vec{k}}$, due to the following equation: 
+%\[ \vec{x}^\top \matr p = \vec{x}^\top (\matr M^\top \vec{k}) = \vec{y}^\top \vec{k} .\]
+%Soundness is guaranteed by the fact that the value $\vec{y}^{*\top} \vec{k}$ is uniformly random, given $\matr M^\top \vec k$, if $\vec{y}^*$ is outside the span of $\matr M$.
+%
+% the subset membership problem is satisfied if vectors randomly sampled in and outside the span of the public parameter $\matr M\getsr\zs$ are distinguishable against $\ncone$, and the proof is of the form $\vec r_1^\top\matr M\vec r_2$ where $\vec r_1,\vec r_2\getsr\bin^\lambda$, where $\matr M\vec r$ is the statement and $\vec r_1^\top\matr M$.
+%
+%
+% it is proven that the indistinguishability between $\zs$ and $\os$ implies a
+
+%Our approach is divided into three intermediate steps.
+%We firstly construct a simple NIZK for linear languages, and then compile it to an OR-proof scheme for $1$-out-of-$\ell$ disjunction, where $\ell$ can be any polynomial. Both schemes run in $\nczero$, which is a subset of $\aczero$. Thirdly, we use this OR-proof scheme to construct a NIZK system for circuit SAT.
+%
+%A main technical hurdle throughout our work is that in the $\aczero$-fine-grained setting, many standard operations, such as computing the sum of a polynomial number of random elements and multiplication of two random matrices, are not allowed.
+%%A main hurdle throughout our work is that standard operations such as computing the sum of a polynomial number of random elements and multiplication of two random matrices, are not available in $\aczero$.
+%%This is also the main technical hurdle, compared to the work of Wang and Pan \cite{EC:WanPan22}
+%%A main technical hurdle throughout our work is that many standard operations, such as computing the sum of a polynomial number of random elements and multiplication of two random matrices, are unvailable in $\aczero$.
+%These operations can be easily performed in $\ncone$ and thus previous fine-grained NIZKs under complexity assumptions \cite{C:BalDacKul20,EC:WanPan22} are not confronted with this problem.
+%As a result, it is more challenging to construct a \inNIZK (or any cryptographic scheme, in general) in $\aczero$, compared to the work of Wang and Pan \cite{EC:WanPan22}. 
+%
+%
+%\heading{NIZK for Linear Languages in $\aczero$.} Our starting point is a simple NIZK that is computable in $\nczero$ and has perfect soundness and composable zero-knowledge against adversaries in $\aczero$ under no assumption.
+%The linear languages we consider are of the form $$\lang_{\matr M}=\{ {\vec t}:\exists \vec w \in \bin^t, \text{ s.t. } \vec t= \matr M \vec w\},$$ where each row vector in $\matr M\in\bin^{n\times t}$ is sparse. Here, by sparse we mean that each row vector in $\matr M$ has only constant Hamming weight. This restriction is inherent, since otherwise even the multiplication of $\matr M$ and $\vec w$ cannot be performed in $\nczero$. \footnote{An $\nczero$ circuit cannot compute the inner product of two vectors unless one of them is sparse.} However, this is still sufficient for our final \inNIZK for circuit SAT.
+%%We make this restriction to ensure that $\matr M\vec w$ is computable in $\nczero$, while this does not affect our 
+%%due to the fact that $\nczero$ (or even $\aczero$) circuits cannot compute the inner product of two vectors with large Hamming weights.
+%
+%The technique behind our scheme is based on the fact that an $\aczero$ adversary cannot tell the parity of a random string with the size being the security parameter $\lambda$ \cite{Has14,IMP12}. 
+%For our purpose, we explain it as the indistinguishability between the following distributions:
+%\[ {\small \underbrace{\{ \matE\tr | \tr \getsr\bin^{\lambda-1} \}}_{=\ZDist} \text{ and } \underbrace{\{\matE\tr+\vece  | \tr \getsr\bin^{\lambda-1}}_{=\ODist}}\}, \]
+%where $\vece\in\bin^{\lambda}$ denotes constant vector with the parity being $1$ and $\matE\in\bin^{\lambda\times(\lambda-1)}$ denotes a fixed constant matrix (see \cref{sec:pre} for the formal definitions). More specifically, we prove that a vector sampled from $\ZDist$ (respectively, $\ODist$) is uniformly distributed conditioned on the parity being $0$ (respectively $1$).
+%A useful property of $\matE$ we will exploit is that each row and column vector in it has constant Hamming weight, which implies that multiplication between $\matE$ and $\tr$ or other matrices can be performed in $\nczero$.
+%
+%%``group free''
+%For the aforementioned linear language $\lang_{\matr M}$, we set the binding CRS as a vector $\vec r$ sampled from $\ODist$.
+%The prover computes $\matr C=\matr M\matr R$ and 
+%$\matr D=(\matr R||\vec w)\begin{pmatrix}\matE^\top\\\vec r^\top\end{pmatrix}$, where $\matr R\getsr\bin^{t\times(\lambda-1)}$, and the verifier accepts iff $(\matr C||\vec x)\begin{pmatrix}\matE^\top\\\vec r^\top\end{pmatrix}=\matM\matr D$. For each multiplication of matrices (or vectors) involved, one can see that either the row vectors of the left hand side matrix or the column vectors of the right hand side matrix have only constant Hamming weight. Hence, all the operations can be performed in $\nczero$.
+%Roughly speaking, soundness follows from the fact that, for a valid proof, either $\vec x$ being in the span of $\matr M$ or $\vec r$ being in the span of $\matE$ must hold, while all $\vec r\in\ODist$ are outside the span of $\matE$. 
+%To prove zero-knowledge, we switch the binding CRS to a hiding CRS by replacing the distribution of $\vec r$ by $\ZDist$. In this case, seeing $\matr C$ and $\matr D$ simultaneously reveals no information on $\vec w$ except for $\vec x$.
+%Due to this CRS switching, we call this zero-knowledge composable, and
+%this change does not modify the view of an $\aczero$ adversary.
+%
+%%To prove soundness, we switch the distribution of $\matr A$ from $\ZDist$ to $\ODist$, which corresponds to switching a hiding CRS to a binding one. In this case, the rank of $\matr A$ become full and there exists no invalid statements passing the verification. 
+%
+%
+% %     The response to the challenge is $\matr D=(\matr R||\vec w)\matr A$, where $\matr A=(\widehat{\matr R}||\widehat{\matr R} \tr)^\top$ and $\widehat{\matr R}=\begin{pmatrix}\vec 0\\ \matr I_{\lambda-1}\end{pmatrix}\in\bin^{\lambda\times(\lambda-1)}$. $\matr I_{\lambda-1}$ is an identity matrix in $\bin^{(\lambda-1)\times(\lambda-1)}$. The verifier checks whether $(\matr C||\vec x)\matr A=\matr M\matr D$. In our $\Sigma$-protocol, all computations are in $GF(2)$, and all parties can run in $\aczerotwo$. We refer the reader to \cref{sec:sigma} for the detailed proof, which reflects our main technical contribution in this part.
+%
+%%Special soundness follows from the fact that for two valid challenge/response pairs $(\tr,\matr D)$ and $(\tr',\matr D')$ such that $\tr\neq \tr'$ for the same $\matr C$, combining their verification equations yields
+%%$$
+%%\vec x ((\tr^{\top}-\tr'^{\top}) \widehat{\matr R}^\top)=\matr M(\matr D-\matr D')\
+%%\text{and}\ ((\tr^{\top}-\tr'^{\top}) \widehat{\matr R}^\top)\neq \vec 0.
+%%$$ 
+%%Thus, we can extract the $i$th column vector of $\matr D-\matr D'$ as a witness if, say, the $i$th bit in $((\tr^{\top}-\tr'^{\top}) \widehat{\matr R}^\top)$ is $1$. 
+%%
+%%
+%%On the other hand, 
+%%%$$\matr C=\matr M\matr R=\matr M(\matr R+\vec w\cdot\tr^\top)-\vec x\cdot\tr^\top$$
+%%we prove that by making use of $\tr$, one can generate $\matr C$ and $\matr D$ with no information on $\matr R$ and $\vec w$ other than $\matr R+\vec w\cdot\tr^\top$, i.e., $\vec w$ is information-theoretically hidden for randomly chosen $\matr R$ and thus special honest-verifier zero-knowledge holds. %\footnote{In fact, the scheme satisfies special honest-verifiable zero-knowledge, i.e., the security holds even if $\tr$ is maliciously generated.} 
+%% We refer the reader to \cref{sec:sigma} for more details.
+%%$$
+%%\matr D=(\matr R||\vec w)\begin{pmatrix}\widehat{\matr R}^\top\\ \tr^\top\widehat{\matr R}^\top \end{pmatrix}
+%%= (\matr R+\vec w\cdot\tr^\top||\vec 0)\begin{pmatrix}\widehat{\matr R}^\top\\ \tr^\top\widehat{\matr R}^\top \end{pmatrix}.
+%%$$
+%%Thus, the commitment and the response reveal no information on $\vec w$ since $\matr R$ is uniformly random, i.e., the honest-verifier zero-knowledge property holds. 
+%
+%%\heading{Compiling $\Sigma$-protocol to NIZK.}
+%%Couteau and Hartmann \cite{C:CouHar20} showed how to convert a $\Sigma$-protocol into a NIZK for $\lang_{(g^{\matr M})}$, where $\lang_{(g^{\matr M})}$ is the language including all the group vectors with exponents in the span of $\matr M$.
+%%%\todo{Yuyu: can you add a definition of $\lang_{\matr M}$ here?}
+%%Their main idea is to put the challenge originally in $\Z_p$ into the group and set it as the common reference string. Verification can be executed by using bilinear map, and finding a valid proof can be reduced to breaking the (extended) kernel matrix Diffie-Hellman assumption. 
+%%Although this assumption is falsifiable and has analysis in the generic group model and algebraic group model, we want a NIZK based on assumptions weaker than that. Moreover, in the fine-grained cryptographic landscape, we are not aware of the existence of any bilinear map.
+%
+%%Since the separation assumption $\assump$ does not directly give us tools in constructing NIZK, 
+%%Our work exploits the indistinguishability of the following two distributions against $\ncone$ adversaries used in \cite{C:DegVaiVas16,TCC:CamGen18,JOC:EWT19,C:BalDacKul20,C:WanPanChe21}:
+%%\[ {\small \underbrace{\{ \matr M \in \bits^{\lambda \times \lambda} : \matr M^\top \getsr\ZeroSamp(\lambda) \}}_{=:\ZDist} \text{ and } \underbrace{\{\matr M \in \bits^{\lambda \times \lambda} : \matr M^\top \getsr \OneSamp(\lambda)\}}_{=:\ODist}}. \]
+%%Here, $\lambda$ is the security parameter, and the randomized sampling algorithms $\ZeroSamp$ and $\OneSamp$ output matrices with rank $\lambda-1$ and full rank, respectively. Concrete definitions of these algorithms are given in \cref{sec:samp}.
+%%Note that this indistinguishability holds under the assumption $\assump$ \cite{FOCS:IshKus00,FOCS:AppIshKus04}.
+%%%, and they are not relevant in this section.
+%%Based on the indistinguishability between $\ZDist$ and $\ODist$, we develop a new compiler from a $\Sigma$-protocol to a NIZK in $\ncone$-fine-grained cryptography. 
+%
+%%The main idea is to generate $\widehat{\matr R}$ in our $\Sigma$-protocol as $\vec e^\lambda_1||\widehat{\matr R}\getsr\LSamp(\lambda)$ instead of $\begin{pmatrix}\vec 0\\ \matr I_{\lambda-1}\end{pmatrix}$, where
+%%as $\F(\vec r)$ instead of $\begin{pmatrix}\vec 0\\ \matr I_{\lambda-1}\end{pmatrix}$, where $\vec r\getsr\bin^{\lambda-1}$ and $\F$ is defined as
+%%$$
+%%	\F(\vec r)=\begin{pmatrix}
+%%	 r_{1,2} & \cdots & r_{1,\lambda-1} & r_{1,\lambda}\\
+%%	 1 & r_{2,3} & \cdots & r_{2,\lambda} \\
+%%	 0 & \ddots &  & \vdots \\
+%%	 \vdots & \ddots & 1 & r_{\lambda-1,\lambda} \\
+%%	 0 &\cdots & 0 & 1 \nonumber
+%%	\end{pmatrix},
+%%$$ for $\vec r\getsr \bin^{\lambda-1}$.
+%%The distribution of $\vec e_1||\F(\vec r)$, 
+%%$\vec e_1^\lambda=(1,0,\cdots,0)^\top$ and $\LSamp$ is an intermediate algorithm  in $\ZeroSamp$. This makes the distribution of $\matr A=(\widehat{\matr R} ||  \widehat{\matr R}\tr )^\top$ in the $\Sigma$-protocol identical to $\ZDist$ (see \cref{sec:samp} for details). The hiding CRS of the resulting NIZK is $\matr A$ with $\tr$ being the simulation trapdoor, and a proof consists of $(\matr C,\matr D)$ (i.e., the first and third round messages of the $\Sigma$-protocol). Perfect zero knowledge follows from the honest-verifier zero-knowledge of the aforementioned $\Sigma$-protocol.
+%%since the rank of $\widehat{\matr R}$ is still $\lambda-1$ in this case. 
+%%To prove soundness, we switch the distribution of $\matr A$ from $\ZDist$ to $\ODist$, which corresponds to switching a hiding CRS to a binding one. In this case, the rank of $\matr A$ become full and there exists no invalid statements passing the verification. 
+%%For a valid proof passing the verification equation $(\matr C||\vec x)\matr A=\matr M\matr D$, we have $(\matr M^\bot)^\top(\matr C||\vec x)\matr A=\vec 0$, where $\matr M^\bot$ is in the kernel of $\matr M^\top$. Since $\matr A\in\ODist$ is of full rank now, we must have $(\matr M^\bot)^\top\vec x=\vec 0$, i.e., $\vec x$ is a valid statement.
+%
+%%By replace the distribution of the CRS from
+%
+%%\heading{A warm-up OR-proof.}
+%\heading{OR-Proof for One Disjunction.}
+%%Let $\overline{\matr A}$ and $\underline{\matr A}$ be the upper $(\lambda-1)\times\lambda$ and lower $1\times\lambda$ matrices of a binding CRS $\matr A^\top$ in $\ODist$, respectively.
+%Following a fine-grained version of the ``OR-proof techniques'' \cite{GOS12,TCC:Rafols15}, the above NIZK can be transformed to an OR-proof for the $1$-out-of-$2$ disjunction (namely, satisfiabilty of 1 out of 2 statements).
+%Let $\vec r$ be a binding CRS sampled from $\ODist$.
+%Assuming the prover knows the witness $\vec w$ of  statement $\vec x_j$ for some $j\in\bin$, it generates a hiding CRS $\vec r_{1-j}$ with a trapdoor $\tr_{1-j}$ and a binding CRS $\vec r_{j}$ such that $\vec r_j=\vec r-\vec r_{1-j}$. Then the prover generates proofs for $\vec x_j$ and $\vec x_{1-j}$ with $\vec w$ and $\tr_{1-j}$ respectively.
+%The verifier receives $\vec r_0$ and generates $\vec r_1$ by itself for verification.
+%Soundness follows from the fact that for any pair of $(\vec r_0,\vec r_1)$ such that $\vec r=\vec r_0+\vec r_1$, at least one of $(\vec r_0,\vec r_1)$ must be a binding CRS with the parity being $1$.
+%%by randomly choosing $\tr_{1-j}\getsr\bin^{\lambda-1}$ for some $j\in\bin$ and computing
+%%      $\matr A_{1-j}=\begin{pmatrix}\overline{\matr A}\\ \tr_{1-j}^\top\overline{\matr A}\end{pmatrix}$ and
+%%      $\matr A_j=\begin{pmatrix}\overline{\matr A}\\ \underline{\matr A}-\tr_{1-j}^\top\overline{\matr A}\end{pmatrix}$. 
+%Composable zero-knowledge follows from that switching the distribution of $\vec r$ to $\ZDist$ leads both $\vec r_0$ and $\vec r_1$ to become hiding CRSs.
+%
+%\heading{OR-Proof for Multiple Disjunctions.} 
+%While the above construction works for the $1$-out-of-$2$ disjunction, our \inNIZK for all $\aczero$ circuit SAT requires $1$-out-of-$\ell$ disjunction for any polynomial $\ell$. 
+%This is due to the fact that an $\aczero$ circuit may contain unbounded fan-in $\AND$ or $\OR$ gates.
+%A natural idea is to let the prover ``split'' $\vec r$ into $\ell$ CRSs $(\vec r_i)_{i\in[\ell]}$ instead of two, among which one is binding and $\ell-1$ ones are hiding. However, this will result in workload beyond $\aczero$ for both the prover and the verifier. Especially, a prover with a witness for the $j$th statement will have to compute $\vec r_j=\vec r-\sum_{i\neq j}\vec r_i$ and the verifier will have to compute $\vec r_\ell=\vec r-\sum_{i=1}^{\ell-1}\vec r_i$. Neither of them can be performed in $\aczero$.
+%
+% %(or equivalently, check $\vec r=\sum_{i=1}^\ell\vec r_i$ on receiving $\{\vec r_i\}_{i\in[\ell]}$). However, the sum of a polynomial number of random vectors (conditioned on the parities being $0$'s or $1$'s) cannot be performed in $\aczero$.
+%
+%%\heading{A fully-fledged OR-proof.} 
+%To overcome the above problems, we develop a new framework of OR-proof for multiple disjunctions. At the core of our framework is a verifiable ``double layer'' sampling procedure.
+%%Instead of directly deriving $\ell$ CRSs via addition operations among vectors, we first extend the parameter $\lambda$ to $\ell$ in the distribution $\ZDist$ to sample a matrix $\trR$ as $\matr E_\ell\matr S$
+%
+%In the first layer, we adopt a distribution, say $\ZDist'$, which is the same as $\ZDist$ except that it outputs vectors with size $\ell$. By running $\ZDist'$ for $\lambda-1$ times, we immediately achieve a matrix in $\bin^{\ell\times(\lambda-1)}$, which can be parsed as $\ell$ random vectors in $\bin^{\lambda-1}$ with the sum being a $\vec 0$-vector. In the second layer, we sample $\ell$ vectors from $\ZDist$, while using the vectors generated in the first layer as the internal randomness. This results in $\ell$ random vectors conditioned on the sum being a $\vec 0$-vector and the parities being $0$'s. Assuming that the witness for the $j$th statement is known, we add the $j$th vector with the original CRS $\vec r$ from $\ODist$ to obtain a binding CRS and use the rest $\ell-1$ vectors as the hiding CRSs. Notice that when switching $\vec r$ to a hiding CRS sampled from $\ZDist$, the $\ell$ split CRSs are all randomly distributed in $\ZDist$ conditioned on the sum being $\vec r$. In this case,
+% information on the index $j$ is information-theoretically hidden, which preserves the zero-knowledge.
+%
+%%For verification, we use some trick to extract a matrix from the internal randomness used in the first layer. 
+%For verification, we propose a method to extract a matrix from the internal randomness used in the first layer. We then use the matrix as a witness to prove that the sum of the CRSs generated by the prover is exactly $\vec r$, via our NIZK for linear languages. In this way, we can convince the verifier that at least one of the CRSs must be binding, and thus soundness can be guaranteed.
+%
+%In conclusion, the above sampling procedure gives rise to ways to split a CRS into multiple ones and to convince the verifier that some of the resulting CRSs is binding, while
+%all the operations involved can be performed in $\aczero$. Combining this sampling procedure with our OR-proof for one disjunction, we achieve an OR-proof for multiple disjunction, which plays a key component of our NIZK for circuit SAT.
+%
+%
+%
+%%Perfect soundness follows from that of the underlying NIZK and the fact that at least one of the CRS must be binding when the sum of the CRSs is $\vec r$.
+%%Zero-knowledge is preserved as well since when switching $\vec r$ to a hiding one, all the $\ell$ CRSs are randomly distributed in $\ZDist$ conditioned on the sum being $\vec r$ and no information on the index $j$ is revealed. We refer the reader to \cref{sec:ornizk} for the detailed detailed construction and security proof.
+%
+%
+%
+%     % Based on this crucial step, we develop a fine-grained version of the ``OR-proof techniques'' \cite{GOS12,TCC:Rafols15} to achieve the target OR-proof system.
+%      
+%      
+%
+%%Specifically, we propose a generic affine MAC and then transform it to various types of fine-grained ABEs by adopting different types of encodings \cite{EC:CheGayWee15}. %which in turn implies the existence of an ABE. 
+%%Roughly speaking, the main hurdle is that all the constructions and reductions for security proofs should run in $\ncone$, and the security proofs are only allowed to be based on the worst case assumption $\assump$, and we circumvent it by using several new techniques in the $\ncone$ world.
+%
+%%\heading{From OR-proof to NIZK for circuit SAT.}  
+%\heading{NIZK for Circuit SAT.}
+%We now give an overview on how we construct a NIZK for all statements verifiable in $\aczero$ (given a witness) by using our NIZK for linear languages and our OR-proof.
+%
+%For a valid witness, we extend it to contain bits of all wires in the statement circuit and commit each bit $\w_i$ as $\ct_i=\matE\vec r_i+\vec t\w_i$, where $\vec r_i$ is a random vector in $\bin^{\lambda-1}$ and $\vec t\getsr\ODist$ is in the CRS. For the final output, we commit it as $\vec t$. Note that the commitment is additively homomorphic and $\vec t$ is a commitment to $1$.
+%For each $\NOT$ gate with input commitments $(\ct_{i1},\ct_{i2})$, we use the NIZK for linear languages to prove that $\ct_{i1}+\ct_{i2}+\vec t$ is in the span of $\matE$, i.e., it commits to $0$.
+%For each $\AND$ gate with input commitments $(\ct_{ij})_{j\in[\ell]}$ and output commitments $\ct_{i(\ell+1)}$, we use an OR-proof for $1$-out-of-$(\ell+1)$ disjunction to prove that either both $\ct_{ij}$ and $\ct_{i(\ell+1)}$ commit to $0$ for some $j\in[\ell]$ or $\ct_{ij}-\vec t$ commits to $0$ for all $j\in[\ell+1]$. Proofs for $\OR$ gates are generated analogously. Notice that when generating the proof of compliance for each $\AND$ (respectively, $\OR$) gate, the prover needs to find the index of the lexicographically first $0$-bit (respectively, $1$-bit) of its input from the extended witness. While common ways may go beyond $\aczero$ due to the unbounded fan-in of each gate, we prove that this can indeed be performed in $\aczero$ by proposing concrete circuits (See \cref{thm:index} for details).
+%
+%Due to the perfect soundness of the underlying OR-proof and NIZK for linear languages, if there exist valid proofs for all gates, we can extract a witness leading the circuit to output $1$ by computing the parities of all commitments for the input wires of the circuit.
+%Notice that the statement here is information-theoretical, and thus the extraction procedure is not necessarily runnable in $\aczero$.
+%Moreover, when switching the distribution of $\vec t$ to $\ZDist$, all the commitments are just random vectors with parities being $0$ and the proofs of the underlying NIZKs reveal no useful information.
+%
+%If we only treat statements verifiable in $\nczero$, which consists only of fan-in $2$ gates, rather than $\aczero$, we can further reduce the proof size by instantiating the underlying OR-proof with our warm-up construction for one disjunction.
+%
+%\heading{Overview of Extensions.} Due to the fact that a random string falls into $\ZDist$ and $\ODist$ with half-half probability, we can also implement our construction in the URS model by running it for multiple times in parallel. Composable zero-knowledge of the resulting construction follows from that of the original NIZK and statistical soundness follows from the fact that at least one CRS falls into $\ODist$ with overwhelming probability.
+%
+%%Also, 
+%Moreover, we can merge each CRS of all our NIZKs into one vector sampled from $\ODist$. In this case, switching a binding CRS to a hiding one can be efficiently done by changing a single bit, and for any two CRSs with the sum being a constant vector where only one entry is $1$, at least one of them must be binding. This implies that our NIZKs have verifiable correlated key generation.
+%Based on this observation, we can convert our NIZKs into unconditionally secure non-interactive ZAPs in $\aczero$, following the conversion technique in \cite{GOS12}.
+%
+%
+%%of wires with an additive homomorphic commitment scheme, and proves that the plaintexts satisfy the relation $\wa+\wb+2\wc-2\in\bin$.\footnote{Recall that any circuit can be converted to one consisting only of {\sf NAND} gates, and $1-\wa\wb=0$ is equivalent to $\wa+\wb+2\wc-2\in\bin$ in $\Z_p$ for a large number $p$.} However,
+%%since all the computations are performed in $GF(2)$ in $\ncone$-fine-grained cryptography, $\wa+\wb+2\wc-2\in\bin$ always holds, and thus proving this relation becomes meaningless. 
+%%
+%%To address the above problem, we adopt another OR-relation: 
+%%$$1+\wa+\wc=0\land 1+\wb=0\ \mbox{or}\ 1+\wc=0\land \wb=0.$$ 
+%%One can check that each valid input/output pair of a {\sf NAND} gate should satisfy it.\footnote{Notice that all the computations are performed in $GF(2)$ and thus addition and subtraction are equivalent.} Then we use the DVV encryption scheme by Degwekar, Vaikuntanathan, and Vasudevan \cite{C:DegVaiVas16} to encrypt $\wa$, $\wb$, and $\wc$ respectively and prove that the plaintexts satisfy this new relation with our OR-proof. 
+%%%More specifically,  a ciphertext of a message $\mes$ in the DVV encryption has the form $\matr M\vec r+\vec e_\lambda^\lambda\mes$, where $\matr M$ is the public key sampled from $\ZDist$, $\vec r$ is a random vector, and $\vec e_\lambda^\lambda=(0,\cdots,0,1)^\top\in\bin^\lambda$. 
+%%%It can be decrypted with a secret key in the kernel of $\matr M^\top$. 
+%%There are two nice properties of the DVV encryption useful in our case: (1) additive homomorphism and (2) a ciphertext of $0$ (respectively, $1$) is in (respectively, outside) the linear subspace of the public key, which make it compatible with our OR-proof. %Then assuming that $(\cta,\ctb,\ctc)$ are the ciphertexts of $(\wa,\wb,\wc)$ respectively, we only have to generate OR-proofs for the following statements: 
+%%%$$\begin{pmatrix}\vec e_\lambda^\lambda+\cta+\ctc\\ \vec e_\lambda^\lambda+\ctb\end{pmatrix}\in \lang_{\matr M'}\ \mbox{or}\ \begin{pmatrix}\vec e_\lambda^\lambda+\ctc\\ \ctb \end{pmatrix}\in\lang_{\matr M'},$$
+%%%where $\matr M'=\begin{pmatrix}\matr M & \matr 0\\ \matr 0& \matr M\end{pmatrix}$ and $\lang_{\matr M'}$ denotes the language consisting of all the vectors in the span of $\matr M'$.
+%
+%%\heading{NIZK for circuit SAT using FHE.}
+%%In our NIZK for circuit SAT mentioned above, we generate a ciphertext for each wire of a statement circuit and a proof of compliance for each gate. Thus, the final proof size grows linearly with the circuit size. 
+%%
+%%Our second construction circumvents this by constructing a fine-grained FHE scheme. In this way, we only have to encrypt the input bits (i.e., witness) and execute the fully homomorphic evaluation of a statement circuit on these ciphertexts to obtain an output ciphertext. Afterwards, we exploit our OR-proof to prove that all the input ciphertexts are valid and the output ciphertext corresponds to $1$.
+%% The final NIZK proof does not include intermediate ciphertexts generated during the homomorphic evaluation. Thus, the proof size is independent of the circuit size. To verify the final proof, one can just evaluate the ciphertext homomorphically and check the proofs for the input/output ciphertexts. Due to the correctness of the FHE and the soundness of the OR-proof, a valid witness can be extracted from any valid proof with the secret key of the FHE.
+%%
+%%%We now briefly describe how we construct the FHE. The public/secret key pair of our FHE is exactly the same as the DVV encryption. Let $\matr M$ be the public key, a ciphertext of $\mes$ is in the form of
+%%%$$\ct= \matr M\matr R+\mes\matr I_{\lambda},$$
+%%% where $\matr R\getsr\bin^{\lambda\times\lambda}$ and $\matr I_\lambda$ is the identity matrix in $\bin^{\lambda\times\lambda}$. The rightmost column vector of the ciphertext is exactly a ciphertext in the DVV encryption, and thus can be decrypted as in DVV.
+%%%The security follows from the fact that after switching the distribution of $\matr M$ from $D_0$ to $D_1$ (which cannot be detected by an $\ncone$ adversary), $\matr M$ is of full rank and thus $\ct$ perfectly hides $\mes$.
+%%%
+%%%Let $\ct_0=\matr M\vec r_0+\mes_0\matr I_\lambda$ and $\ct_1=\matr M\vec r_1+\mes_1\matr I_\lambda$ be two ciphertexts.
+%%%Additive (XOR) homomorphism of our FHE is straightforward
+%%% %Parsing $\matr S_0=(\matr R_0,\vec r_0)\in \bin^{\lambda\times(\lambda-1)}\times\bin^\lambda$ and $\matr S_1=(\matr R_1,\vec r_1)\in \bin^{\lambda\times(\lambda-1)}\times\bin^\lambda$,
+%%%%$$\ct_0+\ct_1=\matr M(\matr R_0+\matr R_1)+(\mes_0+\mes_1)\matr I_\lambda$$
+%%%and multiplicative (AND) homomorphism follows from the fact that
+%%%\[
+%%%\begin{split}
+%%%\ct_0\ct_1
+%%%=(\matr M\matr R_0+\mes_0 \matr I_\lambda)\ct_1
+%%%=&\matr M\matr R_0\ct_1+\mes_0 \matr I_\lambda(\matr M\matr R_1+\mes_1 \matr I_\lambda)\\
+%%%=&\matr M(\matr R_0\ct_1+\mes_0\matr R_1)+\mes_0\mes_1 \matr I_\lambda.
+%%%\end{split}
+%%%\]
+%%%Hence, $\ct_0\ct_1$ is a ciphertext for $\mes_0\mes_1$ with randomness $\matr R_0\ct_1+ \mes_0\matr R_1$.
+%%
+%%Similar to the fine-grained SHE proposed by Campanelli and Gennaro~\cite{TCC:CamGen18}, our FHE scheme supports the homomorphic evaluation of circuits in $\aczerocm$, which makes the supporting statement of the resulting NIZK somewhat limited.
+%%%This is because each homomorphic evaluation of an {\sf AND} gate involves computing the parity of $\lambda$ bits, which cannot be executed by a constantly deep  $\ncone$ circuit.
+%%%This will lead our generic construction of NIZK to support circuits with only constant multiplicative depth as well. 
+%%Using the generic technique in \cite[Section 3.3]{TCC:CamGen18}, we can extend our FHE to support homomorphic evaluation of circuits in $\aczerotwo$ with constant number of non-constant fan-in gates.
+%%Also, our FHE enjoys short public key size and parallel running-time, and compatibility with our OR-proof. %We refer the reader to \cref{sec:ncnizk-fhe} for details.
+%%
+%%%Our FHE enjoys several nice properties:
+%%%
+%%%\begin{compactitem}
+%%%	\item Our construction is conceptually simple and it is easy to adopt our OR-proof to prove that a ciphertext is valid and that a ciphertext corresponds to $1$. %\footnote{To prove the validity of a ciphertext (respectively, a ciphertext $\ct$ corresponds  to $1$), we only have to prove that either $\ct$ or $\ct-\matr I_\lambda$ consists only of vectors in the span of $\matr M$ (respectively, $\ct-\matr I_\lambda$ consists only of vectors in the span of $\matr M$).} 
+%%%	\item The homomorphic evaluation does not affect the form of ciphertexts. This ensures that the form of a ciphertext is independent of its layer in the homomorphic evaluation so that our homomorphic encryption is ``fully fledged'' rather than ``somewhat''. Additionally, it is efficient to compute the randomness of the final ciphertext, which plays part of the witness when proving that the output ciphertext corresponds to $1$. We formalize this property as strong homomorphism (see \cref{def:fhe}).
+%%%	\item Our construction is efficient. Particularly, our public key size is only $O(\lambda^2)$ and the depth of an $\ncone$ circuit required for the homomorphic evaluation of multiplication is small since it only computes the parity of $\lambda$ bits (in parallel). In contrast, the somewhat homomorphic encryption in \cite{TCC:CamGen18} has public keys of length $O(\lambda^3)$ and computes the parity of $\lambda^2$ bits in parallel for multiplication of ciphertexts.
+%%%\end{compactitem}
+%%
+%%%Intuitively, this is due to the fact that the DVV encryption is only additive homomorphic, which makes it necessary to generate ciphertexts for each gate so so that we can prove
+%
+%%\heading{Extensions to non-interactive zap.}
+%%%While \cite{GOS12} showed that the commit keys in the CRS of the GOS NIZK has verifiable correlated key generation and thus can be converted to a non-interactive zap, 
+%%For the conversion from NIZKs to non-interactive zaps,
+%%the bulk of our technical contribution is to prove that all our NIZKs have verifiable correlated key generation. At the core of our proof we show that if $\matr N_\lambda=\matr A_0+\matr A_1$ for any $(\vec e^\lambda_1||\overline{\matr A}_0^\top)\in\LSamp(\lambda)$ and any matrix, where $\matr N_\lambda$ is some constant matrix (See \cref{sec:pre}), either $\matr A_0$ or $\matr A_1$ must be a binding CRS with perfect soundness.
+%%This allows us to improve the GOS technique to generically convert our NIZKs into non-interactive zaps.
+%
+%%Moreover, we show the existence of an algorithm that can sample matrices with only public coins, while its output distribution is identical to $\ZDist$ and $\ODist$ with ``half-half'' probability. Since the CRSs of our NIZKs consist only of matrices in $\ZDist$ and $\ODist$, we can sample CRSs by using this new algorithms for multiple times, and generate proofs for a same statement in parallel. Zero-knowledge follows from that of the underlying NIZK and the indistinguishability between $\ZDist$ and $\ODist$. Statistical soundness holds since with high probability, at least one of the CRSs is binding. Since the sampling procedure for CRSs only uses public coins, the resulting NIZK is in the URS model.
+%\iffalse
+%\subsection{More on Fine-Grained Cryptography}
+%Merkle~\cite{Merkle78} initialized the study of fine-grained cryptography by constructing a non-interactive key exchange scheme, which run in time $O(n)$ and secure against adversaries running in time $o(n^2)$, in the random oracle model. Biham et al.~\cite{TCC:BihGorIsh08} constructed key exchange based on strong OWFs. Recently, Brzuska and Couteau \cite{BrzCou20} proposed a one-way function by using idealized average-case hard languages.
+%
+%Maurer considered a model where adversaries have infinite computing power but only restricted storage~\cite{JC:Maurer92a}. Afterwards, he proposed a key exchange protocol in this model~\cite{IMA:Mitchell95}.
+%Following these works, Cachin and Maurer~\cite{C:CacMau97} constructed a symmetric-key encryption scheme and a key exchange protocol running with storage $O(s)$ and {unconditionally secure} against adversaries with storage $o(s^2)$. Besides, there have been many other works focusing on primitives in this model~\cite{C:AumRab99,C:Vadhan03,C:Ding01,DBLP:AumannDR02,TCC:DHRS04,EC:DziMau04}. 
+%
+%In the constant-depth circuit model,
+%Ajtai and Wigderson~\cite{FOCS:AjtWig85} constructed an unconditional secure pseudo-random generator. Then,  Boppana and Lagarias~\cite{BoppanaL86} exploited the results by Ajtai~\cite{AJTAI19831} and Furst et al.~\cite{FurstSS81}, which shows that parity cannot be computed in size-bounded circuits, to achieve OWFs. The proposed OWF is computable in $\aczero$ ({constant-depth polynomial-sized}) circuits while the inverse cannot. Afterwards, several works treating the same model have been proposed~\cite{FOCS:ImpNao89,DBLP:ApplebaumIK08,Viola05,FOCS:Viola10}.
+%%that $\{\pi_n\}$  be computed in $\aczero$, where $\pi_n(x_1,\cdots,\vx_n) = 1$ if the number of $x_i$ such that $x_i = 1$ is divisible by $3$, otherwise $\pi_n(x_1,\cdots,\vx_n) = 0$.
+%
+%%Cryptographic primitives constructed in these works have common features as follows.
+%%\begin{itemize}
+%%\item The resource of adversaries are bounded.
+%%\item Honest parties can run the algorithms with less resources than adversaries.
+%%\item Security is based on mild assumptions or no assumptions.
+%%\end{itemize}
+%Degwekar et al.~\cite{C:DegVaiVas16} constructed an {unconditionally secure} pseudorandom generator with arbitrary polynomial stretch, a weak pseudorandom function, and a secret-key encryption scheme, all of which are computable in $\aczero$ and secure against $\aczero$ circuits.
+%In the $\ncone$-fine-grained setting, they constructed a OWF, a pseudorandom generator, a collision-resistant hash function, and a semantically secure PKE scheme. Campanelli and Gennaro~\cite{TCC:CamGen18} constructed a somewhat homomorphic encryption and a verifiable computation.
+%Egashira et al. \cite{JOC:EWT19} proposed a permutation, HPSs, and trapdoor functions. Ball et al. \cite{C:BalDacKul20} proposed a non-interactive zero knowledge proof system with polynomial-time provers in the URS model, against $\ncone$ circuits. Recently, Wang et al. \cite{C:WanPanChe21} proposed attribute-based encryption schemes and quasi-adaptive NIZKs.
+%
+%\todo{Section 1.3 is taken from my JoC paper with minor revisions (Page 2 and 3 in https://link.springer.com/content/pdf/10.1007/s00145-021-09390-3.pdf).}
+%\fi
+%
+%\iffalse
+%\heading{More on Fine-grained cryptography.} One approach to alleviate the above concern is to construct ABEs in the landscape of fine-grained cryptography, where the resource of an adversary is a-prior bounded and the honest party has no more resource than the adversary does. Under this setting it is possible to make the underlying assumption extremely mild.
+%
+%
+%The study on fine-grained cryptography was initialized by Merkle~\cite{Merkle78} who considered primitives against adversaries with bounded time. 
+%They constructed a non-interactive key exchange scheme computable in time $O(n)$ and secure against adversaries running in time $o(n^2)$, by only exploiting random functions (i.e., the random oracle). Following this work, Biham et al.~\cite{TCC:BihGorIsh08} constructed a key exchange protocol based on strong one-way functions, and recently Brzuska and Couteau \cite{BrzCou20} proposed a one-way function by using idealized average-case hard languages.
+%
+%%\paragraph{\bf Bounded storage model.}
+%Maurer initialized the study in the bounded storage model where adversaries have infinite computing power but bounded storage~\cite{JC:Maurer92a}, and 
+%it turns out that we can have a broad class of primitives such as key exchange protocols, symmetric key encryption, bit commitment, and oblivious transfer that are unconditionally secure in this model (e.g., \cite{IMA:Mitchell95,C:CacMau97,C:AumRab99,C:Vadhan03,C:Ding01,DBLP:AumannDR02,TCC:DHRS04,EC:DziMau04,EC:GuaZha19}.)
+%
+%%\paragraph{\bf Constant depth circuit model.}
+%The constant depth circuit model treats bounded-parallel-time adversaries. In this model, H$\rm{\mathring{a}}$stad~\cite{Hastad87} implicitly proposed a one-way permutation.
+%Ajtai and Wigderson~\cite{FOCS:AjtWig85} constructed an unconditional secure pseudo-random generator. Then,  Boppana and Lagarias~\cite{BoppanaL86} proposed OWFs computable in $\aczero$ ({constant-depth polynomial-sized}) circuits, based on the results by Ajtai~\cite{Ajtai83} and Furst et al.~\cite{FurstSS81}. Afterwards, several works treating the same model have been proposed~\cite{FOCS:ImpNao89,DBLP:ApplebaumIK08,EPRINT:Viola05,FOCS:Viola10}.
+%
+%Degwekar et al.~\cite{C:DegVaiVas16} considered fine-grained cryptographic primitives against adversaries with bounded circuit depth. Specifically, they proposed a pseudorandom generator, weak pseudorandom function, 
+%and secret-key encryption scheme computable in $\aczero$ and unconditionally secure against all $\aczero$ circuits. 
+%Also, they proposed a one-way function, a pseudorandom generator, a collision-resistant hash function, 
+%and a PKE scheme computable in $\ncone$ and secure against all $\ncone$ circuits, 
+%under the widely believed separation assumption $\assump$. %Here, $\aczero$ and $\ncone$ circuits are {logarithmic-depth and polynomial-size}
+%Based on the same assumption in the $\ncone$ world, Campanelli and Gennaro~\cite{TCC:CamGen18} constructed a somewhat homomorphic encryption scheme and a verifiable computation, Egashira et al. \cite{AC:EgaWanTan19} constructed a one-way permutation, hash proof systems (which in turn imply a PKE against chosen ciphertext attacks), and trapdoor one-way functions, and Ball et al. \cite{C:BalDacKul20} proposed a non-interactive zero knowledge proof system (with polynomial time provers) in the uniform random string model. \footnote{Many of these constructions can be computed in smaller classes than $\ncone$, e.g., the hash function and PKE scheme in \cite{C:DegVaiVas16} can be computed in $\aczerotwo$.}
+%
+%
+%In this work, we study how to achieve advanced primitives in the fine-grained setting. Especially, we are interested in the $\ncone$ fine-grained cryptography due to the following reasons. 
+%
+%\begin{compactenum}
+%	\item According to the previous works (e.g.,~\cite{C:DegVaiVas16,TCC:CamGen18}), (symmetric- and asymmetric-key) fine-grained primitives in $\ncone$ are achievable under the worst-case assumption $\assump$, which is widely believed to hold. 
+%	Since $\lpoly$ can be treated as the class of languages with polynomial-sized branching programs and all languages in $\ncone$ have polynomial-sized branching programs of constant width \cite{STOC:Barrington86}, this assumption holds if there exists one language having only polynomial-sized branching programs of super-constant width.
+%	
+%	It is a theoretically interesting and natural object to construct meaningful primitives under such a weak assumption, especially in the case that the existence of OWFs is still unclear.
+%	\item Although the $\ncone$ adversarial class is limited compared with the traditional polynomial-time one, it is naturally defined and captures a broad class of practical adversaries. An $\ncone$ adversary can be seen as circuits with logarithmic-depth running in parallel, i.e., parallel-time-bounded adversaries. \footnote{As noted in~\cite{C:DegVaiVas16}, this also covers randomized adversaries since for each randomized adversary $\A$, since we can define another non-uniform adversary $\A'$ working in the same way expect for being hard-coded with the randomness that worked best for it.}
+%	Furthermore, it can also be treated as the class of language recognized by alternating Turing machines using $O(\log n)$ space and $O(\log n)$ time or ones using $O(\log n)$ space and polynomial time but only $O(\log n)$ alternations~\cite{Ruzzo81}. Thus, primitives in $\ncone$ can provide us with reliable security against adversaries with bounded but reasonably large memory or computational power, even if we live in, say, the Pessiland.
+%	\item Fine-grained primitives in $\ncone$ are quite efficient. They are computable in $\ncone$ or even in $\aczero[2]$ and all the computations are over $GF(2)$ rather than large groups. Thus, in practice, even in the presence of adversaries with somewhat large resource, we can still exploit their security by increasing the security parameter to a tolerably large number. 
+%	
+%	Perhaps more importantly, as in \cite{C:DegVaiVas16}, combining fine-grained primitives with standard ones immediately derives hybrids secure against $\ncone$ adversaries under $\assump$ and secure against polynomial time adversaries under stronger assumptions (A simple example is to encrypt a plaintext twice by using a fine-grained ABE and a standard ABE respectively), and the efficiency of $\ncone$ fine-grained primitives makes such combination quite cheap.
+%	\item Last but not least, the structures of existing fine-grained constructions in $\ncone$ are similar to those of the (matrix) Diffie-Hellman assumption based constructions in the standard world. It would be interesting to exploit such relevance to make a broader techniques in the standard world compatible with $\ncone$ primitives, so that the efforts of future works on fine-grained cryptography can be greatly alleviated.
+%\end{compactenum}
+%\fi
